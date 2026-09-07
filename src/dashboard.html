@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmaStat • Omarchy Community Hardware Survey</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent-blue: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-purple: #c084fc;
+      --accent-amber: #fbbf24;
+      --accent-red: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      padding: 2rem 1rem;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-icon {
+      font-size: 2rem;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .badge {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    .stat-val {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .stat-sub {
+      color: var(--accent-green);
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+    }
+    .checker-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .checker-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .checker-box {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+    input[type="text"] {
+      flex: 1;
+      min-width: 260px;
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+    button {
+      background: #238636;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1.2rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    button:hover {
+      background: #2ea043;
+    }
+    .checker-result {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      background: #0d1117;
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      display: none;
+    }
+    .grid-sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 600px) {
+      .grid-sections { grid-template-columns: 1fr; }
+    }
+    .chart-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding-bottom: 0.5rem;
+    }
+    .panel-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .item-row {
+      margin-bottom: 0.85rem;
+    }
+    .item-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+    }
+    .bar-bg {
+      background: rgba(255,255,255,0.06);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      margin-top: 3rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-align: center;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <span class="brand-icon">🏆</span>
+        <div>
+          <h1>OmaStat</h1>
+          <p class="subtitle">Omarchy Linux Community Hardware & Benchmark Aggregator</p>
+        </div>
+      </div>
+      <span class="badge">Zero-PII Privacy Safe</span>
+    </header>
+
+    <div class="overview-grid">
+      <div class="stat-card">
+        <div class="stat-label">Active Battlestations</div>
+        <div class="stat-val" id="totalSubmissions">--</div>
+        <div class="stat-sub">Globally benchmarked</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Average OmaScore</div>
+        <div class="stat-val" id="avgScore">--</div>
+        <div class="stat-sub" id="avgTier">Calculating...</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Dominant GPU</div>
+        <div class="stat-val" id="topGpu" style="font-size: 1.25rem;">--</div>
+        <div class="stat-sub" id="topGpuShare">--</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Most Popular Display</div>
+        <div class="stat-val" id="topDisplay" style="font-size: 1.25rem;">--</div>
+        <div class="stat-sub" id="topDisplayShare">--</div>
+      </div>
+    </div>
+
+    <div class="checker-section">
+      <div class="checker-title">🧬 Battlestation Archetype Lookup</div>
+      <p class="subtitle">Enter your hardware build code (e.g. <code>OMA-U7-ARC-31G-240H</code>) to see global rarity:</p>
+      <div class="checker-box">
+        <input type="text" id="archetypeInput" placeholder="Paste your archetype (e.g. OMA-U7-ARC-31G-240H)...">
+        <button id="checkBtn">Check Global Rarity</button>
+      </div>
+      <div id="checkerResult" class="checker-result"></div>
+    </div>
+
+    <div class="grid-sections">
+      <div class="chart-panel">
+        <div class="panel-header">
+          <span class="panel-title">🎮 Graphics Architecture (GPU)</span>
+        </div>
+        <div id="gpuChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <span class="panel-title">⚡ Processor Families (CPU)</span>
+        </div>
+        <div id="cpuChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <span class="panel-title">🧠 System Memory (RAM)</span>
+        </div>
+        <div id="ramChart"></div>
+      </div>
+
+      <div class="chart-panel">
+        <div class="panel-header">
+          <span class="panel-title">🖥️ Display Resolution & Refresh Rates</span>
+        </div>
+        <div id="displayChart"></div>
+      </div>
+
+      <div class="chart-panel" style="grid-column: 1 / -1;">
+        <div class="panel-header">
+          <span class="panel-title">🏅 OmaRank Tier Distribution</span>
+        </div>
+        <div id="tierChart" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;"></div>
+      </div>
+    </div>
+
+    <footer>
+      <p><strong>Omarchy Developer Guide & Security Compliance:</strong> 100% Zero-PII Anonymous Telemetry.</p>
+      <p>No IP addresses, MAC addresses, hostnames, hardware serials, or user identities are ever collected, processed, or persisted.</p>
+      <p>Powered by Cloudflare Workers & D1 for Omarchy Linux.</p>
+    </footer>
+  </div>
+
+  <script>
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats/v1');
+        const data = await res.json();
+        renderDashboard(data);
+      } catch (err) {
+        console.error('Failed to load stats:', err);
+      }
+    }
+
+    function renderDashboard(data) {
+      document.getElementById('totalSubmissions').textContent = (data.total_submissions || 0).toLocaleString();
+      document.getElementById('avgScore').textContent = data.average_score ? (data.average_score + '/100') : '--';
+      document.getElementById('avgTier').textContent = data.average_tier || 'Global Average';
+
+      if (data.top_gpus && data.top_gpus.length > 0) {
+        document.getElementById('topGpu').textContent = data.top_gpus[0].model;
+        document.getElementById('topGpuShare').textContent = `${data.top_gpus[0].percentage}% community share`;
+      }
+
+      if (data.display_breakdown && data.display_breakdown.length > 0) {
+        document.getElementById('topDisplay').textContent = data.display_breakdown[0].resolution_hz;
+        document.getElementById('topDisplayShare').textContent = `${data.display_breakdown[0].percentage}% share`;
+      }
+
+      renderList('gpuChart', data.top_gpus || [], 'var(--accent-green)');
+      renderList('cpuChart', data.top_cpus || [], 'var(--accent-blue)');
+      renderList('ramChart', data.ram_breakdown || [], 'var(--accent-purple)');
+      renderList('displayChart', data.display_breakdown || [], 'var(--accent-amber)');
+      renderTierCards('tierChart', data.tier_distribution || []);
+    }
+
+    function renderList(elementId, items, barColor) {
+      const container = document.getElementById(elementId);
+      container.innerHTML = '';
+      if (items.length === 0) {
+        container.innerHTML = '<p class="subtitle">Awaiting survey submissions...</p>';
+        return;
+      }
+      items.slice(0, 6).forEach(item => {
+        const title = item.model || item.bucket || item.resolution_hz || 'Unknown';
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        row.innerHTML = `
+          <div class="item-meta">
+            <span>${escapeHtml(title)}</span>
+            <span>${item.count.toLocaleString()} (${item.percentage}%)</span>
+          </div>
+          <div class="bar-bg">
+            <div class="bar-fill" style="width: ${item.percentage}%; background: ${barColor};"></div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function renderTierCards(elementId, tiers) {
+      const container = document.getElementById(elementId);
+      container.innerHTML = '';
+      if (tiers.length === 0) {
+        container.innerHTML = '<p class="subtitle">Awaiting tier distribution data...</p>';
+        return;
+      }
+      tiers.forEach(tier => {
+        const card = document.createElement('div');
+        card.style.background = '#0d1117';
+        card.style.padding = '0.75rem';
+        card.style.borderRadius = '6px';
+        card.style.border = '1px solid var(--border)';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+            <span>${escapeHtml(tier.tier_icon)} <strong>${escapeHtml(tier.tier_name)}</strong></span>
+            <span style="color:var(--muted); font-size:0.8rem;">${tier.percentage}%</span>
+          </div>
+          <div class="bar-bg">
+            <div class="bar-fill" style="width: ${tier.percentage}%; background: var(--accent-blue);"></div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', async () => {
+      const code = document.getElementById('archetypeInput').value.trim();
+      const resBox = document.getElementById('checkerResult');
+      if (!code) return;
+
+      try {
+        const res = await fetch(`/api/archetype/${encodeURIComponent(code)}`);
+        const data = await res.json();
+        resBox.style.display = 'block';
+        if (data.found) {
+          resBox.innerHTML = `✨ <strong>Archetype Found:</strong> <code>${escapeHtml(code)}</code> accounts for <strong>${data.percentage}%</strong> (${data.count} battlestations) globally!`;
+          resBox.style.borderColor = 'var(--accent-green)';
+        } else {
+          resBox.innerHTML = `🌟 <strong>Ultra-Rare Archetype:</strong> <code>${escapeHtml(code)}</code> is in the top 1% rarest configurations! Submit yours to add it to the ledger.`;
+          resBox.style.borderColor = 'var(--accent-blue)';
+        }
+      } catch (err) {
+        resBox.style.display = 'block';
+        resBox.textContent = 'Error checking archetype.';
+      }
+    });
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    loadStats();
+  </script>
+</body>
+</html>

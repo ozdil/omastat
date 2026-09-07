@@ -1,0 +1,20 @@
+{
+  "name": "omastat",
+  "version": "1.0.0",
+  "description": "Privacy-preserving community hardware survey and statistics engine for Omarchy",
+  "author": "Ozan Özdil (ozdil)",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply omastat-db --local",
+    "db:migrate:prod": "wrangler d1 migrations apply omastat-db --remote",
+    "test": "node test/test-api.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.101.0"
+  }
+}
