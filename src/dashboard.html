@@ -5,9 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>OmaStat • Omarchy Hardware & Battlestation Matrix</title>
   <meta name="description" content="All 26 Official Omarchy Linux Themes with Quickshell QML telemetry & Rig Roaster 3000.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><text y=\".9em\" font-size=\"90\">🏆</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237aa2f7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4'/%3E%3Cpath d='M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-4'/%3E%3Cpath d='M4 22h16'/%3E%3Cpath d='M10 14.66V17c0 .55-.45 1-1 1H7v2h10v-2h-2c-.55 0-1-.45-1-1v-2.34'/%3E%3Cpath d='M4.5 3h15a.5.5 0 0 1 .5.5v5a7.5 7.5 0 0 1-15 0v-5a.5.5 0 0 1 .5-.5'/%3E%3C/svg%3E">
 
   <style>
+    
+    @font-face {
+      font-family: "JetBrainsMono Nerd Font";
+      src: local("JetBrainsMono Nerd Font"), local("JetBrainsMono NF"), local("JetBrains Mono");
+      font-display: swap;
+    }
+
+    .q-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-style: normal;
+      font-weight: normal;
+      line-height: 1;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      transition: color var(--transition-fast), transform var(--transition-fast);
+    }
+    .q-icon-brand   { color: var(--brand); }
+    .q-icon-purple  { color: var(--purple); }
+    .q-icon-green   { color: var(--green); }
+    .q-icon-amber   { color: var(--amber); }
+    .q-icon-red     { color: var(--red); }
+    .q-icon-cyan    { color: var(--cyan); }
+    .q-icon-muted   { color: var(--muted); }
+    .q-icon-text    { color: var(--text-bright); }
+
     :root {
       --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -40,7 +68,8 @@
       --red: #f7768e;
       --cyan: #449dab;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="catppuccin"] {
       --bg-desktop: #101019;
       --bg-shell: #1e1e2e;
@@ -60,7 +89,8 @@
       --red: #f38ba8;
       --cyan: #94e2d5;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="catppuccin-latte"] {
       --bg-desktop: #d7d8dc;
       --bg-shell: #eff1f5;
@@ -80,7 +110,8 @@
       --red: #d20f39;
       --cyan: #179299;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
-    }\n
+    }
+
     [data-theme="ethereal"] {
       --bg-desktop: #030610;
       --bg-shell: #060B1E;
@@ -100,7 +131,8 @@
       --red: #ED5B5A;
       --cyan: #a3bfd1;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="everforest"] {
       --bg-desktop: #181d20;
       --bg-shell: #2d353b;
@@ -120,7 +152,8 @@
       --red: #e67e80;
       --cyan: #83c092;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="flexoki-light"] {
       --bg-desktop: #e5e2d8;
       --bg-shell: #FFFCF0;
@@ -140,7 +173,8 @@
       --red: #D14D41;
       --cyan: #3AA99F;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
-    }\n
+    }
+
     [data-theme="gruvbox"] {
       --bg-desktop: #161616;
       --bg-shell: #282828;
@@ -160,7 +194,8 @@
       --red: #ea6962;
       --cyan: #89b482;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="hackerman"] {
       --bg-desktop: #06060c;
       --bg-shell: #0B0C16;
@@ -180,7 +215,8 @@
       --red: #50f872;
       --cyan: #7cf8f7;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="istanbul"] {
       --bg-desktop: #13141c;
       --bg-shell: #070a0e;
@@ -200,7 +236,8 @@
       --red: #f7768e;
       --cyan: #449dab;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="kanagawa"] {
       --bg-desktop: #111116;
       --bg-shell: #1f1f28;
@@ -220,7 +257,8 @@
       --red: #c34043;
       --cyan: #6a9589;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="last-horizon"] {
       --bg-desktop: #060606;
       --bg-shell: #0c0b0c;
@@ -240,7 +278,8 @@
       --red: #c38b7b;
       --cyan: #a5a0b6;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="lumon"] {
       --bg-desktop: #0b1216;
       --bg-shell: #16242d;
@@ -260,7 +299,8 @@
       --red: #4d86b0;
       --cyan: #b4e4f6;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="lupine"] {
       --bg-desktop: #dedede;
       --bg-shell: #fafafa;
@@ -280,7 +320,8 @@
       --red: #c900c4;
       --cyan: #0c67de;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
-    }\n
+    }
+
     [data-theme="matte-black"] {
       --bg-desktop: #090909;
       --bg-shell: #121212;
@@ -300,7 +341,8 @@
       --red: #D35F5F;
       --cyan: #bebebe;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="miasma"] {
       --bg-desktop: #121212;
       --bg-shell: #222222;
@@ -320,7 +362,8 @@
       --red: #685742;
       --cyan: #c9a554;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="nord"] {
       --bg-desktop: #191c23;
       --bg-shell: #2e3440;
@@ -340,7 +383,8 @@
       --red: #bf616a;
       --cyan: #88c0d0;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="osaka-jade"] {
       --bg-desktop: #090f0d;
       --bg-shell: #111c18;
@@ -360,7 +404,8 @@
       --red: #FF5345;
       --cyan: #2DD5B7;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="retro-82"] {
       --bg-desktop: #020c17;
       --bg-shell: #05182e;
@@ -380,7 +425,8 @@
       --red: #f85525;
       --cyan: #8cbfb8;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="ristretto"] {
       --bg-desktop: #181414;
       --bg-shell: #2c2525;
@@ -400,7 +446,8 @@
       --red: #fd6883;
       --cyan: #85dacc;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="rose-pine"] {
       --bg-desktop: #e1dbd5;
       --bg-shell: #faf4ed;
@@ -420,7 +467,8 @@
       --red: #b4637a;
       --cyan: #d7827e;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
-    }\n
+    }
+
     [data-theme="solitude"] {
       --bg-desktop: #080a0b;
       --bg-shell: #101315;
@@ -440,7 +488,8 @@
       --red: #565d60;
       --cyan: #707070;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="steammachine"] {
       --bg-desktop: #13141c;
       --bg-shell: #090d16;
@@ -460,7 +509,8 @@
       --red: #f7768e;
       --cyan: #449dab;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="tokyo-night"] {
       --bg-desktop: #0e0e14;
       --bg-shell: #1a1b26;
@@ -480,7 +530,8 @@
       --red: #f7768e;
       --cyan: #449dab;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="turkiye"] {
       --bg-desktop: #13141c;
       --bg-shell: #070a10;
@@ -500,7 +551,8 @@
       --red: #f7768e;
       --cyan: #449dab;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="vantablack"] {
       --bg-desktop: #070707;
       --bg-shell: #000000;
@@ -520,7 +572,8 @@
       --red: #a4a4a4;
       --cyan: #b0b0b0;
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
-    }\n
+    }
+
     [data-theme="white"] {
       --bg-desktop: #e8e8e8;
       --bg-shell: #ffffff;
@@ -1150,7 +1203,10 @@
     }
 
     .roaster-module::after {
-      content: "🔥";
+      content: "󰈸";
+      font-family: var(--font-mono);
+      color: var(--red);
+      opacity: 0.12;
       position: absolute;
       right: 1.5rem;
       top: 1.5rem;
@@ -1657,13 +1713,13 @@
     <div class="panel-container">
       <div class="panel-left">
         <a href="/" class="brand-pill">
-          <span class="brand-icon">🏆</span>
+          <span class="brand-icon q-icon q-icon-brand"></span>
           <span class="brand-title">OmaStat</span>
         </a>
 
         <div class="status-badge">
           <span class="status-pulse"></span>
-          <span>QUICKSHELL EDGE</span>
+          <span class="q-icon q-icon-green" style="font-size:0.75rem; margin-right:3px;">󰄛</span><span>QUICKSHELL EDGE</span>
         </div>
       </div>
 
@@ -1680,18 +1736,18 @@
             <span class="sound-bar"></span>
             <span class="sound-bar"></span>
           </div>
-          <span>SFX</span>
+          <span class="q-icon q-icon-amber" style="margin-right:2px;">󰕾</span><span>SFX</span>
         </button>
 
         <!-- Theme Picker Modal Button -->
         <button id="openThemeModalBtn" class="shell-btn" title="Open Theme Browser (26 Omarchy Themes)">
-          <span>🎨</span>
+          <span class="q-icon q-icon-purple">󰏚</span>
           <span id="activeThemeBadge">Themes (26) ▾</span>
         </button>
 
         <!-- Install Action -->
         <a href="#install" class="btn-install">
-          <span>⚡</span>
+          <span class="q-icon q-icon-brand">󰓅</span>
           <span>Add OmaRank</span>
         </a>
       </div>
@@ -1701,7 +1757,7 @@
   <!-- Quick Horizontal Theme Ribbon Strip -->
   <div class="theme-ribbon">
     <span class="ribbon-label">
-      <span>🎨</span>
+      <span class="q-icon q-icon-purple">󰏚</span>
       <span>Omarchy Themes:</span>
     </span>
     <div id="ribbonPills" style="display: inline-flex; gap: 0.5rem;"></div>
@@ -1731,9 +1787,9 @@
       <div class="window-body">
         <section class="hero-banner">
           <div class="hero-pill">
-            <span>🛡️ ZERO-PII ARCHITECTURE</span>
+            <span class="q-icon q-icon-green">󰒃</span> <span>ZERO-PII ARCHITECTURE</span>
             <span>•</span>
-            <span>26 OFFICIAL OMARCHY THEMES</span>
+            <span class="q-icon q-icon-purple">󰏚</span> <span>26 OFFICIAL OMARCHY THEMES</span>
           </div>
 
           <h1>
@@ -1751,7 +1807,7 @@
               <code id="cliSnippet">omarchy plugin add https://github.com/ozdil/omarchy-omarank --enable</code>
             </div>
             <button id="copyCliBtn" class="cli-copy">
-              <span>📋</span>
+              <span class="q-icon q-icon-brand">󰆏</span>
               <span id="copyStatus">Copy</span>
             </button>
           </div>
@@ -1760,23 +1816,23 @@
         <!-- QML Tabs -->
         <div class="qml-tabs">
           <button class="qml-tab active" data-tab="tab-overview">
-            <span>📊</span>
+            <span class="q-icon q-icon-brand">󰓅</span>
             <span>Hardware Telemetry</span>
           </button>
           <button class="qml-tab" data-tab="tab-roaster">
-            <span>🔥</span>
+            <span class="q-icon q-icon-red">󰈸</span>
             <span>Rig Roaster 3000</span>
           </button>
           <button class="qml-tab" data-tab="tab-simulator">
-            <span>🧮</span>
+            <span class="q-icon q-icon-purple">󰃬</span>
             <span>OmaScore Simulator</span>
           </button>
           <button class="qml-tab" data-tab="tab-tiers">
-            <span>🏆</span>
+            <span class="q-icon q-icon-amber"></span>
             <span>Hall of Tiers</span>
           </button>
           <button class="qml-tab" data-tab="tab-privacy">
-            <span>🔒</span>
+            <span class="q-icon q-icon-green">󰒃</span>
             <span>Zero-PII Audit</span>
           </button>
         </div>
@@ -1787,7 +1843,7 @@
             <div class="border-surface-card">
               <div class="card-top">
                 <span class="card-label">Active Battlestations</span>
-                <span class="card-icon">💻</span>
+                <span class="card-icon q-icon q-icon-brand">󰌢</span>
               </div>
               <div class="card-val" id="totalSubmissions">--</div>
               <div class="card-sub">Benchmarked community rigs</div>
@@ -1796,7 +1852,7 @@
             <div class="border-surface-card">
               <div class="card-top">
                 <span class="card-label">Global OmaScore Mean</span>
-                <span class="card-icon">⭐</span>
+                <span class="card-icon q-icon q-icon-amber">󰓅</span>
               </div>
               <div class="card-val" id="avgScore">--</div>
               <div class="card-sub" id="avgTier">Calculating median...</div>
@@ -1805,7 +1861,7 @@
             <div class="border-surface-card">
               <div class="card-top">
                 <span class="card-label">Apex Predator GPU</span>
-                <span class="card-icon">🎮</span>
+                <span class="card-icon q-icon q-icon-cyan">󰢮</span>
               </div>
               <div class="card-val" id="topGpu" style="font-size: 1.25rem;">--</div>
               <div class="card-sub" id="topGpuShare">Analyzing market share...</div>
@@ -1814,7 +1870,7 @@
             <div class="border-surface-card">
               <div class="card-top">
                 <span class="card-label">Dominant Display</span>
-                <span class="card-icon">🖥️</span>
+                <span class="card-icon q-icon q-icon-purple">󰍹</span>
               </div>
               <div class="card-val" id="topDisplay" style="font-size: 1.25rem;">--</div>
               <div class="card-sub" id="topDisplayShare">Hz & resolution split</div>
@@ -1824,7 +1880,7 @@
           <div class="charts-grid">
             <div class="chart-box">
               <div class="chart-box-header">
-                <span class="chart-box-title">🎮 Graphics Architecture (GPU)</span>
+                <span class="chart-box-title"><span class="q-icon q-icon-cyan">󰢮</span> Graphics Architecture (GPU)</span>
                 <span class="chart-box-tag">RADV • NVIDIA • i915 • Xe</span>
               </div>
               <div id="gpuChart"></div>
@@ -1832,7 +1888,7 @@
 
             <div class="chart-box">
               <div class="chart-box-header">
-                <span class="chart-box-title">⚡ Processor Architecture (CPU)</span>
+                <span class="chart-box-title"><span class="q-icon q-icon-purple"></span> Processor Architecture (CPU)</span>
                 <span class="chart-box-tag">AMD • Intel • ARM64</span>
               </div>
               <div id="cpuChart"></div>
@@ -1840,7 +1896,7 @@
 
             <div class="chart-box">
               <div class="chart-box-header">
-                <span class="chart-box-title">🧠 System Memory (RAM)</span>
+                <span class="chart-box-title"><span class="q-icon q-icon-green">󰘚</span> System Memory (RAM)</span>
                 <span class="chart-box-tag">DDR5 • DDR4 Capacity</span>
               </div>
               <div id="ramChart"></div>
@@ -1848,7 +1904,7 @@
 
             <div class="chart-box">
               <div class="chart-box-header">
-                <span class="chart-box-title">🖥️ Display Arena & Refresh Rates</span>
+                <span class="chart-box-title"><span class="q-icon q-icon-amber">󰍹</span> Display Arena & Refresh Rates</span>
                 <span class="chart-box-tag">High-Speed vs 60Hz</span>
               </div>
               <div id="displayChart"></div>
@@ -1856,7 +1912,7 @@
 
             <div class="chart-box">
               <div class="chart-box-header">
-                <span class="chart-box-title">💻 PC Manufacturers & Custom DIY Vendors</span>
+                <span class="chart-box-title"><span class="q-icon q-icon-brand">󰌢</span> PC Manufacturers & Custom DIY Vendors</span>
                 <span class="chart-box-tag">Laptops • Prebuilts • DIY Mobos</span>
               </div>
               <div id="brandChart"></div>
@@ -1865,7 +1921,7 @@
             <div class="chart-box" style="display: flex; flex-direction: column; justify-content: space-between;">
               <div>
                 <div class="chart-box-header">
-                  <span class="chart-box-title">🤝 Hardware Vendor & OEM Partnership</span>
+                  <span class="chart-box-title"><span class="q-icon q-icon-green">󰒋</span> Hardware Vendor & OEM Partnership</span>
                   <span class="chart-box-tag" style="color: var(--brand); border-color: var(--border-accent);">Sponsorship Open</span>
                 </div>
                 <p style="font-size: 0.82rem; color: var(--text); line-height: 1.5; margin-bottom: 0.75rem;">
@@ -1877,11 +1933,11 @@
               </div>
               <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
                 <a href="https://github.com/omacom/omarchy/discussions/10652" target="_blank" class="btn-install" style="padding: 0.5rem 1rem; font-size: 0.8rem; text-decoration: none;">
-                  <span>🤝</span>
+                  <span class="q-icon q-icon-brand">󰒋</span>
                   <span>Partner with Omarchy (RFC #10652)</span>
                 </a>
                 <a href="https://github.com/ozdil/omastat" target="_blank" class="shell-btn" style="padding: 0.5rem 1rem; font-size: 0.8rem; text-decoration: none;">
-                  <span>🐙</span>
+                  <span class="q-icon q-icon-purple"></span>
                   <span>View Source</span>
                 </a>
               </div>
@@ -1893,18 +1949,18 @@
         <div id="tab-roaster" class="tab-pane">
           <div class="roaster-module">
             <div class="roaster-header">
-              <h2>🔥 Rig Roaster 3000 & Archetype Scanner</h2>
+              <h2><span class="q-icon q-icon-red">󰈸</span> Rig Roaster 3000 & Archetype Scanner</h2>
               <p>Type your anonymous OmaRank Archetype signature (e.g. <code>OMA-U7-ARC-31G-240H</code>) or pick a preset for an immediate, brutally honest community roast:</p>
             </div>
 
             <div class="roaster-input-row">
               <input type="text" id="archetypeInput" class="qml-input" placeholder="Paste your archetype signature (e.g. OMA-R7-790-32G-240H)...">
               <button id="roastBtn" class="btn-fire">
-                <span>🔥</span>
+                <span class="q-icon">󰈸</span>
                 <span>Roast My Rig</span>
               </button>
               <button id="randomRigBtn" class="btn-dice">
-                <span>🎲</span>
+                <span class="q-icon">󰒋</span>
                 <span>Random Rig</span>
               </button>
             </div>
@@ -1925,8 +1981,8 @@
               </div>
               <div class="roast-text" id="roastText"></div>
               <div class="roast-stats-footer">
-                <span id="roastRarity">📊 Global Rarity: In top 5% builds</span>
-                <span>🛡️ Zero-PII Anonymous</span>
+                <span id="roastRarity">󰓅 Global Rarity: In top 5% builds</span>
+                <span class="q-icon q-icon-green">󰒃</span> <span>Zero-PII Anonymous</span>
               </div>
             </div>
           </div>
@@ -1936,7 +1992,7 @@
         <div id="tab-simulator" class="tab-pane">
           <div class="simulator-box">
             <div class="chart-box-header">
-              <span class="chart-box-title">🧮 Interactive OmaScore Simulator</span>
+              <span class="chart-box-title"><span class="q-icon q-icon-purple">󰃬</span> Interactive OmaScore Simulator</span>
               <span class="chart-box-tag">Instant Client-Side Estimation</span>
             </div>
             <p style="font-size: 0.8rem; color: var(--muted);">
@@ -1991,7 +2047,7 @@
                 <span style="color: var(--muted); font-size: 0.9rem;">/ 100 Projected OmaScore</span>
               </div>
               <div style="flex: 1; min-width: 220px;">
-                <div style="font-weight: 800; color: var(--text-bright); font-size: 1rem;" id="simTierTitle">🏎️ Gaming Chair Missing</div>
+                <div style="font-weight: 800; color: var(--text-bright); font-size: 1rem;" id="simTierTitle">󰢮 Gaming Chair Missing</div>
                 <div style="font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem;" id="simTierQuote">"Top 15% tier. You are ready to blame your ISP whenever you miss a shot."</div>
               </div>
               <a href="#install" class="btn-install" style="padding: 0.6rem 1.25rem;">
@@ -2014,7 +2070,7 @@
         <!-- TAB 5: Zero-PII Audit -->
         <div id="tab-privacy" class="tab-pane">
           <div class="zero-pii-card">
-            <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--text-bright); margin-bottom: 0.75rem;">🔒 Zero-PII Cryptographic Privacy Standard</h2>
+            <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--text-bright); margin-bottom: 0.75rem;"><span class="q-icon q-icon-green">󰒃</span> Zero-PII Cryptographic Privacy Standard</h2>
             <p style="margin-bottom: 0.8rem;">
               OmaStat is purpose-built to eliminate user tracking, telemetry backlash, and surveillance vectors.
             </p>
@@ -2048,7 +2104,7 @@
     <div class="theme-modal">
       <div class="modal-head">
         <div class="modal-title">
-          <span>🎨</span>
+          <span class="q-icon q-icon-purple">󰏚</span>
           <span>Omarchy Themes (26)</span>
         </div>
         <button id="closeThemeModalBtn" class="modal-close-btn">✕</button>
@@ -2057,7 +2113,7 @@
       <div class="modal-search-bar">
         <input type="text" id="themeSearch" class="modal-search-input" placeholder="Filter themes (e.g. Catppuccin, Gruvbox, Nord, Hackerman, Turkiye)...">
         <button id="randomThemeBtn" class="shell-btn" style="white-space: nowrap;">
-          <span>🎲</span>
+          <span class="q-icon">󰒋</span>
           <span>Random</span>
         </button>
       </div>
@@ -2331,10 +2387,10 @@
       const rarity = document.getElementById("roastRarity");
 
       const info = pickRoast(code);
-      title.innerHTML = `🔥 ${escapeHtml(info.title)} <code style="font-size:0.75rem; color:var(--brand);">${escapeHtml(code)}</code>`;
-      tierBadge.textContent = `🏅 ${info.tier}`;
+      title.innerHTML = `<span class="q-icon q-icon-red" style="margin-right:4px;">󰈸</span> ${escapeHtml(info.title)} <code style="font-size:0.75rem; color:var(--brand);">${escapeHtml(code)}</code>`;
+      tierBadge.textContent = `${info.tier}`;
       text.textContent = `"${info.comment}"`;
-      rarity.textContent = "📊 Querying Cloudflare D1 edge database...";
+      rarity.textContent = "󰓅 Querying Cloudflare D1 edge database...";
 
       output.style.display = "block";
 
@@ -2342,12 +2398,12 @@
         const res = await fetch(`/api/archetype/${encodeURIComponent(code)}`);
         const data = await res.json();
         if (data.found) {
-          rarity.textContent = `📊 Global Frequency: ${data.percentage}% (${data.count} battlestations in ledger)`;
+          rarity.textContent = `󰓅 Global Frequency: ${data.percentage}% (${data.count} battlestations in ledger)`;
         } else {
-          rarity.textContent = `🌟 Ultra-Rare Spec: < 1% representation globally`;
+          rarity.textContent = `󰓅 Ultra-Rare Spec: < 1% representation globally`;
         }
       } catch(e) {
-        rarity.textContent = `📊 In top 5% rarest community configurations`;
+        rarity.textContent = `󰓅 In top 5% rarest community configurations`;
       }
     }
 
@@ -2396,23 +2452,23 @@
       const score = Math.min(100, Math.round((cpu * 0.3) + (gpu * 0.35) + (ram * 0.2) + (disp * 0.15)));
       document.getElementById("simScoreDisplay").textContent = score;
 
-      let tier = "🏎️ Gaming Chair Missing";
+      let tier = "󰢮 Gaming Chair Missing";
       let quote = "\"Top 15% tier. You are ready to blame your ISP whenever you miss a shot.\"";
 
       if (score >= 92) {
-        tier = "🚀 NASA Supercomputer";
+        tier = " NASA Supercomputer";
         quote = "\"Top 1% God tier. Your PC compiles Linux in 12 seconds and warms the room.\"";
       } else if (score >= 80) {
-        tier = "🏎️ Cyberpunk Beast";
+        tier = "󰓅 Cyberpunk Beast";
         quote = "\"Top 12% tier. High refresh DSC + liquid butter Wayland animations.\"";
       } else if (score >= 65) {
-        tier = "🎮 High-FPS Addiction";
+        tier = "󰢮 High-FPS Addiction";
         quote = "\"Top 35% tier. Solid high refresh gaming, zero frame drops in Sway/Hyprland.\"";
       } else if (score >= 45) {
-        tier = "☕ Respectable Daily Driver";
+        tier = "󰌢 Respectable Daily Driver";
         quote = "\"Median community benchmark. Gets work done reliably without whining.\"";
       } else {
-        tier = "🥔 Certified Potato Toaster";
+        tier = "󰋊 Certified Potato Toaster";
         quote = "\"Bottom 20%. Your CPU fans scream for mercy when opening VS Code.\"";
       }
 
@@ -2430,11 +2486,11 @@
 
     // --- Live Data Loader ---
     const defaultTiers = [
-      { tier_name: "NASA Supercomputer", tier_icon: "🚀", percentage: 4, lore: "OmaScore 90-100 • Halo GPUs, 32-thread CPUs, 360Hz displays" },
-      { tier_name: "Cyberpunk Beast", tier_icon: "🏎️", percentage: 24, lore: "OmaScore 75-89 • High-end dGPUs, 240Hz monitors, liquid butter" },
-      { tier_name: "High-FPS Addiction", tier_icon: "🎮", percentage: 38, lore: "OmaScore 60-74 • Ryzen 5/7 + 144Hz, the backbone of Linux gaming" },
-      { tier_name: "Daily Driver", tier_icon: "☕", percentage: 22, lore: "OmaScore 40-59 • Solid laptops and workhorses" },
-      { tier_name: "Potato Toaster", tier_icon: "🥔", percentage: 12, lore: "OmaScore 0-39 • Brave warriors running on pure hope" }
+      { tier_name: "NASA Supercomputer", tier_icon: "", percentage: 4, lore: "OmaScore 90-100 • Halo GPUs, 32-thread CPUs, 360Hz displays" },
+      { tier_name: "Cyberpunk Beast", tier_icon: "󰓅", percentage: 24, lore: "OmaScore 75-89 • High-end dGPUs, 240Hz monitors, liquid butter" },
+      { tier_name: "High-FPS Addiction", tier_icon: "󰢮", percentage: 38, lore: "OmaScore 60-74 • Ryzen 5/7 + 144Hz, the backbone of Linux gaming" },
+      { tier_name: "Daily Driver", tier_icon: "󰌢", percentage: 22, lore: "OmaScore 40-59 • Solid laptops and workhorses" },
+      { tier_name: "Potato Toaster", tier_icon: "󰋊", percentage: 12, lore: "OmaScore 0-39 • Brave warriors running on pure hope" }
     ];
 
     async function loadData() {
@@ -2451,7 +2507,7 @@
       const total = data.total_submissions || 0;
       document.getElementById("totalSubmissions").textContent = total > 0 ? total.toLocaleString() : "2";
       document.getElementById("avgScore").textContent = data.average_score > 0 ? (data.average_score + "/100") : "79/100";
-      document.getElementById("avgTier").textContent = data.average_tier || "🚀 Cyberpunk Beast";
+      document.getElementById("avgTier").textContent = data.average_tier || "󰓅 Cyberpunk Beast";
 
       const topGpu = (data.top_gpus && data.top_gpus.length > 0) ? data.top_gpus[0] : { model: "NVIDIA GeForce RTX 4060 Laptop GPU", percentage: 50 };
       document.getElementById("topGpu").textContent = topGpu.model;
