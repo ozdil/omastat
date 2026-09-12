@@ -8,7 +8,7 @@
     {
       "binding": "DB",
       "database_name": "omastat-db",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_id": "b8948890-0740-44d6-b4a2-28deb3dd8b1b",
       "migrations_dir": "migrations"
     }
   ],
