@@ -4,6 +4,10 @@
 
 OmaStat is the open-source community hardware survey aggregator for Omarchy (`omastat.omarchy.org`). Inspired by the Steam Hardware Survey, it collects privacy-safe, anonymous telemetry from the [OmaRank](https://github.com/ozdil/omarchy-omarank) hardware benchmark widget to provide live, transparent hardware market share statistics across the Omarchy ecosystem.
 
+📊 **Live Demo Dashboard:** [https://omastat.ozan-zdil.workers.dev/dashboard](https://omastat.ozan-zdil.workers.dev/dashboard)  
+📡 **Live Survey API:** `https://omastat.ozan-zdil.workers.dev/api/survey/v1`
+
+
 ---
 
 ## 🌟 Architecture & Technology Stack

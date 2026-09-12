@@ -22,6 +22,8 @@ interface OmaStatSurveyPayload {
   ram_gb: number;
   ram_type: string;
   ram_speed_mts: number;
+  mobo_vendor?: string;
+  system_vendor?: string;
   mobo_name: string;
   chipset: string;
   primary_display: string;
@@ -141,6 +143,12 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
   const now = Math.floor(Date.now() / 1000);
 
   const tierIcon = getTierIcon(tierName);
+  const { brand: vendorBrand, model: vendorModel } = cleanBrandAndModel(
+    sanitizeText(body.system_vendor || body.mobo_vendor || "", 40),
+    sanitizeText(body.mobo_vendor || "", 40),
+    sanitizeText(body.mobo_name || "", 50),
+    sanitizeText(body.mobo_name || "", 50)
+  );
 
   try {
     // Atomic D1 batch execution for zero-latency aggregate updates
@@ -185,6 +193,11 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
       env.DB.prepare(
         "INSERT INTO archetype_distribution (archetype, count) VALUES (?, 1) ON CONFLICT(archetype) DO UPDATE SET count = count + 1"
       ).bind(archetype),
+
+      // Upsert Brand / OEM distribution
+      env.DB.prepare(
+        "INSERT INTO brand_distribution (brand, model, count) VALUES (?, ?, 1) ON CONFLICT(brand) DO UPDATE SET count = count + 1, model = excluded.model"
+      ).bind(vendorBrand, vendorModel),
     ]);
 
     return jsonResponse({
@@ -200,7 +213,7 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
 
 async function handleStatsQuery(env: Env): Promise<Response> {
   try {
-    const [metaRes, cpusRes, gpusRes, ramRes, dispRes, tierRes, archRes] = await env.DB.batch([
+    const [metaRes, cpusRes, gpusRes, ramRes, dispRes, tierRes, archRes, brandRes] = await env.DB.batch([
       env.DB.prepare("SELECT key, value FROM stats_meta"),
       env.DB.prepare("SELECT model, count FROM cpu_distribution ORDER BY count DESC LIMIT 8"),
       env.DB.prepare("SELECT model, count FROM gpu_distribution ORDER BY count DESC LIMIT 8"),
@@ -208,6 +221,7 @@ async function handleStatsQuery(env: Env): Promise<Response> {
       env.DB.prepare("SELECT resolution_hz, count FROM display_distribution ORDER BY count DESC LIMIT 8"),
       env.DB.prepare("SELECT tier_name, tier_icon, count FROM tier_distribution ORDER BY count DESC"),
       env.DB.prepare("SELECT archetype, count FROM archetype_distribution ORDER BY count DESC LIMIT 10"),
+      env.DB.prepare("SELECT brand, model, count FROM brand_distribution ORDER BY count DESC LIMIT 8"),
     ]);
 
     const metaMap: Record<string, number> = {};
@@ -238,6 +252,7 @@ async function handleStatsQuery(env: Env): Promise<Response> {
         display_breakdown: formatList(dispRes.results || []),
         tier_distribution: formatList(tierRes.results || []),
         top_archetypes: formatList(archRes.results || []),
+        top_brands: formatList(brandRes.results || []),
         last_updated: new Date((metaMap["last_updated_epoch"] || 0) * 1000).toISOString(),
       },
       200,
@@ -319,4 +334,80 @@ function getAverageTier(score: number): string {
   if (score >= 31) return "🚲 Budget Warrior";
   if (score >= 16) return "📻 Study Mode Only";
   return "🥔 Potato Toaster";
+}
+
+function cleanBrandAndModel(sysVendor: string, boardVendor: string, productName: string, boardName: string): { brand: string; model: string } {
+  const sv = (sysVendor || "").toUpperCase().trim();
+  const bv = (boardVendor || "").toUpperCase().trim();
+  const pn = (productName || "").trim();
+  const bn = (boardName || "").trim();
+
+  const isGeneric = !pn || ["SYSTEM PRODUCT NAME", "DEFAULT STRING", "TO BE FILLED BY O.E.M.", "UNKNOWN"].includes(pn.toUpperCase());
+
+  // 1. Laptop / Prebuilt OEMs
+  if (sv.includes("GAME GARAJ") || bv.includes("GAME GARAJ") || pn.toUpperCase().includes("SLAYER")) {
+    return { brand: "Game Garaj", model: sanitizeText(pn || bn || "Slayer 4 Ultra", 40) };
+  }
+  if (sv.includes("FRAMEWORK") || bv.includes("FRAMEWORK")) {
+    return { brand: "Framework", model: sanitizeText(pn || "Modular Laptop", 40) };
+  }
+  if (sv.includes("MONSTER") || bv.includes("MONSTER") || pn.toUpperCase().includes("TULPAR") || pn.toUpperCase().includes("ABRA")) {
+    return { brand: "Monster Notebook", model: sanitizeText(pn || bn || "Tulpar / Abra", 40) };
+  }
+  if (sv.includes("SYSTEM76")) {
+    return { brand: "System76", model: sanitizeText(pn || "Linux Rig", 40) };
+  }
+  if (sv.includes("LENOVO") || pn.toUpperCase().includes("THINKPAD") || pn.toUpperCase().includes("LEGION")) {
+    return { brand: "Lenovo", model: sanitizeText(pn || "ThinkPad / Legion", 40) };
+  }
+  if (sv.includes("DELL") || sv.includes("ALIENWARE") || pn.toUpperCase().includes("XPS")) {
+    return { brand: "Dell / Alienware", model: sanitizeText(pn || "XPS / Latitude", 40) };
+  }
+  if (sv.includes("APPLE")) {
+    return { brand: "Apple Silicon (Asahi)", model: sanitizeText(pn || "MacBook Pro", 40) };
+  }
+  if (sv.includes("RAZER") || pn.toUpperCase().includes("BLADE")) {
+    return { brand: "Razer", model: sanitizeText(pn || "Blade", 40) };
+  }
+  if (sv.includes("HP") || sv.includes("HEWLETT-PACKARD") || pn.toUpperCase().includes("OMEN")) {
+    return { brand: "HP", model: sanitizeText(pn || "Omen / Victus", 40) };
+  }
+  if (sv.includes("ACER") || pn.toUpperCase().includes("PREDATOR")) {
+    return { brand: "Acer", model: sanitizeText(pn || "Predator / Nitro", 40) };
+  }
+  if (sv.includes("TUXEDO")) {
+    return { brand: "TUXEDO Computers", model: sanitizeText(pn || "Linux Book", 40) };
+  }
+
+  // 2. Custom DIY PC Motherboard Vendors
+  let diyVendor = "";
+  if (bv.includes("ASUS") || sv.includes("ASUS") || bv.includes("ASUSTEK")) diyVendor = "ASUS";
+  else if (bv.includes("GIGABYTE") || sv.includes("GIGABYTE")) diyVendor = "Gigabyte";
+  else if (bv.includes("MSI") || sv.includes("MSI") || bv.includes("MICRO-STAR")) diyVendor = "MSI";
+  else if (bv.includes("ASROCK") || sv.includes("ASROCK")) diyVendor = "ASRock";
+  else if (bv.includes("NZXT")) diyVendor = "NZXT";
+  else if (bv.includes("BIOSTAR")) diyVendor = "Biostar";
+
+  if (diyVendor) {
+    if (isGeneric) {
+      return { brand: `Custom PC (${diyVendor})`, model: sanitizeText(bn || diyVendor, 40) };
+    }
+    if (pn.toUpperCase().includes("ROG") || pn.toUpperCase().includes("STRIX")) {
+      return { brand: "ASUS ROG", model: sanitizeText(pn, 40) };
+    }
+    if (pn.toUpperCase().includes("TUF")) {
+      return { brand: "ASUS TUF", model: sanitizeText(pn, 40) };
+    }
+    if (pn.toUpperCase().includes("AORUS")) {
+      return { brand: "Gigabyte AORUS", model: sanitizeText(pn, 40) };
+    }
+    return { brand: `Custom PC (${diyVendor})`, model: sanitizeText(bn || pn, 40) };
+  }
+
+  if (isGeneric) {
+    return { brand: "Custom PC (DIY)", model: sanitizeText(bn || "DIY Rig", 40) };
+  }
+
+  const fallbackBrand = sanitizeText(sysVendor || boardVendor || "Custom PC", 30);
+  return { brand: fallbackBrand, model: sanitizeText(pn || bn || "Desktop", 40) };
 }

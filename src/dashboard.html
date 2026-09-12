@@ -1853,6 +1853,39 @@
               </div>
               <div id="displayChart"></div>
             </div>
+
+            <div class="chart-box">
+              <div class="chart-box-header">
+                <span class="chart-box-title">💻 PC Manufacturers & Custom DIY Vendors</span>
+                <span class="chart-box-tag">Laptops • Prebuilts • DIY Mobos</span>
+              </div>
+              <div id="brandChart"></div>
+            </div>
+
+            <div class="chart-box" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div class="chart-box-header">
+                  <span class="chart-box-title">🤝 Hardware Vendor & OEM Partnership</span>
+                  <span class="chart-box-tag" style="color: var(--brand); border-color: var(--border-accent);">Sponsorship Open</span>
+                </div>
+                <p style="font-size: 0.82rem; color: var(--text); line-height: 1.5; margin-bottom: 0.75rem;">
+                  Are you a PC manufacturer or hardware brand like <strong>Game Garaj</strong>, <strong>Framework</strong>, <strong>ASUS</strong>, <strong>System76</strong>, or <strong>Lenovo</strong>?
+                </p>
+                <p style="font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem;">
+                  Omarchy Linux delivers native Wayland performance and zero-PII telemetry. Get your models certified, featured in community benchmarks, or sponsor official Omarchy hardware validation.
+                </p>
+              </div>
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <a href="https://github.com/omacom/omarchy/discussions/10652" target="_blank" class="btn-install" style="padding: 0.5rem 1rem; font-size: 0.8rem; text-decoration: none;">
+                  <span>🤝</span>
+                  <span>Partner with Omarchy (RFC #10652)</span>
+                </a>
+                <a href="https://github.com/ozdil/omastat" target="_blank" class="shell-btn" style="padding: 0.5rem 1rem; font-size: 0.8rem; text-decoration: none;">
+                  <span>🐙</span>
+                  <span>View Source</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2450,16 +2483,26 @@
         { resolution_hz: "2560×1440 @ 240Hz", percentage: 50 }
       ]);
 
+      renderProgress("brandChart", data.top_brands, "var(--green)", [
+        { brand: "Game Garaj", model: "Slayer 4 Ultra", percentage: 50 },
+        { brand: "Custom PC (ASUS)", model: "ROG / TUF Gaming", percentage: 25 },
+        { brand: "Framework", model: "Modular Laptop", percentage: 25 }
+      ]);
+
       renderTiers(data.tier_distribution && data.tier_distribution.length > 0 ? data.tier_distribution : defaultTiers);
     }
 
     function renderProgress(elId, items, color, fallbackList) {
       const box = document.getElementById(elId);
+      if (!box) return;
       box.innerHTML = "";
       const arr = (items && items.length > 0) ? items : fallbackList;
 
       arr.slice(0, 5).forEach(item => {
-        const name = item.model || item.bucket || item.resolution_hz || "Unknown";
+        let name = item.model || item.bucket || item.resolution_hz || "Unknown";
+        if (item.brand) {
+          name = item.model && item.model !== item.brand ? `${item.brand} • ${item.model}` : item.brand;
+        }
         const row = document.createElement("div");
         row.className = "progress-row";
         row.innerHTML = `
