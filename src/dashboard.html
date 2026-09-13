@@ -10,6 +10,13 @@
   <style>
     
     @font-face {
+      font-family: "Symbols Nerd Font";
+      src: local("Symbols Nerd Font"), local("SymbolsNerdFont"),
+           url("https://cdn.jsdelivr.net/gh/ryanoasis/nerd-fonts@master/patched-fonts/NerdFontsSymbolsOnly/SymbolsNerdFont-Regular.ttf") format("truetype");
+      font-display: swap;
+    }
+
+    @font-face {
       font-family: "JetBrainsMono Nerd Font";
       src: local("JetBrainsMono Nerd Font"), local("JetBrainsMono NF"), local("JetBrains Mono");
       font-display: swap;
@@ -20,7 +27,7 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      font-family: "JetBrainsMono Nerd Font", var(--font-mono);
+      font-family: "Symbols Nerd Font", "JetBrainsMono Nerd Font", var(--font-mono);
       font-style: normal;
       font-weight: normal;
       line-height: 1;
@@ -2631,10 +2638,10 @@
                 <div style="font-weight: 800; color: var(--text-bright); font-size: 1rem;" id="simTierTitle">󰢮 Gaming Chair Missing</div>
                 <div style="font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem;" id="simTierQuote">"Top 15% tier. You are ready to blame your ISP whenever you miss a shot."</div>
               </div>
-              <a href="#install" class="btn-install" style="padding: 0.6rem 1.25rem;">
-                <span>Run Real Benchmark</span>
+              <button id="runRealBenchmarkBtn" class="btn-install" style="padding: 0.6rem 1.25rem; border: none; cursor: pointer;">
+                <span id="runRealBenchmarkText">Run Real Benchmark</span>
                 <span>→</span>
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -2698,6 +2705,64 @@
       </div>
 
       <div id="modalThemeGrid" class="modal-grid"></div>
+    </div>
+  </div>
+
+  <!-- 🚀 Real Benchmark Guide Modal -->
+  <div id="benchmarkModal" class="theme-modal-backdrop">
+    <div class="theme-modal" style="max-width: 580px;">
+      <div class="modal-head">
+        <div class="modal-title">
+          <span class="q-icon q-icon-brand">󰓅</span>
+          <span id="bmModalTitle">Gerçek Donanım Testi (Real Benchmark)</span>
+        </div>
+        <button id="closeBenchmarkModalBtn" class="modal-close-btn">✕</button>
+      </div>
+
+      <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+        <p style="font-size: 0.82rem; color: var(--text); line-height: 1.5; margin: 0;" id="bmModalDesc">
+          Web simülatörü varsayımsal bir puan tahmin aracıdır. Kendi bilgisayarının gerçek donanımını (CPU, GPU, RAM hızı, ekran Hz, NVMe) doğrudan Linux çekirdeğinden test etmek için terminalde şu komutları çalıştırabilirsin:
+        </p>
+
+        <!-- Step 1: Quick local test -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem;">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--brand); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;" id="bmStep1Title">
+            1. Anında Donanım Testi (OmaRank Kuruluysa)
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <code style="flex: 1; background: var(--bg-subtle); padding: 0.45rem 0.75rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--green);">omarank-engine</code>
+            <button class="shell-btn copy-cmd-btn" data-cmd="omarank-engine" style="white-space: nowrap;">
+              <span class="q-icon">󰆏</span> <span class="btn-label">Kopyala</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Install plugin -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem;">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--brand); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;" id="bmStep2Title">
+            2. OmaRank Eklentisini Omarchy'ye Ekle
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <code style="flex: 1; background: var(--bg-subtle); padding: 0.45rem 0.75rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">omarchy plugin add https://github.com/ozdil/omarchy-omarank --enable</code>
+            <button class="shell-btn copy-cmd-btn" data-cmd="omarchy plugin add https://github.com/ozdil/omarchy-omarank --enable" style="white-space: nowrap;">
+              <span class="q-icon">󰆏</span> <span class="btn-label">Kopyala</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Submit survey -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem;">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--green); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;" id="bmStep3Title">
+            3. Dünya Sıralamasına Gönder (Zero-PII)
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <code style="flex: 1; background: var(--bg-subtle); padding: 0.45rem 0.75rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--cyan);">omarank-engine --submit-survey</code>
+            <button class="shell-btn copy-cmd-btn" data-cmd="omarank-engine --submit-survey" style="white-space: nowrap;">
+              <span class="q-icon">󰆏</span> <span class="btn-label">Kopyala</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2923,6 +2988,7 @@
         roastBtn: "Sistemimi Eleştir",
         simTitle: "OmaScore Donanım Simülatörü",
         simDesc: "Donanım parçalarını değiştirerek tahmini OmaScore puanınızı hesaplayın.",
+        runRealBenchmark: "Gerçek Testi Çalıştır",
         tickerWelcomeTag: "YENİ RIG",
         tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Aramıza hoş geldin! 🎉",
         tickerStatTag: "CANLI TELEMETRİ",
@@ -2982,7 +3048,8 @@
         roasterDesc: "Type your anonymous OmaRank Archetype signature or pick a preset for an immediate, brutally honest community roast:",
         roastBtn: "Roast My Rig",
         simTitle: "OmaScore Hardware Simulator",
-        simDesc: "Simulate hardware upgrades and calculate your hypothetical OmaScore tier.",
+        simDesc: "Tweak hardware components to calculate your projected OmaScore and tier.",
+        runRealBenchmark: "Run Real Benchmark",
         tickerWelcomeTag: "NEW RIG",
         tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Welcome aboard! 🎉",
         tickerStatTag: "LIVE TELEMETRY",
@@ -3041,6 +3108,7 @@
         roastBtn: "Röste Mein System",
         simTitle: "OmaScore Hardware-Simulator",
         simDesc: "Simulieren Sie Hardware-Upgrades und berechnen Sie Ihre hypothetische OmaScore-Stufe.",
+        runRealBenchmark: "Echten Benchmark Starten",
         tickerWelcomeTag: "NEUES RIG",
         tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Willkommen! 🎉",
         tickerStatTag: "LIVE-TELEMETRIE",
@@ -3099,6 +3167,7 @@
         roastBtn: "Critica Mi PC",
         simTitle: "Simulador de Hardware OmaScore",
         simDesc: "Simula mejoras en tus componentes y calcula tu puntuación hipotética.",
+        runRealBenchmark: "Ejecutar Benchmark Real",
         tickerWelcomeTag: "NUEVO EQUIPO",
         tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — ¡Bienvenido! 🎉",
         tickerStatTag: "TELEMETRÍA EN VIVO",
@@ -3157,6 +3226,7 @@
         roastBtn: "Rôtir Ma Config",
         simTitle: "Simulateur Matériel OmaScore",
         simDesc: "Simulez des mises à niveau et calculez votre rang théorique OmaScore.",
+        runRealBenchmark: "Lancer le Vrai Benchmark",
         tickerWelcomeTag: "NOUVEAU RIG",
         tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Bienvenue! 🎉",
         tickerStatTag: "TÉLÉMÉTRIE DIRECTE",
@@ -3215,6 +3285,7 @@
         roastBtn: "PCを辛口批評する",
         simTitle: "OmaScore ハードウェア・シミュレータ",
         simDesc: "パーツのアップグレードを試算し、仮想OmaScoreティアを算出します。",
+        runRealBenchmark: "実機ベンチマークを実行",
         tickerWelcomeTag: "新規リグ",
         tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — ようこそ！ 🎉",
         tickerStatTag: "リアルタイム遠隔測定",
@@ -3533,6 +3604,9 @@
       const roastBtnSpan = document.querySelector("#roastBtn span:last-child");
       if (roastBtnSpan) roastBtnSpan.textContent = t.roastBtn;
 
+      const runRealEl = document.getElementById("runRealBenchmarkText");
+      if (runRealEl) runRealEl.textContent = t.runRealBenchmark || "Run Real Benchmark";
+
       document.querySelectorAll("#langMenu .menu-item").forEach(item => {
         if (item.getAttribute("data-lang") === lang) item.classList.add("active");
         else item.classList.remove("active");
@@ -3642,6 +3716,59 @@
       const randomItem = themeCatalog[Math.floor(Math.random() * themeCatalog.length)];
       applyTheme(randomItem.id);
       playChime();
+    });
+
+    // --- Benchmark Guide Modal Events ---
+    const benchmarkModal = document.getElementById("benchmarkModal");
+    const runRealBtn = document.getElementById("runRealBenchmarkBtn");
+    if (runRealBtn) {
+      runRealBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        benchmarkModal.classList.add("open");
+        playChime();
+        const defaultCmd = "omarank-engine";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(defaultCmd).catch(() => fallbackCopy(defaultCmd));
+        } else {
+          fallbackCopy(defaultCmd);
+        }
+        toastMsg("✓ 'omarank-engine' komutu kopyalandı! Terminalinde çalıştırabilirsin.");
+      });
+    }
+
+    const closeBmBtn = document.getElementById("closeBenchmarkModalBtn");
+    if (closeBmBtn) {
+      closeBmBtn.addEventListener("click", () => {
+        benchmarkModal.classList.remove("open");
+      });
+    }
+
+    if (benchmarkModal) {
+      benchmarkModal.addEventListener("click", (e) => {
+        if (e.target === benchmarkModal) benchmarkModal.classList.remove("open");
+      });
+    }
+
+    document.querySelectorAll(".copy-cmd-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const cmd = btn.getAttribute("data-cmd");
+        if (!cmd) return;
+        const onDone = () => {
+          playChime();
+          const label = btn.querySelector(".btn-label");
+          if (label) {
+            const old = label.textContent;
+            label.textContent = "✓ Kopyalandı!";
+            setTimeout(() => { label.textContent = old; }, 1500);
+          }
+          toastMsg(`✓ Komut panoya kopyalandı!`);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(cmd).then(onDone).catch(() => fallbackCopy(cmd).then(onDone));
+        } else {
+          fallbackCopy(cmd).then(onDone);
+        }
+      });
     });
 
     // Apply initial theme & language
