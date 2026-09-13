@@ -1640,6 +1640,27 @@
       margin-top: 3px;
     }
 
+    .my-rig-row {
+      background: rgba(122, 162, 247, 0.13) !important;
+      border-left: 3px solid var(--brand) !important;
+    }
+
+    .my-rig-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: var(--brand);
+      color: var(--bg-shell);
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 0.12rem 0.42rem;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      margin-left: 6px;
+      vertical-align: middle;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
     .spec-pill {
       font-size: 0.72rem;
       color: var(--text);
@@ -2211,20 +2232,20 @@
                 <div class="menu-item-desc">Synthwave • Retrowave • 320kbps</div>
               </div>
               <div class="menu-item" data-index="1">
-                <div class="menu-item-title"><span class="q-icon q-icon-cyan">🌴</span> Chillsynth FM</div>
+                <div class="menu-item-title"><span class="q-icon q-icon-cyan">󰓅</span> Chillsynth FM</div>
                 <div class="menu-item-desc">Chillwave • Lo-Fi Synth • 320kbps</div>
               </div>
               <div class="menu-item" data-index="2">
-                <div class="menu-item-title"><span class="q-icon q-icon-purple">💾</span> Datawave FM</div>
+                <div class="menu-item-title"><span class="q-icon q-icon-purple">󰌢</span> Datawave FM</div>
                 <div class="menu-item-desc">Cyberpunk • IDM • Darksynth</div>
               </div>
               <div class="menu-item" data-index="3">
-                <div class="menu-item-title"><span class="q-icon q-icon-amber">🌆</span> Nightwave Plaza</div>
-                <div class="menu-item-desc">Vaporwave • Future Funk • City Pop</div>
+                <div class="menu-item-title"><span class="q-icon q-icon-amber">󰈸</span> Darksynth FM</div>
+                <div class="menu-item-desc">Dark Synthwave • Heavy Synth • 320kbps</div>
               </div>
               <div class="menu-item" data-index="4">
-                <div class="menu-item-title"><span class="q-icon q-icon-green">☕</span> SomaFM Vaporwaves</div>
-                <div class="menu-item-desc">Retrowave Ambient & Chill</div>
+                <div class="menu-item-title"><span class="q-icon q-icon-green">󰔎</span> Nightwave Plaza</div>
+                <div class="menu-item-desc">Vaporwave • Future Funk • City Pop</div>
               </div>
             </div>
           </div>
@@ -2693,6 +2714,10 @@
       if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
       }
+      if (audioContext && audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+      soundActive = true;
     }
 
     function playNote(freq, type = "sine", duration = 0.08, volume = 0.12) {
@@ -2730,8 +2755,8 @@
       { id: "nightride", name: "Nightride FM", url: "https://stream.nightride.fm/nightride.mp3", desc: "Synthwave / Outrun • 320k" },
       { id: "chillsynth", name: "Chillsynth FM", url: "https://stream.nightride.fm/chillsynth.mp3", desc: "Chillwave / Lo-Fi • 320k" },
       { id: "datawave", name: "Datawave FM", url: "https://stream.nightride.fm/datawave.mp3", desc: "Cyberpunk / IDM • 320k" },
-      { id: "plaza", name: "Nightwave Plaza", url: "https://radio.plaza.one/mp3", desc: "Vaporwave / City Pop" },
-      { id: "somafm", name: "SomaFM Vapor", url: "https://ice1.somafm.com/vaporwaves-128-mp3", desc: "Retrowave Ambient" }
+      { id: "darksynth", name: "Darksynth FM", url: "https://stream.nightride.fm/darksynth.mp3", desc: "Dark Synthwave • 320k" },
+      { id: "plaza", name: "Nightwave Plaza", url: "https://radio.plaza.one/mp3", desc: "Vaporwave / City Pop • 128k" }
     ];
 
     let currentStationIndex = 0;
@@ -2741,9 +2766,14 @@
     function initRadio() {
       if (!radioAudio) {
         radioAudio = new Audio();
-        radioAudio.crossOrigin = "anonymous";
+        // Do NOT set crossOrigin="anonymous" on live icecast streams to avoid CORS/redirect block
         const volInput = document.getElementById("radioVolume");
         radioAudio.volume = volInput ? parseFloat(volInput.value || "0.75") : 0.75;
+        radioAudio.preload = "none";
+
+        radioAudio.addEventListener("waiting", () => {
+          document.getElementById("radioStationLabel").textContent = "BUFFERING";
+        });
 
         radioAudio.addEventListener("playing", () => {
           radioPlaying = true;
@@ -2760,7 +2790,9 @@
           document.getElementById("radioStationLabel").textContent = "SYNTHWAVE";
         });
 
-        radioAudio.addEventListener("error", () => {
+        radioAudio.addEventListener("error", (e) => {
+          console.warn("Radio stream error:", e);
+          radioPlaying = false;
           document.getElementById("radioPlayBtn").classList.add("sound-muted");
           document.getElementById("radioPlayIcon").textContent = "󰐊";
           document.getElementById("radioStationLabel").textContent = "RETRY";
@@ -2769,12 +2801,20 @@
     }
 
     function playStation(index) {
+      ensureAudio();
       initRadio();
       currentStationIndex = index;
       const st = radioStations[index];
+      document.getElementById("radioStationLabel").textContent = "CONNECTING";
       radioAudio.src = st.url;
       radioAudio.load();
-      radioAudio.play().catch(e => console.warn("Radio play prevented:", e));
+      const p = radioAudio.play();
+      if (p !== undefined) {
+        p.catch(e => {
+          console.warn("Radio play prevented:", e);
+          document.getElementById("radioStationLabel").textContent = "RETRY";
+        });
+      }
       document.getElementById("currentStationName").textContent = st.name;
 
       document.querySelectorAll("#stationMenu .menu-item").forEach((item, idx) => {
@@ -2786,13 +2826,20 @@
     function toggleRadio() {
       ensureAudio();
       initRadio();
-      if (radioPlaying) {
+      if (radioAudio && !radioAudio.paused) {
         radioAudio.pause();
       } else {
         if (!radioAudio.src || radioAudio.src === "" || radioAudio.src === window.location.href) {
           playStation(currentStationIndex);
         } else {
-          radioAudio.play().catch(e => console.warn("Play error:", e));
+          document.getElementById("radioStationLabel").textContent = "CONNECTING";
+          const p = radioAudio.play();
+          if (p !== undefined) {
+            p.catch(e => {
+              console.warn("Play error:", e);
+              playStation(currentStationIndex);
+            });
+          }
         }
       }
     }
@@ -2895,29 +2942,31 @@
         badge: "EN",
         tickerTitle: "LIVE FEED",
         navAddPlugin: "Add OmaRank",
-        heroLead: "Real-time aggregate silicon intelligence across the Omarchy Linux ecosystem.",
+        heroLead: "Real-time crowdsourced hardware intelligence across the Omarchy Linux ecosystem.",
         heroTitle: 'Omarchy <span class="hero-gradient">Hardware Matrix</span>',
         copyStatus: "Copy",
         copyToast: "Command copied to clipboard!",
         tabOverview: "Hardware Telemetry",
-        tabLeaderboard: "World Rankings",
+        tabLeaderboard: "World Leaderboard",
         tabRoaster: "Rig Roaster 3000",
         tabSimulator: "OmaScore Simulator",
-        tabTiers: "Hall of Tiers",
+        tabTiers: "Tier Ladder",
         tabPrivacy: "Zero-PII Audit",
         lbTitle: "World Battlestation Leaderboard",
-        lbSubtitle: "Verified Omarchy systems ranked by high-precision OmaScore, letter grades, and silicon specs.",
-        lbSearchPh: "Search system (Game Garaj), GPU (4070), CPU or archetype...",
+        lbSubtitle: "Verified Omarchy systems ranked by high-precision decimal OmaScore, letter grade, and architectural capability.",
+        lbSearchPh: "Search system (e.g. Game Garaj), GPU (4070), CPU, or archetype...",
         lbTotalCount: "Verified Systems",
+        myRigBadge: "YOUR RIG",
         lbColRank: "RANK",
         lbColGrade: "GRADE",
         lbColScore: "OMASCORE",
-        lbColSystem: "BATTLESTATION & RIG",
-        lbColCpu: "PROCESSOR (CPU)",
-        lbColGpu: "GRAPHICS (GPU)",
-        lbColRam: "MEMORY (RAM)",
+        lbColSystem: "SYSTEM & ARCHETYPE",
+        lbColCpu: "PROCESSOR",
+        lbColGpu: "GRAPHICS",
+        lbColRam: "MEMORY",
         lbColDisplay: "DISPLAY",
         lbColVerified: "VERIFIED",
+        lbFilterAll: "All Tiers",
         lbNoResults: "No matching battlestations found.",
         activeRigs: "Active Battlestations",
         activeRigsSub: "Benchmarked community rigs",
@@ -3275,6 +3324,18 @@
 
       const t = i18n[activeLang] || i18n.tr;
 
+      const urlParams = new URLSearchParams(window.location.search);
+      let myParam = (urlParams.get("my") || "").trim();
+      if (!myParam && window.location.hash.includes("my=")) {
+        myParam = (window.location.hash.split("my=")[1] || "").split("&")[0].trim();
+      }
+      if (myParam) {
+        try { localStorage.setItem("omastat_my_rig", myParam); } catch(e) {}
+      } else {
+        try { myParam = localStorage.getItem("omastat_my_rig") || ""; } catch(e) {}
+      }
+      const myLower = myParam.toLowerCase();
+
       let filtered = currentLeaderboard.slice();
 
       if (currentLeaderboardFilter !== "all") {
@@ -3329,8 +3390,17 @@
         const submissions = item.submissions_count || 1;
         const tierIcon = getCleanTierIcon(item.tier_name, item.tier_icon);
 
+        const isMyRig = myLower.length > 0 && (
+          (item.archetype || "").toLowerCase().includes(myLower) ||
+          (item.system_name || "").toLowerCase().includes(myLower)
+        );
+        const rowClass = isMyRig ? ' class="my-rig-row"' : "";
+        const myBadgeHtml = isMyRig
+          ? `<span class="my-rig-badge"><span class="q-icon" style="font-size:0.6rem;">󰄵</span> ${escapeHtml(t.myRigBadge || "SENİN CİHAZIN")}</span>`
+          : "";
+
         return `
-          <tr>
+          <tr${rowClass}>
             <td><span class="${rankClass}">${rankHtml}</span></td>
             <td><span class="grade-badge ${gradeClass}">${escapeHtml(grade)}</span></td>
             <td><span class="score-cell">${scoreFormatted}</span></td>
@@ -3338,6 +3408,7 @@
               <div class="system-title">
                 <span class="q-icon q-icon-brand">${tierIcon}</span>
                 <span>${escapeHtml(item.system_name || "Custom Rig")}</span>
+                ${myBadgeHtml}
               </div>
               <div class="archetype-tag">${escapeHtml(item.archetype || "OMA-BUILD")}</div>
             </td>
@@ -3587,16 +3658,36 @@
       setTimeout(() => { toast.style.display = "none"; }, 2200);
     }
 
+    function fallbackCopy(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch(e) {}
+      document.body.removeChild(ta);
+      return Promise.resolve();
+    }
+
     copyBtn.addEventListener("click", () => {
       const code = document.getElementById("cliSnippet").innerText;
-      navigator.clipboard.writeText(code).then(() => {
+      const onDone = () => {
         playChime();
         document.getElementById("copyStatus").textContent = "Copied! ✓";
         toastMsg("✓ Plugin install command copied to clipboard!");
         setTimeout(() => {
           document.getElementById("copyStatus").textContent = "Copy";
         }, 2000);
-      });
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(onDone).catch(() => {
+          fallbackCopy(code).then(onDone);
+        });
+      } else {
+        fallbackCopy(code).then(onDone);
+      }
     });
 
     // --- Quickshell Tabs ---
