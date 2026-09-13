@@ -1647,25 +1647,56 @@
       margin-top: 3px;
     }
 
+    @keyframes myRigPulseGlow {
+      0%, 100% {
+        background-color: rgba(122, 162, 247, 0.14) !important;
+        box-shadow: inset 4px 0 0 var(--brand), inset 0 0 16px rgba(122, 162, 247, 0.22);
+      }
+      50% {
+        background-color: rgba(122, 162, 247, 0.32) !important;
+        box-shadow: inset 5px 0 0 #00f0ff, inset 0 0 30px rgba(122, 162, 247, 0.55), 0 0 20px rgba(0, 240, 255, 0.3);
+      }
+    }
+
+    @keyframes myBadgePulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 8px rgba(122, 162, 247, 0.4);
+      }
+      50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 16px rgba(122, 162, 247, 0.9), 0 0 24px rgba(0, 240, 255, 0.7);
+      }
+    }
+
     .my-rig-row {
-      background: rgba(122, 162, 247, 0.13) !important;
-      border-left: 3px solid var(--brand) !important;
+      position: relative;
+      z-index: 2;
+      animation: myRigPulseGlow 2.2s ease-in-out infinite;
+      border-left: 4px solid var(--brand) !important;
+      scroll-margin: 120px;
+    }
+
+    .my-rig-row td {
+      background-color: transparent !important;
     }
 
     .my-rig-badge {
       display: inline-flex;
       align-items: center;
-      gap: 3px;
-      background: var(--brand);
-      color: var(--bg-shell);
+      gap: 4px;
+      background: linear-gradient(135deg, var(--brand), #00f0ff);
+      color: #0b0f19;
       font-size: 0.62rem;
-      font-weight: 800;
-      padding: 0.12rem 0.42rem;
+      font-weight: 900;
+      padding: 0.15rem 0.5rem;
       border-radius: 4px;
       letter-spacing: 0.5px;
-      margin-left: 6px;
+      margin-left: 8px;
       vertical-align: middle;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      animation: myBadgePulse 2.2s ease-in-out infinite;
+      text-transform: uppercase;
     }
 
     .spec-pill {
@@ -3400,6 +3431,7 @@
       if (!myParam && window.location.hash.includes("my=")) {
         myParam = (window.location.hash.split("my=")[1] || "").split("&")[0].trim();
       }
+      try { myParam = decodeURIComponent(myParam); } catch(e) {}
       if (myParam) {
         try { localStorage.setItem("omastat_my_rig", myParam); } catch(e) {}
       } else {
@@ -3440,6 +3472,8 @@
         return;
       }
 
+      let hasMarkedMyRig = false;
+
       tbody.innerHTML = filtered.map((item, idx) => {
         const rank = idx + 1;
         let rankHtml = `<span>#${rank}</span>`;
@@ -3463,15 +3497,22 @@
 
         const isMyRig = myLower.length > 0 && (
           (item.archetype || "").toLowerCase().includes(myLower) ||
-          (item.system_name || "").toLowerCase().includes(myLower)
+          (item.system_name || "").toLowerCase().includes(myLower) ||
+          (item.cpu_model || "").toLowerCase().includes(myLower) ||
+          (item.gpu_model || "").toLowerCase().includes(myLower)
         );
+        let rowId = "";
+        if (isMyRig && !hasMarkedMyRig) {
+          hasMarkedMyRig = true;
+          rowId = ' id="myRigRow"';
+        }
         const rowClass = isMyRig ? ' class="my-rig-row"' : "";
         const myBadgeHtml = isMyRig
           ? `<span class="my-rig-badge"><span class="q-icon" style="font-size:0.6rem;">󰄵</span> ${escapeHtml(t.myRigBadge || "SENİN CİHAZIN")}</span>`
           : "";
 
         return `
-          <tr${rowClass}>
+          <tr${rowId}${rowClass}>
             <td><span class="${rankClass}">${rankHtml}</span></td>
             <td><span class="grade-badge ${gradeClass}">${escapeHtml(grade)}</span></td>
             <td><span class="score-cell">${scoreFormatted}</span></td>
@@ -3515,6 +3556,21 @@
           </tr>
         `;
       }).join("");
+
+      if (hasMarkedMyRig) {
+        scrollToMyRig();
+      }
+    }
+
+    function scrollToMyRig() {
+      const activeTab = document.querySelector(".tab-pane.active");
+      if (!activeTab || activeTab.id !== "tab-leaderboard") return;
+      setTimeout(() => {
+        const el = document.getElementById("myRigRow");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 250);
     }
 
     function renderTicker(lang) {
@@ -3827,6 +3883,9 @@
         if (p.id === targetId) p.classList.add("active");
         else p.classList.remove("active");
       });
+      if (targetId === "tab-leaderboard") {
+        scrollToMyRig();
+      }
     }
 
     document.querySelectorAll(".qml-tab").forEach(tab => {
@@ -3840,9 +3899,15 @@
       });
     });
 
-    const initialHash = window.location.hash.replace("#", "");
-    if (initialHash) {
-      const targetTabId = initialHash.startsWith("tab-") ? initialHash : ("tab-" + initialHash);
+    const rawHash = window.location.hash.replace("#", "");
+    const cleanHash = rawHash.split("?")[0];
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasMyRigQuery = !!urlParams.get("my") || window.location.hash.includes("my=");
+
+    if (hasMyRigQuery && (!rawHash || rawHash.includes("leaderboard") || rawHash.includes("my="))) {
+      switchTab("tab-leaderboard");
+    } else if (cleanHash) {
+      const targetTabId = cleanHash.startsWith("tab-") ? cleanHash : ("tab-" + cleanHash);
       if (document.getElementById(targetTabId)) {
         switchTab(targetTabId);
       }
