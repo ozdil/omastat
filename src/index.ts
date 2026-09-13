@@ -130,14 +130,18 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
     return jsonResponse({ success: false, error: "Unsupported schema_version (expected 2)" }, 400);
   }
 
-  const score = Math.max(0, Math.min(100, Number(body.omarank_score) || 0));
+  // High-precision decimal score (e.g. 88.45)
+  const score = Math.max(0, Math.min(100, Math.round((Number(body.omarank_score) || 0) * 100) / 100));
+  const grade = getLetterGrade(score);
   const tierName = sanitizeText(body.tier_name, 40) || "Unknown";
   const cpuModel = cleanCpuModel(sanitizeText(body.cpu_model, 80));
   const gpuModel = cleanGpuModel(sanitizeText(body.gpu_model, 80));
   const gpuDriver = sanitizeText(body.gpu_driver, 40);
   const ramGb = Math.round(Number(body.ram_gb) || 0);
   const ramType = sanitizeText(body.ram_type, 20) || "RAM";
+  const ramSpeed = Math.round(Number(body.ram_speed_mts) || 0);
   const ramBucket = `${ramGb}GB ${ramType}`;
+  const ramDesc = ramSpeed > 0 ? `${ramGb}GB ${ramType} @ ${ramSpeed}MT/s` : `${ramGb}GB ${ramType}`;
   const display = cleanDisplay(sanitizeText(body.primary_display, 40));
   const archetype = sanitizeText(body.archetype_signature, 50) || "OMA-BUILD-UNKNOWN";
   const now = Math.floor(Date.now() / 1000);
@@ -149,6 +153,9 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
     sanitizeText(body.mobo_name || "", 50),
     sanitizeText(body.mobo_name || "", 50)
   );
+  const systemName = vendorBrand && vendorModel && vendorModel !== vendorBrand
+    ? `${vendorBrand} ${vendorModel}`
+    : (vendorBrand || "Custom Battlestation");
 
   try {
     // Atomic D1 batch execution for zero-latency aggregate updates
@@ -198,12 +205,24 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
       env.DB.prepare(
         "INSERT INTO brand_distribution (brand, model, count) VALUES (?, ?, 1) ON CONFLICT(brand) DO UPDATE SET count = count + 1, model = excluded.model"
       ).bind(vendorBrand, vendorModel),
+
+      // Upsert Global Leaderboard
+      env.DB.prepare(
+        `INSERT INTO global_leaderboard (
+           archetype, score, grade, tier_name, tier_icon, system_name, cpu_model, gpu_model, ram_desc, display_desc, submissions_count, last_updated_epoch
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+         ON CONFLICT(archetype) DO UPDATE SET
+           score = MAX(score, excluded.score),
+           submissions_count = submissions_count + 1,
+           last_updated_epoch = excluded.last_updated_epoch`
+      ).bind(archetype, score, grade, tierName, tierIcon, systemName, cpuModel, gpuModel, ramDesc, display, now),
     ]);
 
     return jsonResponse({
       success: true,
       message: "Successfully submitted anonymous hardware profile to OmaStat survey!",
       score,
+      grade,
       tier: tierName,
     });
   } catch (err: any) {
@@ -213,7 +232,7 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
 
 async function handleStatsQuery(env: Env): Promise<Response> {
   try {
-    const [metaRes, cpusRes, gpusRes, ramRes, dispRes, tierRes, archRes, brandRes] = await env.DB.batch([
+    const [metaRes, cpusRes, gpusRes, ramRes, dispRes, tierRes, archRes, brandRes, boardRes] = await env.DB.batch([
       env.DB.prepare("SELECT key, value FROM stats_meta"),
       env.DB.prepare("SELECT model, count FROM cpu_distribution ORDER BY count DESC LIMIT 8"),
       env.DB.prepare("SELECT model, count FROM gpu_distribution ORDER BY count DESC LIMIT 8"),
@@ -222,6 +241,7 @@ async function handleStatsQuery(env: Env): Promise<Response> {
       env.DB.prepare("SELECT tier_name, tier_icon, count FROM tier_distribution ORDER BY count DESC"),
       env.DB.prepare("SELECT archetype, count FROM archetype_distribution ORDER BY count DESC LIMIT 10"),
       env.DB.prepare("SELECT brand, model, count FROM brand_distribution ORDER BY count DESC LIMIT 8"),
+      env.DB.prepare("SELECT archetype, score, grade, tier_name, tier_icon, system_name, cpu_model, gpu_model, ram_desc, display_desc, submissions_count, last_updated_epoch FROM global_leaderboard ORDER BY score DESC LIMIT 50"),
     ]);
 
     const metaMap: Record<string, number> = {};
@@ -231,7 +251,7 @@ async function handleStatsQuery(env: Env): Promise<Response> {
 
     const total = metaMap["total_submissions"] || 0;
     const sumScores = metaMap["sum_scores"] || 0;
-    const avgScore = total > 0 ? Math.round(sumScores / total) : 0;
+    const avgScore = total > 0 ? Number((sumScores / total).toFixed(2)) : 0;
 
     const calcPercentage = (count: number) => (total > 0 ? Number(((count / total) * 100).toFixed(1)) : 0);
 
@@ -245,7 +265,8 @@ async function handleStatsQuery(env: Env): Promise<Response> {
       {
         total_submissions: total,
         average_score: avgScore,
-        average_tier: getAverageTier(avgScore),
+        average_grade: getLetterGrade(avgScore),
+        average_tier: getAverageTier(Math.round(avgScore)),
         top_cpus: formatList(cpusRes.results || []),
         top_gpus: formatList(gpusRes.results || []),
         ram_breakdown: formatList(ramRes.results || []),
@@ -253,6 +274,7 @@ async function handleStatsQuery(env: Env): Promise<Response> {
         tier_distribution: formatList(tierRes.results || []),
         top_archetypes: formatList(archRes.results || []),
         top_brands: formatList(brandRes.results || []),
+        leaderboard: boardRes.results || [],
         last_updated: new Date((metaMap["last_updated_epoch"] || 0) * 1000).toISOString(),
       },
       200,
@@ -334,6 +356,17 @@ function getAverageTier(score: number): string {
   if (score >= 31) return "󰘚 Budget Warrior";
   if (score >= 16) return "󰍛 Study Mode Only";
   return "󰋊 Potato Toaster";
+}
+
+function getLetterGrade(score: number): string {
+  if (score >= 95.0) return "S+";
+  if (score >= 90.0) return "S";
+  if (score >= 85.0) return "A+";
+  if (score >= 75.0) return "A";
+  if (score >= 65.0) return "B+";
+  if (score >= 55.0) return "B";
+  if (score >= 40.0) return "C";
+  return "D";
 }
 
 function cleanBrandAndModel(sysVendor: string, boardVendor: string, productName: string, boardName: string): { brand: string; model: string } {

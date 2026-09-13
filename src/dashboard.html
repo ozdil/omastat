@@ -1049,7 +1049,7 @@
 
     /* Pure Qt Quickshell Canvas */
     main.quickshell-canvas {
-      max-width: 1220px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 1.75rem 1.25rem 4rem;
       width: 100%;
@@ -1346,6 +1346,292 @@
       height: 100%;
       border-radius: var(--radius-full);
       transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Global Leaderboard */
+    .leaderboard-module {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .leaderboard-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .leaderboard-head h2 {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--text-bright);
+      letter-spacing: -0.5px;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .leaderboard-head p {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .leaderboard-summary-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.35rem 0.8rem;
+      border-radius: var(--radius-full);
+      background: rgba(var(--brand-rgb), 0.12);
+      border: 1px solid rgba(var(--brand-rgb), 0.3);
+      color: var(--brand);
+    }
+
+    .leaderboard-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .search-box-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--bg-desktop);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      flex: 1;
+      max-width: 420px;
+      min-width: 260px;
+      overflow: hidden;
+    }
+
+    .lb-search-input {
+      border: none !important;
+      background: transparent !important;
+      padding: 0.55rem 0.75rem !important;
+      font-size: 0.8rem !important;
+      box-shadow: none !important;
+    }
+
+    .lb-filters {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .lb-filter-btn {
+      background: var(--bg-desktop);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-full);
+      padding: 0.25rem 0.65rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      user-select: none;
+    }
+
+    .lb-filter-btn:hover {
+      border-color: var(--brand);
+      color: var(--text-bright);
+    }
+
+    .lb-filter-btn.active {
+      background: color-mix(in srgb, var(--brand) 20%, var(--bg-surface));
+      border-color: var(--brand);
+      color: var(--brand);
+      box-shadow: 0 0 10px rgba(var(--brand-rgb), 0.25);
+    }
+
+    .leaderboard-table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-desktop);
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    .leaderboard-table-container::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.74rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .leaderboard-table th {
+      background: var(--bg-subtle);
+      color: var(--muted);
+      font-size: 0.64rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .leaderboard-table td {
+      padding: 0.75rem 0.75rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    .leaderboard-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .leaderboard-table tr:hover td {
+      background: color-mix(in srgb, var(--brand) 4%, transparent);
+    }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 0.82rem;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+    }
+
+    .rank-1 {
+      background: rgba(255, 215, 0, 0.15);
+      border-color: rgba(255, 215, 0, 0.5);
+      color: #ffd700;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.25);
+    }
+
+    .rank-2 {
+      background: rgba(220, 220, 220, 0.15);
+      border-color: rgba(220, 220, 220, 0.4);
+      color: #e2e8f0;
+    }
+
+    .rank-3 {
+      background: rgba(205, 127, 50, 0.15);
+      border-color: rgba(205, 127, 50, 0.4);
+      color: #e59866;
+    }
+
+    .grade-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      border: 1px solid;
+    }
+
+    .grade-s-plus {
+      color: #ffd700;
+      background: rgba(255, 215, 0, 0.12);
+      border-color: rgba(255, 215, 0, 0.4);
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+    }
+
+    .grade-s {
+      color: #00f0ff;
+      background: rgba(0, 240, 255, 0.1);
+      border-color: rgba(0, 240, 255, 0.4);
+    }
+
+    .grade-a-plus {
+      color: #7aa2f7;
+      background: rgba(122, 162, 247, 0.12);
+      border-color: rgba(122, 162, 247, 0.4);
+    }
+
+    .grade-a {
+      color: #9ece6a;
+      background: rgba(158, 206, 106, 0.12);
+      border-color: rgba(158, 206, 106, 0.4);
+    }
+
+    .grade-b-plus {
+      color: #e0af68;
+      background: rgba(224, 175, 104, 0.12);
+      border-color: rgba(224, 175, 104, 0.4);
+    }
+
+    .grade-b {
+      color: #e0af68;
+      background: rgba(224, 175, 104, 0.08);
+      border-color: rgba(224, 175, 104, 0.25);
+    }
+
+    .grade-c {
+      color: #f7768e;
+      background: rgba(247, 118, 142, 0.1);
+      border-color: rgba(247, 118, 142, 0.3);
+    }
+
+    .grade-d {
+      color: #787c99;
+      background: rgba(120, 124, 153, 0.1);
+      border-color: rgba(120, 124, 153, 0.3);
+    }
+
+    .score-cell {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: var(--text-bright);
+      font-family: var(--font-mono);
+    }
+
+    .system-title {
+      font-weight: 800;
+      color: var(--text-bright);
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .archetype-tag {
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      color: var(--muted);
+      background: var(--bg-surface);
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      display: inline-block;
+      margin-top: 3px;
+    }
+
+    .spec-pill {
+      font-size: 0.72rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
     }
 
     /* Roaster */
@@ -2019,6 +2305,10 @@
             <span class="q-icon q-icon-brand">󰓅</span>
             <span>Hardware Telemetry</span>
           </button>
+          <button class="qml-tab" data-tab="tab-leaderboard">
+            <span class="q-icon q-icon-amber"></span>
+            <span id="tabLeaderboardText">Dünya Sıralaması</span>
+          </button>
           <button class="qml-tab" data-tab="tab-roaster">
             <span class="q-icon q-icon-red">󰈸</span>
             <span>Rig Roaster 3000</span>
@@ -2028,7 +2318,7 @@
             <span>OmaScore Simulator</span>
           </button>
           <button class="qml-tab" data-tab="tab-tiers">
-            <span class="q-icon q-icon-amber"></span>
+            <span class="q-icon q-icon-cyan">󰘚</span>
             <span>Hall of Tiers</span>
           </button>
           <button class="qml-tab" data-tab="tab-privacy">
@@ -2145,7 +2435,63 @@
           </div>
         </div>
 
-        <!-- TAB 2: Rig Roaster 3000 -->
+        <!-- TAB 2: Global Leaderboard (Dünya Sıralaması) -->
+        <div id="tab-leaderboard" class="tab-pane">
+          <div class="leaderboard-module">
+            <div class="leaderboard-head">
+              <div>
+                <h2><span class="q-icon q-icon-amber"></span> <span id="lbTitle">Dünya Battlestation Sıralaması</span></h2>
+                <p id="lbSubtitle">Doğrulanmış Omarchy sistemleri; ondalıklı hassas OmaScore, harf dereceleri ve donanım mimarisi.</p>
+              </div>
+              <div class="leaderboard-summary-pill">
+                <span class="status-pulse"></span>
+                <span id="lbTotalCount">Doğrulanmış Sistemler</span>
+              </div>
+            </div>
+
+            <!-- Toolbar & Filter -->
+            <div class="leaderboard-toolbar">
+              <div class="search-box-wrap">
+                <span class="q-icon q-icon-brand" style="margin-left: 0.75rem;">󰍉</span>
+                <input type="text" id="leaderboardSearch" class="qml-input lb-search-input" placeholder="Sistem (Game Garaj), GPU (4070), CPU veya arketip ara...">
+              </div>
+              <div class="lb-filters" id="lbFilters">
+                <button class="lb-filter-btn active" data-filter="all">TÜMÜ</button>
+                <button class="lb-filter-btn" data-filter="S+">👑 S+</button>
+                <button class="lb-filter-btn" data-filter="S">⚡ S</button>
+                <button class="lb-filter-btn" data-filter="A+">🔥 A+</button>
+                <button class="lb-filter-btn" data-filter="A">🎮 A</button>
+                <button class="lb-filter-btn" data-filter="B+">⚔️ B+</button>
+              </div>
+            </div>
+
+            <!-- Leaderboard Table -->
+            <div class="leaderboard-table-container">
+              <table class="leaderboard-table">
+                <thead>
+                  <tr>
+                    <th style="width: 55px;" id="thRank">SIRA</th>
+                    <th style="width: 65px;" id="thGrade">DERECE</th>
+                    <th style="width: 90px;" id="thScore">OMASCORE</th>
+                    <th id="thSystem">BATTLESTATION & SİSTEM</th>
+                    <th id="thCpu">İŞLEMCİ (CPU)</th>
+                    <th id="thGpu">GRAFİK KARTI (GPU)</th>
+                    <th id="thRam">BELLEK (RAM)</th>
+                    <th id="thDisplay">EKRAN</th>
+                    <th style="width: 95px; text-align: right;" id="thVerified">DOĞRULAMA</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                  <tr>
+                    <td colspan="9" style="text-align: center; padding: 2rem; color: var(--muted);">Yükleniyor...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: Rig Roaster 3000 -->
         <div id="tab-roaster" class="tab-pane">
           <div class="roaster-module">
             <div class="roaster-header">
@@ -2482,10 +2828,25 @@
         copyStatus: "Kopyala",
         copyToast: "Komut panoya kopyalandı!",
         tabOverview: "Donanım Telemetrisi",
+        tabLeaderboard: "Dünya Sıralaması",
         tabRoaster: "Rig Roaster 3000",
         tabSimulator: "OmaScore Simülatörü",
         tabTiers: "Seviyeler Listesi",
         tabPrivacy: "Zero-PII Denetimi",
+        lbTitle: "Dünya Battlestation Sıralaması",
+        lbSubtitle: "Doğrulanmış Omarchy sistemleri; ondalıklı hassas OmaScore, harf dereceleri ve donanım mimarisi.",
+        lbSearchPh: "Sistem (Game Garaj), GPU (4070), CPU veya arketip ara...",
+        lbTotalCount: "Doğrulanmış Sistem",
+        lbColRank: "SIRA",
+        lbColGrade: "DERECE",
+        lbColScore: "OMASCORE",
+        lbColSystem: "BATTLESTATION & SİSTEM",
+        lbColCpu: "İŞLEMCİ (CPU)",
+        lbColGpu: "GRAFİK KARTI (GPU)",
+        lbColRam: "BELLEK (RAM)",
+        lbColDisplay: "EKRAN",
+        lbColVerified: "DOĞRULAMA",
+        lbNoResults: "Arama kriterine uygun battlestation bulunamadı.",
         activeRigs: "Aktif Sistemler",
         activeRigsSub: "Topluluk tarafından test edilen donanımlar",
         avgScore: "Genel OmaScore Ortalaması",
@@ -2525,10 +2886,25 @@
         copyStatus: "Copy",
         copyToast: "Command copied to clipboard!",
         tabOverview: "Hardware Telemetry",
+        tabLeaderboard: "World Rankings",
         tabRoaster: "Rig Roaster 3000",
         tabSimulator: "OmaScore Simulator",
         tabTiers: "Hall of Tiers",
         tabPrivacy: "Zero-PII Audit",
+        lbTitle: "World Battlestation Leaderboard",
+        lbSubtitle: "Verified Omarchy systems ranked by high-precision OmaScore, letter grades, and silicon specs.",
+        lbSearchPh: "Search system (Game Garaj), GPU (4070), CPU or archetype...",
+        lbTotalCount: "Verified Systems",
+        lbColRank: "RANK",
+        lbColGrade: "GRADE",
+        lbColScore: "OMASCORE",
+        lbColSystem: "BATTLESTATION & RIG",
+        lbColCpu: "PROCESSOR (CPU)",
+        lbColGpu: "GRAPHICS (GPU)",
+        lbColRam: "MEMORY (RAM)",
+        lbColDisplay: "DISPLAY",
+        lbColVerified: "VERIFIED",
+        lbNoResults: "No matching battlestations found.",
         activeRigs: "Active Battlestations",
         activeRigsSub: "Benchmarked community rigs",
         avgScore: "Global OmaScore Mean",
@@ -2568,10 +2944,25 @@
         copyStatus: "Kopieren",
         copyToast: "Befehl in die Zwischenablage kopiert!",
         tabOverview: "Hardware-Telemetrie",
+        tabLeaderboard: "Weltrangliste",
         tabRoaster: "Rig Roaster 3000",
         tabSimulator: "OmaScore Simulator",
         tabTiers: "Rangstufen-Halle",
         tabPrivacy: "Zero-PII Prüfung",
+        lbTitle: "Globale Battlestation-Bestenliste",
+        lbSubtitle: "Verifizierte Omarchy-Systeme sortiert nach präzisem OmaScore, Notenstufen und Hardware-Architektur.",
+        lbSearchPh: "Suche System (Game Garaj), GPU (4070), CPU oder Archetyp...",
+        lbTotalCount: "Verifizierte Systeme",
+        lbColRank: "RANG",
+        lbColGrade: "NOTE",
+        lbColScore: "OMASCORE",
+        lbColSystem: "BATTLESTATION & SYSTEM",
+        lbColCpu: "PROZESSOR (CPU)",
+        lbColGpu: "GRAFIKKARTE (GPU)",
+        lbColRam: "ARBEITSSPEICHER (RAM)",
+        lbColDisplay: "BILDSCHIRM",
+        lbColVerified: "VERIFIZIERT",
+        lbNoResults: "Keine passenden Battlestations gefunden.",
         activeRigs: "Aktive Systeme",
         activeRigsSub: "Von der Community getestete Rigs",
         avgScore: "Globaler OmaScore-Mittelwert",
@@ -2611,10 +3002,25 @@
         copyStatus: "Copiar",
         copyToast: "¡Comando copiado al portapapeles!",
         tabOverview: "Telemetría de Hardware",
+        tabLeaderboard: "Clasificación Mundial",
         tabRoaster: "Rig Roaster 3000",
         tabSimulator: "Simulador OmaScore",
         tabTiers: "Sala de Rangos",
         tabPrivacy: "Auditoría Zero-PII",
+        lbTitle: "Tabla de Clasificación Mundial",
+        lbSubtitle: "Sistemas Omarchy verificados ordenados por OmaScore de alta precisión, notas y especificaciones.",
+        lbSearchPh: "Buscar sistema (Game Garaj), GPU (4070), CPU o arquetipo...",
+        lbTotalCount: "Sistemas Verificados",
+        lbColRank: "PUESTO",
+        lbColGrade: "GRADO",
+        lbColScore: "OMASCORE",
+        lbColSystem: "BATTLESTATION Y SISTEMA",
+        lbColCpu: "PROCESADOR (CPU)",
+        lbColGpu: "TARJETA GRÁFICA (GPU)",
+        lbColRam: "MEMORIA (RAM)",
+        lbColDisplay: "PANTALLA",
+        lbColVerified: "VERIFICACIONES",
+        lbNoResults: "No se encontraron sistemas coincidentes.",
         activeRigs: "Estaciones Activas",
         activeRigsSub: "Equipos evaluados por la comunidad",
         avgScore: "Media Global OmaScore",
@@ -2654,10 +3060,25 @@
         copyStatus: "Copier",
         copyToast: "Commande copiée dans le presse-papier!",
         tabOverview: "Télémétrie Matérielle",
+        tabLeaderboard: "Classement Mondial",
         tabRoaster: "Rig Roaster 3000",
         tabSimulator: "Simulateur OmaScore",
         tabTiers: "Galerie des Rangs",
         tabPrivacy: "Audit Zero-PII",
+        lbTitle: "Classement Mondial des Battlestations",
+        lbSubtitle: "Systèmes Omarchy vérifiés classés par OmaScore haute précision, grades et matériel.",
+        lbSearchPh: "Rechercher système, GPU (4070), CPU ou archétype...",
+        lbTotalCount: "Systèmes Vérifiés",
+        lbColRank: "RANG",
+        lbColGrade: "GRADE",
+        lbColScore: "OMASCORE",
+        lbColSystem: "BATTLESTATION & SYSTÈME",
+        lbColCpu: "PROCESSEUR (CPU)",
+        lbColGpu: "CARTE GRAPHIQUE (GPU)",
+        lbColRam: "MÉMOIRE (RAM)",
+        lbColDisplay: "ÉCRAN",
+        lbColVerified: "VÉRIFIÉ",
+        lbNoResults: "Aucune battlestation trouvée.",
         activeRigs: "Systèmes Actifs",
         activeRigsSub: "Configurations testées par la communauté",
         avgScore: "Moyenne Globale OmaScore",
@@ -2697,10 +3118,25 @@
         copyStatus: "コピー",
         copyToast: "コマンドをクリップボードにコピーしました！",
         tabOverview: "ハードウェア遠隔測定",
+        tabLeaderboard: "世界ランキング",
         tabRoaster: "Rig Roaster 3000",
         tabSimulator: "OmaScoreシミュレータ",
         tabTiers: "ティア一覧 (殿堂)",
         tabPrivacy: "Zero-PII 監査",
+        lbTitle: "世界バトルステーション ランキング",
+        lbSubtitle: "高精度OmaScore、レターグレード、およびハードウェア構成に基づく検証済みOmarchyシステム。",
+        lbSearchPh: "システム名、GPU、CPU、アーキタイプで検索...",
+        lbTotalCount: "検証済みシステム",
+        lbColRank: "順位",
+        lbColGrade: "グレード",
+        lbColScore: "OMASCORE",
+        lbColSystem: "PC構成 & システム",
+        lbColCpu: "プロセッサ (CPU)",
+        lbColGpu: "グラフィック (GPU)",
+        lbColRam: "メモリ (RAM)",
+        lbColDisplay: "ディスプレイ",
+        lbColVerified: "検証回数",
+        lbNoResults: "一致するシステムが見つかりませんでした。",
         activeRigs: "アクティブなシステム",
         activeRigsSub: "コミュニティで測定されたPC構成",
         avgScore: "全世界平均 OmaScore",
@@ -2737,6 +3173,178 @@
     const savedLang = localStorage.getItem("omastat-lang");
     if (savedLang && i18n[savedLang]) {
       activeLang = savedLang;
+    }
+
+    function escapeHtml(s) {
+      return String(s || "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[m]);
+    }
+
+    // --- Global Leaderboard Logic ---
+    let currentLeaderboard = [
+      {
+        rank: 1,
+        archetype: "OMA-R9-4090-64G-360H",
+        score: 98.75,
+        grade: "S+",
+        tier_name: "NASA Supercomputer",
+        tier_icon: "",
+        system_name: "Custom Liquid Titan",
+        cpu_model: "AMD Ryzen 9 7950X3D (32 Threads)",
+        gpu_model: "NVIDIA GeForce RTX 4090 (24GB VRAM)",
+        ram_desc: "64GB DDR5 @ 6000MT/s",
+        display_desc: "3840×2160 @ 240Hz",
+        submissions_count: 5
+      },
+      {
+        rank: 2,
+        archetype: "OMA-R7-790-32G-240H",
+        score: 92.80,
+        grade: "S",
+        tier_name: "Cyberpunk Beast",
+        tier_icon: "󰓅",
+        system_name: "ASUS ROG Strix Advantage",
+        cpu_model: "AMD Ryzen 7 7800X3D (16 Threads)",
+        gpu_model: "AMD Radeon RX 7900 XTX (RADV)",
+        ram_desc: "32GB DDR5 @ 6000MT/s",
+        display_desc: "2560×1440 @ 240Hz",
+        submissions_count: 3
+      },
+      {
+        rank: 3,
+        archetype: "OMA-U7-4070-32G-240H",
+        score: 88.45,
+        grade: "A+",
+        tier_name: "Cyberpunk Beast",
+        tier_icon: "󰓅",
+        system_name: "Game Garaj Slayer 4 Ultra",
+        cpu_model: "Intel Core i7-14700HX (28 Threads)",
+        gpu_model: "NVIDIA GeForce RTX 4070 Laptop GPU",
+        ram_desc: "32GB DDR5 @ 5600MT/s",
+        display_desc: "2560×1600 @ 240Hz",
+        submissions_count: 7
+      },
+      {
+        rank: 4,
+        archetype: "OMA-U7-4060-31G-240H",
+        score: 79.50,
+        grade: "A",
+        tier_name: "High-FPS Addiction",
+        tier_icon: "󰢮",
+        system_name: "Game Garaj Slayer 3",
+        cpu_model: "Intel Core Ultra 7 155H (22 Threads)",
+        gpu_model: "NVIDIA GeForce RTX 4060 Laptop GPU",
+        ram_desc: "31GB DDR5 @ 4800MT/s",
+        display_desc: "2560×1600 @ 240Hz",
+        submissions_count: 2
+      }
+    ];
+    let currentLeaderboardFilter = "all";
+    let currentLeaderboardSearch = "";
+
+    function renderLeaderboard() {
+      const tbody = document.getElementById("leaderboardBody");
+      const totalCountEl = document.getElementById("lbTotalCount");
+      if (!tbody) return;
+
+      const t = i18n[activeLang] || i18n.tr;
+
+      let filtered = currentLeaderboard.slice();
+
+      if (currentLeaderboardFilter !== "all") {
+        filtered = filtered.filter(item => (item.grade || "").toUpperCase() === currentLeaderboardFilter.toUpperCase());
+      }
+
+      if (currentLeaderboardSearch) {
+        const q = currentLeaderboardSearch.toLowerCase();
+        filtered = filtered.filter(item => {
+          return (item.system_name || "").toLowerCase().includes(q) ||
+                 (item.cpu_model || "").toLowerCase().includes(q) ||
+                 (item.gpu_model || "").toLowerCase().includes(q) ||
+                 (item.ram_desc || "").toLowerCase().includes(q) ||
+                 (item.archetype || "").toLowerCase().includes(q) ||
+                 (item.grade || "").toLowerCase().includes(q);
+        });
+      }
+
+      if (totalCountEl) {
+        totalCountEl.textContent = `${currentLeaderboard.length} ${t.lbTotalCount}`;
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 2.5rem; color: var(--muted); font-size: 0.85rem;">
+              ${escapeHtml(t.lbNoResults)}
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((item, idx) => {
+        const rank = idx + 1;
+        let rankHtml = `#${rank}`;
+        let rankClass = "rank-badge";
+        if (rank === 1) {
+          rankClass += " rank-1";
+          rankHtml = "🥇 #1";
+        } else if (rank === 2) {
+          rankClass += " rank-2";
+          rankHtml = "🥈 #2";
+        } else if (rank === 3) {
+          rankClass += " rank-3";
+          rankHtml = "🥉 #3";
+        }
+
+        const grade = item.grade || "A";
+        const gradeClass = `grade-${grade.toLowerCase().replace('+', '-plus')}`;
+        const scoreFormatted = Number(item.score || 0).toFixed(2);
+        const submissions = item.submissions_count || 1;
+
+        return `
+          <tr>
+            <td><span class="${rankClass}">${rankHtml}</span></td>
+            <td><span class="grade-badge ${gradeClass}">${escapeHtml(grade)}</span></td>
+            <td><span class="score-cell">${scoreFormatted}</span></td>
+            <td>
+              <div class="system-title">
+                <span>${item.tier_icon || "󰌢"}</span>
+                <span>${escapeHtml(item.system_name || "Custom Rig")}</span>
+              </div>
+              <div class="archetype-tag">${escapeHtml(item.archetype || "OMA-BUILD")}</div>
+            </td>
+            <td>
+              <span class="spec-pill">
+                <span class="q-icon q-icon-purple"></span>
+                <span>${escapeHtml(item.cpu_model || "CPU")}</span>
+              </span>
+            </td>
+            <td>
+              <span class="spec-pill">
+                <span class="q-icon q-icon-brand">󰢮</span>
+                <span>${escapeHtml(item.gpu_model || "GPU")}</span>
+              </span>
+            </td>
+            <td>
+              <span class="spec-pill">
+                <span class="q-icon q-icon-cyan">󰍛</span>
+                <span>${escapeHtml(item.ram_desc || "RAM")}</span>
+              </span>
+            </td>
+            <td>
+              <span class="spec-pill">
+                <span class="q-icon q-icon-amber">󰍹</span>
+                <span>${escapeHtml(item.display_desc || "Display")}</span>
+              </span>
+            </td>
+            <td style="text-align: right;">
+              <span style="font-family: var(--font-mono); font-weight: 700; color: var(--green); background: rgba(158, 206, 106, 0.1); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid rgba(158, 206, 106, 0.25);">
+                ✓ ${submissions}×
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join("");
     }
 
     function renderTicker(lang) {
@@ -2779,10 +3387,28 @@
       if (heroH1) heroH1.innerHTML = t.heroTitle;
       document.getElementById("copyStatus").textContent = t.copyStatus;
 
-      const tabLabels = [t.tabOverview, t.tabRoaster, t.tabSimulator, t.tabTiers, t.tabPrivacy];
+      const tabLabels = [t.tabOverview, t.tabLeaderboard, t.tabRoaster, t.tabSimulator, t.tabTiers, t.tabPrivacy];
       document.querySelectorAll(".qml-tab span:last-child").forEach((el, i) => {
         if (tabLabels[i]) el.textContent = tabLabels[i];
       });
+
+      const lbTitleEl = document.getElementById("lbTitle"); if (lbTitleEl) lbTitleEl.textContent = t.lbTitle;
+      const lbSubEl = document.getElementById("lbSubtitle"); if (lbSubEl) lbSubEl.textContent = t.lbSubtitle;
+      const lbSearchInput = document.getElementById("leaderboardSearch"); if (lbSearchInput) lbSearchInput.placeholder = t.lbSearchPh;
+
+      const thRank = document.getElementById("thRank"); if (thRank) thRank.textContent = t.lbColRank;
+      const thGrade = document.getElementById("thGrade"); if (thGrade) thGrade.textContent = t.lbColGrade;
+      const thScore = document.getElementById("thScore"); if (thScore) thScore.textContent = t.lbColScore;
+      const thSystem = document.getElementById("thSystem"); if (thSystem) thSystem.textContent = t.lbColSystem;
+      const thCpu = document.getElementById("thCpu"); if (thCpu) thCpu.textContent = t.lbColCpu;
+      const thGpu = document.getElementById("thGpu"); if (thGpu) thGpu.textContent = t.lbColGpu;
+      const thRam = document.getElementById("thRam"); if (thRam) thRam.textContent = t.lbColRam;
+      const thDisplay = document.getElementById("thDisplay"); if (thDisplay) thDisplay.textContent = t.lbColDisplay;
+      const thVerified = document.getElementById("thVerified"); if (thVerified) thVerified.textContent = t.lbColVerified;
+
+      if (typeof renderLeaderboard === "function") {
+        renderLeaderboard();
+      }
 
       const cardLabels = document.querySelectorAll(".card-label");
       if (cardLabels[0]) cardLabels[0].textContent = t.activeRigs;
@@ -2946,18 +3572,35 @@
     });
 
     // --- Quickshell Tabs ---
+    function switchTab(targetId) {
+      document.querySelectorAll(".qml-tab").forEach(t => {
+        if (t.getAttribute("data-tab") === targetId) t.classList.add("active");
+        else t.classList.remove("active");
+      });
+      document.querySelectorAll(".tab-pane").forEach(p => {
+        if (p.id === targetId) p.classList.add("active");
+        else p.classList.remove("active");
+      });
+    }
+
     document.querySelectorAll(".qml-tab").forEach(tab => {
       tab.addEventListener("click", () => {
         playClick();
-        document.querySelectorAll(".qml-tab").forEach(t => t.classList.remove("active"));
-        document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
-
-        tab.classList.add("active");
         const target = tab.getAttribute("data-tab");
-        const pane = document.getElementById(target);
-        if (pane) pane.classList.add("active");
+        switchTab(target);
+        if (history.replaceState) {
+          history.replaceState(null, "", "#" + target.replace("tab-", ""));
+        }
       });
     });
+
+    const initialHash = window.location.hash.replace("#", "");
+    if (initialHash) {
+      const targetTabId = initialHash.startsWith("tab-") ? initialHash : ("tab-" + initialHash);
+      if (document.getElementById(targetTabId)) {
+        switchTab(targetTabId);
+      }
+    }
 
     // --- Rig Roaster 3000 ---
     const roastDB = [
@@ -3124,6 +3767,25 @@
     });
     recalculateSimulator();
 
+    // --- Leaderboard Event Listeners ---
+    const lbSearchInput = document.getElementById("leaderboardSearch");
+    if (lbSearchInput) {
+      lbSearchInput.addEventListener("input", (e) => {
+        currentLeaderboardSearch = e.target.value.trim().toLowerCase();
+        renderLeaderboard();
+      });
+    }
+
+    document.querySelectorAll("#lbFilters .lb-filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        playClick();
+        document.querySelectorAll("#lbFilters .lb-filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentLeaderboardFilter = btn.getAttribute("data-filter") || "all";
+        renderLeaderboard();
+      });
+    });
+
     // --- Live Data Loader ---
     const defaultTiers = [
       { tier_name: "NASA Supercomputer", tier_icon: "", percentage: 4, lore: "OmaScore 90-100 • Halo GPUs, 32-thread CPUs, 360Hz displays" },
@@ -3146,8 +3808,14 @@
     function renderStats(data) {
       const total = data.total_submissions || 0;
       document.getElementById("totalSubmissions").textContent = total > 0 ? total.toLocaleString() : "2";
-      document.getElementById("avgScore").textContent = data.average_score > 0 ? (data.average_score + "/100") : "79/100";
+      const avgGrade = data.average_grade ? ` [${data.average_grade}]` : "";
+      document.getElementById("avgScore").textContent = data.average_score > 0 ? (Number(data.average_score).toFixed(2) + "/100" + avgGrade) : "79.50/100 [A]";
       document.getElementById("avgTier").textContent = data.average_tier || "󰓅 Cyberpunk Beast";
+
+      if (data.leaderboard && data.leaderboard.length > 0) {
+        currentLeaderboard = data.leaderboard;
+      }
+      renderLeaderboard();
 
       const topGpu = (data.top_gpus && data.top_gpus.length > 0) ? data.top_gpus[0] : { model: "NVIDIA GeForce RTX 4060 Laptop GPU", percentage: 50 };
       document.getElementById("topGpu").textContent = topGpu.model;
