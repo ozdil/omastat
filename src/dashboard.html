@@ -595,7 +595,26 @@
       --shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    *::-webkit-scrollbar {
+      width: 0px !important;
+      height: 0px !important;
+      display: none !important;
+      background: transparent !important;
+    }
+
+    html, body {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+      overflow-x: hidden;
+    }
 
     body {
       background-color: var(--bg-desktop);
@@ -773,6 +792,17 @@
       100% { height: 35%; }
     }
 
+    
+    .theme-ribbon::-webkit-scrollbar,
+    .cli-cmd::-webkit-scrollbar,
+    .qml-tabs::-webkit-scrollbar,
+    .modal-grid::-webkit-scrollbar,
+    .terminal-cli::-webkit-scrollbar {
+      display: none !important;
+      width: 0px !important;
+      height: 0px !important;
+    }
+
     /* Horizontal Theme Ribbon Strip */
     .theme-ribbon {
       background: var(--bg-subtle);
@@ -783,7 +813,8 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      scrollbar-width: thin;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
     }
 
     .ribbon-label {
@@ -835,69 +866,14 @@
       display: inline-block;
     }
 
-    /* Main Window */
-    main.quickshell-window {
-      max-width: 1140px;
-      margin: 1.5rem auto 4rem;
-      padding: 0 1rem;
+    /* Pure Qt Quickshell Canvas */
+    main.quickshell-canvas {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 1.75rem 1.25rem 4rem;
       width: 100%;
       position: relative;
       z-index: 1;
-    }
-
-    .window-surface {
-      background: var(--bg-shell);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      position: relative;
-    }
-
-    .window-titlebar {
-      background: var(--bg-subtle);
-      border-bottom: 1px solid var(--border);
-      padding: 0.75rem 1.25rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .window-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .win-dot {
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      border: 1px solid rgba(0,0,0,0.25);
-    }
-
-    .dot-close { background: #ff5f56; }
-    .dot-min { background: #ffbd2e; }
-    .dot-max { background: #27c93f; }
-
-    .window-title {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .window-body {
-      padding: 2rem;
-    }
-
-    @media (max-width: 768px) {
-      .window-body { padding: 1.25rem; }
     }
 
     /* Hero Banner */
@@ -1763,42 +1739,23 @@
     <div id="ribbonPills" style="display: inline-flex; gap: 0.5rem;"></div>
   </div>
 
-  <!-- Main Floating Window -->
-  <main class="quickshell-window">
-    <div class="window-surface">
-      <div class="window-titlebar">
-        <div class="window-controls">
-          <span class="win-dot dot-close"></span>
-          <span class="win-dot dot-min"></span>
-          <span class="win-dot dot-max"></span>
-        </div>
-
-        <div class="window-title">
-          <span></span>
-          <span>omastat.omarchy.org — Quickshell Telemetry Inspector v1.2.0</span>
-        </div>
-
-        <div style="display: flex; gap: 0.5rem; font-size: 0.7rem; color: var(--muted);">
-          <span style="background: var(--bg-surface); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">WAYLAND</span>
-          <span style="background: var(--bg-surface); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">D1 SQLITE</span>
-        </div>
-      </div>
-
-      <div class="window-body">
+  <!-- Pure Qt Quickshell Canvas -->
+  <main class="quickshell-canvas">
         <section class="hero-banner">
           <div class="hero-pill">
-            <span class="q-icon q-icon-green">󰒃</span> <span>ZERO-PII ARCHITECTURE</span>
+            <span class="q-icon q-icon-green">󰒃</span> <span>ZERO-PII</span>
             <span>•</span>
-            <span class="q-icon q-icon-purple">󰏚</span> <span>26 OFFICIAL OMARCHY THEMES</span>
+            <span class="q-icon q-icon-purple">󰏚</span> <span>26 THEMES</span>
+            <span>•</span>
+            <span class="q-icon q-icon-cyan">󰄛</span> <span>QUICKSHELL RUNTIME</span>
           </div>
 
           <h1>
-            Omarchy Community<br>
-            <span class="hero-gradient">Hardware & Battlestation Matrix</span>
+            Omarchy <span class="hero-gradient">Hardware Matrix</span>
           </h1>
 
           <p class="hero-lead">
-            Real-time, anonymous, aggregate hardware intelligence across the Omarchy Linux ecosystem. No device fingerprinting, no IP tracking, just pure cryptographic silicon statistics.
+            Real-time aggregate silicon intelligence across the Omarchy Linux ecosystem.
           </p>
 
           <div id="install" class="terminal-cli">
@@ -2087,16 +2044,14 @@
           </div>
         </div>
 
-        <footer class="qml-footer">
-          <p>
-            <strong>OmaStat</strong> • Official Community Hardware Matrix for <a href="https://omarchy.org" target="_blank">Omarchy Linux</a>
-          </p>
-          <p>
-            Architected by <a href="https://github.com/ozdil" target="_blank">Ozan Özdil (ozdil)</a> & Omarchy Contributors • Serverless Edge on Cloudflare Workers & D1
-          </p>
-        </footer>
-      </div>
-    </div>
+    <footer class="qml-footer">
+      <p>
+        <strong>OmaStat</strong> • Pure Qt Quickshell Telemetry Engine • <a href="https://omarchy.org" target="_blank">Omarchy Linux</a>
+      </p>
+      <p style="margin-top: 0.25rem; opacity: 0.7;">
+        Architected by <a href="https://github.com/ozdil" target="_blank">Ozan Özdil (ozdil)</a> & Omarchy Contributors • Zero-PII Cryptographic Matrix
+      </p>
+    </footer>
   </main>
 
   <!-- 🎨 Theme Browser Modal -->
