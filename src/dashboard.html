@@ -19,7 +19,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-family: var(--font-mono);
+      flex-shrink: 0;
+      font-family: "JetBrainsMono Nerd Font", var(--font-mono);
       font-style: normal;
       font-weight: normal;
       line-height: 1;
@@ -37,7 +38,7 @@
     .q-icon-text    { color: var(--text-bright); }
 
     :root {
-      --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --font-mono: "JetBrainsMono Nerd Font", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --transition-fast: 0.15s cubic-bezier(0.2, 0, 0, 1);
       --transition-smooth: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1509,32 +1510,45 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 0.3rem;
       font-weight: 900;
-      font-size: 0.82rem;
-      width: 32px;
-      height: 32px;
-      border-radius: var(--radius-sm);
+      font-size: 0.76rem;
+      font-family: var(--font-mono);
+      min-width: 44px;
+      height: 28px;
+      padding: 0 0.45rem;
+      border-radius: 4px;
       background: var(--bg-surface);
       border: 1px solid var(--border);
+      box-sizing: border-box;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .rank-trophy {
+      font-size: 0.72rem;
+      line-height: 1;
     }
 
     .rank-1 {
-      background: rgba(255, 215, 0, 0.15);
+      background: rgba(255, 215, 0, 0.12);
       border-color: rgba(255, 215, 0, 0.5);
       color: #ffd700;
-      box-shadow: 0 0 12px rgba(255, 215, 0, 0.25);
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
     }
 
     .rank-2 {
-      background: rgba(220, 220, 220, 0.15);
+      background: rgba(220, 220, 220, 0.12);
       border-color: rgba(220, 220, 220, 0.4);
       color: #e2e8f0;
+      box-shadow: 0 0 8px rgba(220, 220, 220, 0.15);
     }
 
     .rank-3 {
-      background: rgba(205, 127, 50, 0.15);
+      background: rgba(205, 127, 50, 0.12);
       border-color: rgba(205, 127, 50, 0.4);
       color: #e59866;
+      box-shadow: 0 0 8px rgba(205, 127, 50, 0.15);
     }
 
     .grade-badge {
@@ -2457,11 +2471,11 @@
               </div>
               <div class="lb-filters" id="lbFilters">
                 <button class="lb-filter-btn active" data-filter="all">TÜMÜ</button>
-                <button class="lb-filter-btn" data-filter="S+">👑 S+</button>
-                <button class="lb-filter-btn" data-filter="S">⚡ S</button>
-                <button class="lb-filter-btn" data-filter="A+">🔥 A+</button>
-                <button class="lb-filter-btn" data-filter="A">🎮 A</button>
-                <button class="lb-filter-btn" data-filter="B+">⚔️ B+</button>
+                <button class="lb-filter-btn" data-filter="S+"><span class="q-icon q-icon-amber" style="font-size:0.75rem; margin-right:3px;"></span>S+</button>
+                <button class="lb-filter-btn" data-filter="S"><span class="q-icon q-icon-cyan" style="font-size:0.75rem; margin-right:3px;">󰓅</span>S</button>
+                <button class="lb-filter-btn" data-filter="A+"><span class="q-icon q-icon-purple" style="font-size:0.75rem; margin-right:3px;">󰢮</span>A+</button>
+                <button class="lb-filter-btn" data-filter="A"><span class="q-icon q-icon-green" style="font-size:0.75rem; margin-right:3px;">󰈸</span>A</button>
+                <button class="lb-filter-btn" data-filter="B+"><span class="q-icon q-icon-red" style="font-size:0.75rem; margin-right:3px;">󰘚</span>B+</button>
               </div>
             </div>
 
@@ -2470,7 +2484,7 @@
               <table class="leaderboard-table">
                 <thead>
                   <tr>
-                    <th style="width: 55px;" id="thRank">SIRA</th>
+                    <th style="width: 75px;" id="thRank">SIRA</th>
                     <th style="width: 65px;" id="thGrade">DERECE</th>
                     <th style="width: 90px;" id="thScore">OMASCORE</th>
                     <th id="thSystem">BATTLESTATION & SİSTEM</th>
@@ -3241,6 +3255,19 @@
     let currentLeaderboardFilter = "all";
     let currentLeaderboardSearch = "";
 
+    function getCleanTierIcon(tierName, rawIcon) {
+      if (rawIcon && !["🚀", "🥔", "⚡", "🔥", "👑", "🎮", "⚔️"].includes(rawIcon) && rawIcon.trim().length > 0) {
+        return rawIcon;
+      }
+      const name = (tierName || "").toLowerCase();
+      if (name.includes("nasa") || name.includes("supercomputer")) return "";
+      if (name.includes("cyberpunk")) return "󰓅";
+      if (name.includes("high-fps") || name.includes("gamer") || name.includes("addiction")) return "󰢮";
+      if (name.includes("daily")) return "󰌢";
+      if (name.includes("potato") || name.includes("toaster")) return "󰋊";
+      return "󰌢";
+    }
+
     function renderLeaderboard() {
       const tbody = document.getElementById("leaderboardBody");
       const totalCountEl = document.getElementById("lbTotalCount");
@@ -3283,23 +3310,24 @@
 
       tbody.innerHTML = filtered.map((item, idx) => {
         const rank = idx + 1;
-        let rankHtml = `#${rank}`;
+        let rankHtml = `<span>#${rank}</span>`;
         let rankClass = "rank-badge";
         if (rank === 1) {
           rankClass += " rank-1";
-          rankHtml = "🥇 #1";
+          rankHtml = `<span class="q-icon q-icon-amber rank-trophy"></span><span>#1</span>`;
         } else if (rank === 2) {
           rankClass += " rank-2";
-          rankHtml = "🥈 #2";
+          rankHtml = `<span class="q-icon rank-trophy" style="color: #e2e8f0;"></span><span>#2</span>`;
         } else if (rank === 3) {
           rankClass += " rank-3";
-          rankHtml = "🥉 #3";
+          rankHtml = `<span class="q-icon rank-trophy" style="color: #e59866;"></span><span>#3</span>`;
         }
 
         const grade = item.grade || "A";
         const gradeClass = `grade-${grade.toLowerCase().replace('+', '-plus')}`;
         const scoreFormatted = Number(item.score || 0).toFixed(2);
         const submissions = item.submissions_count || 1;
+        const tierIcon = getCleanTierIcon(item.tier_name, item.tier_icon);
 
         return `
           <tr>
@@ -3308,7 +3336,7 @@
             <td><span class="score-cell">${scoreFormatted}</span></td>
             <td>
               <div class="system-title">
-                <span>${item.tier_icon || "󰌢"}</span>
+                <span class="q-icon q-icon-brand">${tierIcon}</span>
                 <span>${escapeHtml(item.system_name || "Custom Rig")}</span>
               </div>
               <div class="archetype-tag">${escapeHtml(item.archetype || "OMA-BUILD")}</div>
