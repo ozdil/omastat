@@ -760,7 +760,7 @@
       box-shadow: 0 4px 18px rgba(var(--brand-rgb), 0.5);
     }
 
-    /* Equalizer SFX */
+    /* Equalizer SFX & Radio */
     .sound-bars {
       display: flex;
       align-items: flex-end;
@@ -781,52 +781,233 @@
     .sound-bar:nth-child(4) { height: 100%; animation-delay: 0.4s; }
 
     .sound-muted .sound-bar {
-      animation: none;
-      height: 2px;
-      opacity: 0.5;
+      animation: none !important;
+      height: 2px !important;
+      opacity: 0.45;
     }
 
     @keyframes equalize {
-      0% { height: 25%; }
+      0% { height: 20%; }
       50% { height: 100%; }
-      100% { height: 35%; }
+      100% { height: 30%; }
     }
 
-    
-    .theme-ribbon::-webkit-scrollbar,
-    .cli-cmd::-webkit-scrollbar,
-    .qml-tabs::-webkit-scrollbar,
-    .modal-grid::-webkit-scrollbar,
-    .terminal-cli::-webkit-scrollbar {
-      display: none !important;
-      width: 0px !important;
-      height: 0px !important;
+    /* Radio Widget in Shell Header */
+    .radio-widget {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 0.15rem 0.4rem 0.15rem 0.25rem;
     }
 
-    /* Horizontal Theme Ribbon Strip */
-    .theme-ribbon {
+    .radio-play-btn {
+      border: none !important;
+      background: transparent !important;
+      padding: 0.25rem 0.5rem !important;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .radio-play-btn:hover {
+      background: var(--bg-subtle) !important;
+    }
+
+    .station-dropdown-container, .lang-dropdown-container {
+      position: relative;
+    }
+
+    .station-btn, .lang-btn {
+      font-size: 0.72rem !important;
+      padding: 0.3rem 0.65rem !important;
+    }
+
+    .volume-slider-box {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0 0.35rem;
+      border-left: 1px solid var(--border);
+      margin-left: 0.2rem;
+    }
+
+    .quickshell-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 48px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .quickshell-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--brand);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .quickshell-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.3);
+      box-shadow: 0 0 8px var(--brand);
+    }
+
+    /* Quickshell Popover Menus (Dropdowns) */
+    .quickshell-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65);
+      padding: 0.35rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.2rem;
+      min-width: 185px;
+      z-index: 5000;
+      backdrop-filter: blur(12px);
+    }
+
+    .quickshell-menu.show {
+      display: flex;
+      animation: menuDrop 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes menuDrop {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .menu-item {
+      padding: 0.45rem 0.65rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: var(--transition-fast);
+    }
+
+    .menu-item:hover {
+      background: color-mix(in srgb, var(--brand) 15%, var(--bg-surface));
+      color: var(--text-bright);
+    }
+
+    .menu-item.active {
+      background: color-mix(in srgb, var(--brand) 20%, var(--bg-surface));
+      color: var(--brand);
+      font-weight: 700;
+      border-left: 2px solid var(--brand);
+    }
+
+    .menu-item-title {
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .menu-item-desc {
+      font-size: 0.64rem;
+      color: var(--muted);
+    }
+
+    /* Live Telemetry Ticker Strip (Kayar Yazı) */
+    .live-ticker-strip {
       background: var(--bg-subtle);
       border-bottom: 1px solid var(--border);
-      padding: 0.5rem 1.25rem;
-      overflow-x: auto;
-      white-space: nowrap;
+      height: 38px;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      scrollbar-width: none !important;
-      -ms-overflow-style: none !important;
+      overflow: hidden;
+      position: relative;
+      user-select: none;
     }
 
-    .ribbon-label {
-      font-size: 0.7rem;
+    .ticker-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: color-mix(in srgb, var(--brand) 12%, var(--bg-surface));
+      color: var(--brand);
+      border-right: 1px solid var(--border);
+      padding: 0 0.85rem;
+      height: 100%;
+      font-size: 0.68rem;
       font-weight: 800;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-right: 0.5rem;
+      letter-spacing: 0.8px;
+      flex-shrink: 0;
+      z-index: 10;
+      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .ticker-viewport {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      height: 100%;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+    }
+
+    .ticker-track {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      gap: 3rem;
+      animation: tickerLoop 42s linear infinite;
+    }
+
+    .ticker-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes tickerLoop {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.74rem;
+      color: var(--text);
+    }
+
+    .ticker-tag {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--brand);
+      padding: 0.15rem 0.45rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .ticker-icon {
+      font-family: "JetBrainsMono Nerd Font", monospace;
+      font-size: 0.85rem;
+    }
+
+    .ticker-text {
+      font-weight: 500;
     }
 
     .theme-pill {
@@ -923,7 +1104,7 @@
     }
 
     .terminal-cli {
-      max-width: 620px;
+      max-width: 680px;
       margin: 0 auto;
       background: var(--bg-desktop);
       border: 1px solid var(--border);
@@ -1704,16 +1885,56 @@
       </div>
 
       <div class="panel-right">
-        <!-- SFX Synth Toggle -->
-        <button id="soundBtn" class="shell-btn sound-muted" title="Toggle Synthesized Retro SFX">
-          <div class="sound-bars">
-            <span class="sound-bar"></span>
-            <span class="sound-bar"></span>
-            <span class="sound-bar"></span>
-            <span class="sound-bar"></span>
+        <!-- Synthwave Radio Player & SFX Widget -->
+        <div class="radio-widget" id="radioWidget">
+          <button id="radioPlayBtn" class="shell-btn radio-play-btn sound-muted" title="Play/Pause Synthwave Radio">
+            <div class="sound-bars">
+              <span class="sound-bar"></span>
+              <span class="sound-bar"></span>
+              <span class="sound-bar"></span>
+              <span class="sound-bar"></span>
+            </div>
+            <span id="radioPlayIcon" class="q-icon q-icon-amber" style="font-size: 0.8rem; margin-right: 2px;">󰐊</span>
+            <span id="radioStationLabel" style="font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px;">SYNTHWAVE</span>
+          </button>
+
+          <!-- Station Dropdown -->
+          <div class="station-dropdown-container">
+            <button id="stationPickerBtn" class="shell-btn station-btn" title="Switch Radio Station">
+              <span class="q-icon q-icon-purple">󰎆</span>
+              <span id="currentStationName">Nightride FM</span>
+              <span class="q-icon" style="font-size: 0.65rem;">▾</span>
+            </button>
+            <div id="stationMenu" class="quickshell-menu">
+              <div class="menu-item active" data-index="0">
+                <div class="menu-item-title"><span class="q-icon q-icon-brand">󰎆</span> Nightride FM</div>
+                <div class="menu-item-desc">Synthwave • Retrowave • 320kbps</div>
+              </div>
+              <div class="menu-item" data-index="1">
+                <div class="menu-item-title"><span class="q-icon q-icon-cyan">🌴</span> Chillsynth FM</div>
+                <div class="menu-item-desc">Chillwave • Lo-Fi Synth • 320kbps</div>
+              </div>
+              <div class="menu-item" data-index="2">
+                <div class="menu-item-title"><span class="q-icon q-icon-purple">💾</span> Datawave FM</div>
+                <div class="menu-item-desc">Cyberpunk • IDM • Darksynth</div>
+              </div>
+              <div class="menu-item" data-index="3">
+                <div class="menu-item-title"><span class="q-icon q-icon-amber">🌆</span> Nightwave Plaza</div>
+                <div class="menu-item-desc">Vaporwave • Future Funk • City Pop</div>
+              </div>
+              <div class="menu-item" data-index="4">
+                <div class="menu-item-title"><span class="q-icon q-icon-green">☕</span> SomaFM Vaporwaves</div>
+                <div class="menu-item-desc">Retrowave Ambient & Chill</div>
+              </div>
+            </div>
           </div>
-          <span class="q-icon q-icon-amber" style="margin-right:2px;">󰕾</span><span>SFX</span>
-        </button>
+
+          <!-- Volume Slider -->
+          <div class="volume-slider-box" title="Radio Volume">
+            <span class="q-icon q-icon-cyan" id="volumeIcon" style="font-size:0.75rem;">󰕾</span>
+            <input type="range" id="radioVolume" min="0" max="1" step="0.05" value="0.75" class="quickshell-slider" />
+          </div>
+        </div>
 
         <!-- Theme Picker Modal Button -->
         <button id="openThemeModalBtn" class="shell-btn" title="Open Theme Browser (26 Omarchy Themes)">
@@ -1721,22 +1942,44 @@
           <span id="activeThemeBadge">Themes (26) ▾</span>
         </button>
 
+        <!-- Language Selector Dropdown -->
+        <div class="lang-dropdown-container">
+          <button id="langPickerBtn" class="shell-btn lang-btn" title="Change Language / Dil Seçimi">
+            <span class="q-icon q-icon-blue">󰗊</span>
+            <span id="activeLangBadge">TR</span>
+            <span class="q-icon" style="font-size: 0.65rem;">▾</span>
+          </button>
+          <div id="langMenu" class="quickshell-menu">
+            <div class="menu-item active" data-lang="tr"><div class="menu-item-title">🇹🇷 Türkçe</div></div>
+            <div class="menu-item" data-lang="en"><div class="menu-item-title">🇬🇧 English</div></div>
+            <div class="menu-item" data-lang="de"><div class="menu-item-title">🇩🇪 Deutsch</div></div>
+            <div class="menu-item" data-lang="es"><div class="menu-item-title">🇪🇸 Español</div></div>
+            <div class="menu-item" data-lang="fr"><div class="menu-item-title">🇫🇷 Français</div></div>
+            <div class="menu-item" data-lang="ja"><div class="menu-item-title">🇯🇵 日本語</div></div>
+          </div>
+        </div>
+
         <!-- Install Action -->
         <a href="#install" class="btn-install">
           <span class="q-icon q-icon-brand">󰓅</span>
-          <span>Add OmaRank</span>
+          <span id="navAddPluginText">OmaRank Ekle</span>
         </a>
       </div>
     </div>
   </header>
 
-  <!-- Quick Horizontal Theme Ribbon Strip -->
-  <div class="theme-ribbon">
-    <span class="ribbon-label">
-      <span class="q-icon q-icon-purple">󰏚</span>
-      <span>Omarchy Themes:</span>
-    </span>
-    <div id="ribbonPills" style="display: inline-flex; gap: 0.5rem;"></div>
+  <!-- Live Telemetry & Welcome Ticker Strip (Kayar Yazı) -->
+  <div class="live-ticker-strip">
+    <div class="ticker-badge">
+      <span class="status-pulse"></span>
+      <span class="q-icon q-icon-brand" style="margin-right:2px;">󰓅</span>
+      <span id="tickerTitle">CANLI AKIŞ</span>
+    </div>
+    <div class="ticker-viewport">
+      <div class="ticker-track" id="tickerTrack">
+        <!-- Telemetry & Welcome items injected dynamically -->
+      </div>
+    </div>
   </div>
 
   <!-- Pure Qt Quickshell Canvas -->
@@ -2122,16 +2365,478 @@
       setTimeout(() => playNote(600, "triangle", 0.14, 0.14), 110);
     }
 
-    document.getElementById("soundBtn").addEventListener("click", () => {
-      ensureAudio();
-      soundActive = !soundActive;
-      const btn = document.getElementById("soundBtn");
-      if (soundActive) {
-        btn.classList.remove("sound-muted");
-        playChime();
-      } else {
-        btn.classList.add("sound-muted");
+    // --- Live Synthwave Radio & Audio Engine ---
+    const radioStations = [
+      { id: "nightride", name: "Nightride FM", url: "https://stream.nightride.fm/nightride.mp3", desc: "Synthwave / Outrun • 320k" },
+      { id: "chillsynth", name: "Chillsynth FM", url: "https://stream.nightride.fm/chillsynth.mp3", desc: "Chillwave / Lo-Fi • 320k" },
+      { id: "datawave", name: "Datawave FM", url: "https://stream.nightride.fm/datawave.mp3", desc: "Cyberpunk / IDM • 320k" },
+      { id: "plaza", name: "Nightwave Plaza", url: "https://radio.plaza.one/mp3", desc: "Vaporwave / City Pop" },
+      { id: "somafm", name: "SomaFM Vapor", url: "https://ice1.somafm.com/vaporwaves-128-mp3", desc: "Retrowave Ambient" }
+    ];
+
+    let currentStationIndex = 0;
+    let radioPlaying = false;
+    let radioAudio = null;
+
+    function initRadio() {
+      if (!radioAudio) {
+        radioAudio = new Audio();
+        radioAudio.crossOrigin = "anonymous";
+        const volInput = document.getElementById("radioVolume");
+        radioAudio.volume = volInput ? parseFloat(volInput.value || "0.75") : 0.75;
+
+        radioAudio.addEventListener("playing", () => {
+          radioPlaying = true;
+          soundActive = true;
+          document.getElementById("radioPlayBtn").classList.remove("sound-muted");
+          document.getElementById("radioPlayIcon").textContent = "󰏤";
+          document.getElementById("radioStationLabel").textContent = "LIVE";
+        });
+
+        radioAudio.addEventListener("pause", () => {
+          radioPlaying = false;
+          document.getElementById("radioPlayBtn").classList.add("sound-muted");
+          document.getElementById("radioPlayIcon").textContent = "󰐊";
+          document.getElementById("radioStationLabel").textContent = "SYNTHWAVE";
+        });
+
+        radioAudio.addEventListener("error", () => {
+          document.getElementById("radioPlayBtn").classList.add("sound-muted");
+          document.getElementById("radioPlayIcon").textContent = "󰐊";
+          document.getElementById("radioStationLabel").textContent = "RETRY";
+        });
       }
+    }
+
+    function playStation(index) {
+      initRadio();
+      currentStationIndex = index;
+      const st = radioStations[index];
+      radioAudio.src = st.url;
+      radioAudio.load();
+      radioAudio.play().catch(e => console.warn("Radio play prevented:", e));
+      document.getElementById("currentStationName").textContent = st.name;
+
+      document.querySelectorAll("#stationMenu .menu-item").forEach((item, idx) => {
+        if (idx === index) item.classList.add("active");
+        else item.classList.remove("active");
+      });
+    }
+
+    function toggleRadio() {
+      ensureAudio();
+      initRadio();
+      if (radioPlaying) {
+        radioAudio.pause();
+      } else {
+        if (!radioAudio.src || radioAudio.src === "" || radioAudio.src === window.location.href) {
+          playStation(currentStationIndex);
+        } else {
+          radioAudio.play().catch(e => console.warn("Play error:", e));
+        }
+      }
+    }
+
+    document.getElementById("radioPlayBtn").addEventListener("click", () => {
+      toggleRadio();
+      playClick();
+    });
+
+    const stationPickerBtn = document.getElementById("stationPickerBtn");
+    const stationMenu = document.getElementById("stationMenu");
+    stationPickerBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      stationMenu.classList.toggle("show");
+      document.getElementById("langMenu").classList.remove("show");
+      playClick();
+    });
+
+    document.querySelectorAll("#stationMenu .menu-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const idx = parseInt(item.getAttribute("data-index"), 10);
+        playStation(idx);
+        stationMenu.classList.remove("show");
+        playChime();
+      });
+    });
+
+    const volumeSlider = document.getElementById("radioVolume");
+    const volumeIcon = document.getElementById("volumeIcon");
+    volumeSlider.addEventListener("input", (e) => {
+      const vol = parseFloat(e.target.value);
+      initRadio();
+      radioAudio.volume = vol;
+      if (vol === 0) volumeIcon.textContent = "󰖁";
+      else if (vol < 0.5) volumeIcon.textContent = "󰕿";
+      else volumeIcon.textContent = "󰕾";
+    });
+
+    // --- Multi-Language Support (i18n) ---
+    const i18n = {
+      tr: {
+        badge: "TR",
+        tickerTitle: "CANLI AKIŞ",
+        navAddPlugin: "OmaRank Ekle",
+        heroLead: "Omarchy Linux ekosistemi genelinde gerçek zamanlı toplu donanım zekası.",
+        heroTitle: 'Omarchy <span class="hero-gradient">Donanım Matrisi</span>',
+        copyStatus: "Kopyala",
+        copyToast: "Komut panoya kopyalandı!",
+        tabOverview: "Donanım Telemetrisi",
+        tabRoaster: "Rig Roaster 3000",
+        tabSimulator: "OmaScore Simülatörü",
+        tabTiers: "Seviyeler Listesi",
+        tabPrivacy: "Zero-PII Denetimi",
+        activeRigs: "Aktif Sistemler",
+        activeRigsSub: "Topluluk tarafından test edilen donanımlar",
+        avgScore: "Genel OmaScore Ortalaması",
+        topGpu: "Zirvedeki GPU",
+        topDisplay: "Baskın Ekran",
+        chartGpu: "Grafik Mimarisi (GPU)",
+        chartCpu: "İşlemci Mimarisi (CPU)",
+        chartRam: "Sistem Belleği (RAM)",
+        chartDisplay: "Ekran Arenası & Yenileme Hızları",
+        chartVendors: "PC Üreticileri & Laptop Markaları",
+        roasterTitle: "Rig Roaster 3000 & Arketip Tarayıcı",
+        roasterDesc: "Anonim OmaRank imzanızı yapıştırın veya bir hazır sistem seçerek anında acımasız topluluk eleştirisini görün:",
+        roastBtn: "Sistemimi Eleştir",
+        simTitle: "OmaScore Donanım Simülatörü",
+        simDesc: "Donanım parçalarını değiştirerek tahmini OmaScore puanınızı hesaplayın.",
+        tickerWelcomeTag: "YENİ RIG",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Aramıza hoş geldin! 🎉",
+        tickerStatTag: "CANLI TELEMETRİ",
+        tickerStatText: "142 Doğrulanmış Battlestation • Ortalama OmaScore: 84.6/100 (Enthusiast)",
+        tickerGpuTag: "LİDER GPU",
+        tickerGpuText: "NVIDIA GeForce RTX 4070 (%28.4 pazar payı) • Zirve: RTX 4090",
+        tickerCpuTag: "LİDER CPU",
+        tickerCpuText: "AMD Ryzen 7 7800X3D (%31.2 pay) • Intel Core i7-14700HX",
+        tickerThemeTag: "FAVORİ TEMA",
+        tickerThemeText: "Tokyo Night (%34) • Ankara & Catppuccin takipte",
+        tickerQuickshellTag: "QUICKSHELL",
+        tickerQuickshellText: "%100 Yerel Qt/QML Arayüz Desteği • Zero-Scrollbar Tasarım",
+        tickerSecurityTag: "GÜVENLİK",
+        tickerSecurityText: "%100 Zero-PII • SHA-256 Anonim Donanım Kimliği • Cloudflare D1 Edge Senkron"
+      },
+      en: {
+        badge: "EN",
+        tickerTitle: "LIVE FEED",
+        navAddPlugin: "Add OmaRank",
+        heroLead: "Real-time aggregate silicon intelligence across the Omarchy Linux ecosystem.",
+        heroTitle: 'Omarchy <span class="hero-gradient">Hardware Matrix</span>',
+        copyStatus: "Copy",
+        copyToast: "Command copied to clipboard!",
+        tabOverview: "Hardware Telemetry",
+        tabRoaster: "Rig Roaster 3000",
+        tabSimulator: "OmaScore Simulator",
+        tabTiers: "Hall of Tiers",
+        tabPrivacy: "Zero-PII Audit",
+        activeRigs: "Active Battlestations",
+        activeRigsSub: "Benchmarked community rigs",
+        avgScore: "Global OmaScore Mean",
+        topGpu: "Apex Predator GPU",
+        topDisplay: "Dominant Display",
+        chartGpu: "Graphics Architecture (GPU)",
+        chartCpu: "Processor Architecture (CPU)",
+        chartRam: "System Memory (RAM)",
+        chartDisplay: "Display Arena & Refresh Rates",
+        chartVendors: "PC Manufacturers & Custom DIY Vendors",
+        roasterTitle: "Rig Roaster 3000 & Archetype Scanner",
+        roasterDesc: "Type your anonymous OmaRank Archetype signature or pick a preset for an immediate, brutally honest community roast:",
+        roastBtn: "Roast My Rig",
+        simTitle: "OmaScore Hardware Simulator",
+        simDesc: "Simulate hardware upgrades and calculate your hypothetical OmaScore tier.",
+        tickerWelcomeTag: "NEW RIG",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Welcome aboard! 🎉",
+        tickerStatTag: "LIVE TELEMETRY",
+        tickerStatText: "142 Verified Battlestations • Global Mean OmaScore: 84.6/100 (Enthusiast)",
+        tickerGpuTag: "APEX GPU",
+        tickerGpuText: "NVIDIA GeForce RTX 4070 (28.4% community share) • Apex: RTX 4090",
+        tickerCpuTag: "APEX CPU",
+        tickerCpuText: "AMD Ryzen 7 7800X3D (31.2% share) • Intel Core i7-14700HX",
+        tickerThemeTag: "TOP THEME",
+        tickerThemeText: "Tokyo Night (34%) • Followed by Ankara & Catppuccin",
+        tickerQuickshellTag: "QUICKSHELL",
+        tickerQuickshellText: "100% Native Qt/QML Shell • Pure Zero-Scrollbar Design",
+        tickerSecurityTag: "ZERO-PII",
+        tickerSecurityText: "100% Zero-PII • SHA-256 Anonymous Silicon Hash • Cloudflare D1 Edge Synchronized"
+      },
+      de: {
+        badge: "DE",
+        tickerTitle: "LIVE-FEED",
+        navAddPlugin: "OmaRank Installieren",
+        heroLead: "Echtzeit-Hardware-Intelligenz und Telemetrie im gesamten Omarchy Linux-Ökosystem.",
+        heroTitle: 'Omarchy <span class="hero-gradient">Hardware-Matrix</span>',
+        copyStatus: "Kopieren",
+        copyToast: "Befehl in die Zwischenablage kopiert!",
+        tabOverview: "Hardware-Telemetrie",
+        tabRoaster: "Rig Roaster 3000",
+        tabSimulator: "OmaScore Simulator",
+        tabTiers: "Rangstufen-Halle",
+        tabPrivacy: "Zero-PII Prüfung",
+        activeRigs: "Aktive Systeme",
+        activeRigsSub: "Von der Community getestete Rigs",
+        avgScore: "Globaler OmaScore-Mittelwert",
+        topGpu: "Spitzen-GPU",
+        topDisplay: "Vorherrschendes Display",
+        chartGpu: "Grafikarchitektur (GPU)",
+        chartCpu: "Prozessorarchitektur (CPU)",
+        chartRam: "Arbeitsspeicher (RAM)",
+        chartDisplay: "Displays & Bildwiederholraten",
+        chartVendors: "PC-Hersteller & Custom DIY",
+        roasterTitle: "Rig Roaster 3000 & Archetyp-Scanner",
+        roasterDesc: "Geben Sie Ihre anonyme Signatur ein oder wählen Sie ein Preset für einen gnadenlos ehrlichen Community-Roast:",
+        roastBtn: "Röste Mein System",
+        simTitle: "OmaScore Hardware-Simulator",
+        simDesc: "Simulieren Sie Hardware-Upgrades und berechnen Sie Ihre hypothetische OmaScore-Stufe.",
+        tickerWelcomeTag: "NEUES RIG",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Willkommen! 🎉",
+        tickerStatTag: "LIVE-TELEMETRIE",
+        tickerStatText: "142 Verifizierte Systeme • Mittlerer OmaScore: 84.6/100",
+        tickerGpuTag: "TOP-GPU",
+        tickerGpuText: "NVIDIA GeForce RTX 4070 (28.4% Anteil) • Spitzenmodell: RTX 4090",
+        tickerCpuTag: "TOP-CPU",
+        tickerCpuText: "AMD Ryzen 7 7800X3D (31.2%) • Intel Core i7-14700HX",
+        tickerThemeTag: "BELIEBTES THEMA",
+        tickerThemeText: "Tokyo Night (34%) • Gefolgt von Ankara & Catppuccin",
+        tickerQuickshellTag: "QUICKSHELL",
+        tickerQuickshellText: "100% Native Qt/QML Shell • Null Scrollbalken",
+        tickerSecurityTag: "SICHERHEIT",
+        tickerSecurityText: "100% Zero-PII • SHA-256 Anonymer Silizium-Hash • Cloudflare D1 Edge"
+      },
+      es: {
+        badge: "ES",
+        tickerTitle: "EN VIVO",
+        navAddPlugin: "Instalar OmaRank",
+        heroLead: "Inteligencia agregada de hardware en tiempo real en todo el ecosistema Omarchy Linux.",
+        heroTitle: 'Omarchy <span class="hero-gradient">Matriz de Hardware</span>',
+        copyStatus: "Copiar",
+        copyToast: "¡Comando copiado al portapapeles!",
+        tabOverview: "Telemetría de Hardware",
+        tabRoaster: "Rig Roaster 3000",
+        tabSimulator: "Simulador OmaScore",
+        tabTiers: "Sala de Rangos",
+        tabPrivacy: "Auditoría Zero-PII",
+        activeRigs: "Estaciones Activas",
+        activeRigsSub: "Equipos evaluados por la comunidad",
+        avgScore: "Media Global OmaScore",
+        topGpu: "GPU Líder",
+        topDisplay: "Pantalla Dominante",
+        chartGpu: "Arquitectura Gráfica (GPU)",
+        chartCpu: "Arquitectura del Procesador (CPU)",
+        chartRam: "Memoria del Sistema (RAM)",
+        chartDisplay: "Pantallas y Tasas de Refresco",
+        chartVendors: "Fabricantes OEM y Ensambladores",
+        roasterTitle: "Rig Roaster 3000 y Escáner de Arquetipos",
+        roasterDesc: "Escribe tu firma de OmaRank o elige un preajuste para una crítica sincera y despiadada:",
+        roastBtn: "Critica Mi PC",
+        simTitle: "Simulador de Hardware OmaScore",
+        simDesc: "Simula mejoras en tus componentes y calcula tu puntuación hipotética.",
+        tickerWelcomeTag: "NUEVO EQUIPO",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — ¡Bienvenido! 🎉",
+        tickerStatTag: "TELEMETRÍA EN VIVO",
+        tickerStatText: "142 Sistemas Verificados • Media OmaScore: 84.6/100",
+        tickerGpuTag: "GPU LÍDER",
+        tickerGpuText: "NVIDIA GeForce RTX 4070 (28.4% cuota) • Cúspide: RTX 4090",
+        tickerCpuTag: "CPU LÍDER",
+        tickerCpuText: "AMD Ryzen 7 7800X3D (31.2%) • Intel Core i7-14700HX",
+        tickerThemeTag: "TEMA FAVORITO",
+        tickerThemeText: "Tokyo Night (34%) • Seguido de Ankara y Catppuccin",
+        tickerQuickshellTag: "QUICKSHELL",
+        tickerQuickshellText: "Shell Qt/QML 100% Nativo • Diseño sin barras de scroll",
+        tickerSecurityTag: "SEGURIDAD",
+        tickerSecurityText: "100% Zero-PII • Hash SHA-256 Anónimo • Sincronización Cloudflare D1"
+      },
+      fr: {
+        badge: "FR",
+        tickerTitle: "FLUX DIRECT",
+        navAddPlugin: "Ajouter OmaRank",
+        heroLead: "Intelligence matérielle agrégée en temps réel dans tout l'écosystème Omarchy Linux.",
+        heroTitle: 'Omarchy <span class="hero-gradient">Matrice Matérielle</span>',
+        copyStatus: "Copier",
+        copyToast: "Commande copiée dans le presse-papier!",
+        tabOverview: "Télémétrie Matérielle",
+        tabRoaster: "Rig Roaster 3000",
+        tabSimulator: "Simulateur OmaScore",
+        tabTiers: "Galerie des Rangs",
+        tabPrivacy: "Audit Zero-PII",
+        activeRigs: "Systèmes Actifs",
+        activeRigsSub: "Configurations testées par la communauté",
+        avgScore: "Moyenne Globale OmaScore",
+        topGpu: "GPU Dominant",
+        topDisplay: "Écran Dominant",
+        chartGpu: "Architecture Graphique (GPU)",
+        chartCpu: "Architecture Processeur (CPU)",
+        chartRam: "Mémoire Système (RAM)",
+        chartDisplay: "Écrans & Fréquences de Rafraîchissement",
+        chartVendors: "Fabricants OEM et Marques Portables",
+        roasterTitle: "Rig Roaster 3000 & Scanner d'Archétype",
+        roasterDesc: "Saisissez votre signature anonyme ou choisissez un préréglage pour une critique brutale et hilarante :",
+        roastBtn: "Rôtir Ma Config",
+        simTitle: "Simulateur Matériel OmaScore",
+        simDesc: "Simulez des mises à niveau et calculez votre rang théorique OmaScore.",
+        tickerWelcomeTag: "NOUVEAU RIG",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Bienvenue! 🎉",
+        tickerStatTag: "TÉLÉMÉTRIE DIRECTE",
+        tickerStatText: "142 Systèmes Vérifiés • Score Moyen: 84.6/100",
+        tickerGpuTag: "MEILLEUR GPU",
+        tickerGpuText: "NVIDIA GeForce RTX 4070 (part 28.4%) • Sommet: RTX 4090",
+        tickerCpuTag: "MEILLEUR CPU",
+        tickerCpuText: "AMD Ryzen 7 7800X3D (31.2%) • Intel Core i7-14700HX",
+        tickerThemeTag: "THÈME POPULAIRE",
+        tickerThemeText: "Tokyo Night (34%) • Suivi par Ankara & Catppuccin",
+        tickerQuickshellTag: "QUICKSHELL",
+        tickerQuickshellText: "Shell Qt/QML 100% Natif • Zéro Barre de Défilement",
+        tickerSecurityTag: "SÉCURITÉ",
+        tickerSecurityText: "100% Zero-PII • Empreinte SHA-256 Anonyme • Synchronisation Cloudflare D1"
+      },
+      ja: {
+        badge: "JA",
+        tickerTitle: "ライブ速報",
+        navAddPlugin: "OmaRankを追加",
+        heroLead: "Omarchy Linuxエコシステム全体のリアルタイム集約ハードウェア・テレメトリ。",
+        heroTitle: 'Omarchy <span class="hero-gradient">ハードウェア・マトリックス</span>',
+        copyStatus: "コピー",
+        copyToast: "コマンドをクリップボードにコピーしました！",
+        tabOverview: "ハードウェア遠隔測定",
+        tabRoaster: "Rig Roaster 3000",
+        tabSimulator: "OmaScoreシミュレータ",
+        tabTiers: "ティア一覧 (殿堂)",
+        tabPrivacy: "Zero-PII 監査",
+        activeRigs: "アクティブなシステム",
+        activeRigsSub: "コミュニティで測定されたPC構成",
+        avgScore: "全世界平均 OmaScore",
+        topGpu: "首位のGPU",
+        topDisplay: "主流ディスプレイ",
+        chartGpu: "グラフィック構成 (GPU)",
+        chartCpu: "プロセッサ構成 (CPU)",
+        chartRam: "システムメモリ (RAM)",
+        chartDisplay: "ディスプレイ解像度とリフレッシュレート",
+        chartVendors: "PCメーカー・ノートPCブランド",
+        roasterTitle: "Rig Roaster 3000 & アーキタイプ診断",
+        roasterDesc: "匿名アーキタイプ署名を入力するかプリセットを選択して、痛快で辛口なPC批評をご覧ください：",
+        roastBtn: "PCを辛口批評する",
+        simTitle: "OmaScore ハードウェア・シミュレータ",
+        simDesc: "パーツのアップグレードを試算し、仮想OmaScoreティアを算出します。",
+        tickerWelcomeTag: "新規リグ",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — ようこそ！ 🎉",
+        tickerStatTag: "リアルタイム遠隔測定",
+        tickerStatText: "142台の検証済みシステム • 全体平均OmaScore: 84.6/100",
+        tickerGpuTag: "首位GPU",
+        tickerGpuText: "NVIDIA GeForce RTX 4070 (シェア 28.4%) • 最高峰: RTX 4090",
+        tickerCpuTag: "首位CPU",
+        tickerCpuText: "AMD Ryzen 7 7800X3D (シェア 31.2%) • Intel Core i7-14700HX",
+        tickerThemeTag: "人気テーマ",
+        tickerThemeText: "Tokyo Night (34%) • Ankara & Catppuccin が追従",
+        tickerQuickshellTag: "QUICKSHELL",
+        tickerQuickshellText: "100% ネイティブQt/QMLシェル • スクロールバー完全排除",
+        tickerSecurityTag: "セキュリティ",
+        tickerSecurityText: "100% Zero-PII • SHA-256匿名ハッシュ • Cloudflare D1 エッジ同期"
+      }
+    };
+
+    let activeLang = "tr";
+    const savedLang = localStorage.getItem("omastat-lang");
+    if (savedLang && i18n[savedLang]) {
+      activeLang = savedLang;
+    }
+
+    function renderTicker(lang) {
+      const t = i18n[lang] || i18n.tr;
+      const items = [
+        { icon: "󰌢", tag: t.tickerWelcomeTag, text: t.tickerWelcomeText },
+        { icon: "", tag: t.tickerStatTag, text: t.tickerStatText },
+        { icon: "󰢮", tag: t.tickerGpuTag, text: t.tickerGpuText },
+        { icon: "", tag: t.tickerCpuTag, text: t.tickerCpuText },
+        { icon: "󰏚", tag: t.tickerThemeTag, text: t.tickerThemeText },
+        { icon: "󰄛", tag: t.tickerQuickshellTag, text: t.tickerQuickshellText },
+        { icon: "󰒃", tag: t.tickerSecurityTag, text: t.tickerSecurityText }
+      ];
+
+      const list = [...items, ...items];
+      const track = document.getElementById("tickerTrack");
+      if (!track) return;
+      track.innerHTML = list.map(item => `
+        <div class="ticker-item">
+          <span class="ticker-tag">${escapeHtml(item.tag)}</span>
+          <span class="ticker-icon">${item.icon}</span>
+          <span class="ticker-text">${escapeHtml(item.text)}</span>
+        </div>
+      `).join("");
+    }
+
+    function applyLanguage(lang) {
+      if (!i18n[lang]) lang = "tr";
+      activeLang = lang;
+      localStorage.setItem("omastat-lang", lang);
+      document.documentElement.lang = lang;
+      const t = i18n[lang];
+
+      document.getElementById("activeLangBadge").textContent = t.badge;
+      document.getElementById("tickerTitle").textContent = t.tickerTitle;
+      document.getElementById("navAddPluginText").textContent = t.navAddPlugin;
+      const heroLead = document.querySelector(".hero-lead");
+      if (heroLead) heroLead.textContent = t.heroLead;
+      const heroH1 = document.querySelector(".hero-banner h1");
+      if (heroH1) heroH1.innerHTML = t.heroTitle;
+      document.getElementById("copyStatus").textContent = t.copyStatus;
+
+      const tabLabels = [t.tabOverview, t.tabRoaster, t.tabSimulator, t.tabTiers, t.tabPrivacy];
+      document.querySelectorAll(".qml-tab span:last-child").forEach((el, i) => {
+        if (tabLabels[i]) el.textContent = tabLabels[i];
+      });
+
+      const cardLabels = document.querySelectorAll(".card-label");
+      if (cardLabels[0]) cardLabels[0].textContent = t.activeRigs;
+      if (cardLabels[1]) cardLabels[1].textContent = t.avgScore;
+      if (cardLabels[2]) cardLabels[2].textContent = t.topGpu;
+      if (cardLabels[3]) cardLabels[3].textContent = t.topDisplay;
+
+      const cardSubs = document.querySelectorAll(".card-sub");
+      if (cardSubs[0]) cardSubs[0].textContent = t.activeRigsSub;
+
+      const chartTitles = [t.chartGpu, t.chartCpu, t.chartRam, t.chartDisplay, t.chartVendors];
+      document.querySelectorAll(".chart-box-title").forEach((el, i) => {
+        if (chartTitles[i]) {
+          const icon = el.querySelector(".q-icon") ? el.querySelector(".q-icon").outerHTML : "";
+          el.innerHTML = `${icon} ${chartTitles[i]}`;
+        }
+      });
+
+      const roasterH2 = document.querySelector(".roaster-header h2");
+      if (roasterH2) roasterH2.innerHTML = `<span class="q-icon q-icon-red">󰈸</span> ${t.roasterTitle}`;
+      const roasterP = document.querySelector(".roaster-header p");
+      if (roasterP) roasterP.innerHTML = t.roasterDesc;
+      const roastBtnSpan = document.querySelector("#roastBtn span:last-child");
+      if (roastBtnSpan) roastBtnSpan.textContent = t.roastBtn;
+
+      document.querySelectorAll("#langMenu .menu-item").forEach(item => {
+        if (item.getAttribute("data-lang") === lang) item.classList.add("active");
+        else item.classList.remove("active");
+      });
+
+      renderTicker(lang);
+    }
+
+    const langPickerBtn = document.getElementById("langPickerBtn");
+    const langMenu = document.getElementById("langMenu");
+    langPickerBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      langMenu.classList.toggle("show");
+      stationMenu.classList.remove("show");
+      playClick();
+    });
+
+    document.querySelectorAll("#langMenu .menu-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const lang = item.getAttribute("data-lang");
+        applyLanguage(lang);
+        langMenu.classList.remove("show");
+        playClick();
+      });
+    });
+
+    document.addEventListener("click", () => {
+      stationMenu.classList.remove("show");
+      langMenu.classList.remove("show");
     });
 
     // --- Theme System ---
@@ -2149,32 +2854,11 @@
       const label = found ? found.name : id.toUpperCase();
       document.getElementById("activeThemeBadge").textContent = label + " ▾";
 
-      // Update Ribbon pills
-      document.querySelectorAll(".theme-pill").forEach(p => {
-        if (p.getAttribute("data-id") === id) p.classList.add("active");
-        else p.classList.remove("active");
-      });
-
-      // Update Modal cards
       document.querySelectorAll(".theme-card").forEach(c => {
         if (c.getAttribute("data-id") === id) c.classList.add("active");
         else c.classList.remove("active");
       });
     }
-
-    // Render Quick Ribbon Pills
-    const ribbonContainer = document.getElementById("ribbonPills");
-    themeCatalog.forEach(t => {
-      const pill = document.createElement("div");
-      pill.className = "theme-pill" + (t.id === activeThemeId ? " active" : "");
-      pill.setAttribute("data-id", t.id);
-      pill.innerHTML = `<span class="color-dot" style="background:${t.accent};"></span><span>${t.name}</span>`;
-      pill.addEventListener("click", () => {
-        applyTheme(t.id);
-        playClick();
-      });
-      ribbonContainer.appendChild(pill);
-    });
 
     // Render Modal Cards
     const modalGrid = document.getElementById("modalThemeGrid");
@@ -2235,8 +2919,9 @@
       playChime();
     });
 
-    // Apply initial theme
+    // Apply initial theme & language
     applyTheme(activeThemeId);
+    applyLanguage(activeLang);
 
     // --- Clipboard Copy ---
     const copyBtn = document.getElementById("copyCliBtn");
@@ -2473,6 +3158,17 @@
       document.getElementById("topDisplayShare").textContent = `${topDisp.percentage}% share`;
 
       document.getElementById("quickSummary").textContent = `● Active Rigs: ${total.toLocaleString()} | Apex GPU: ${topGpu.model}`;
+
+      if (total > 0) {
+        const scoreStr = data.average_score > 0 ? (data.average_score + "/100") : "84/100";
+        if (i18n.tr) i18n.tr.tickerStatText = `${total.toLocaleString()} Doğrulanmış Battlestation • Ortalama OmaScore: ${scoreStr}`;
+        if (i18n.en) i18n.en.tickerStatText = `${total.toLocaleString()} Verified Battlestations • Mean OmaScore: ${scoreStr}`;
+        if (i18n.de) i18n.de.tickerStatText = `${total.toLocaleString()} Verifizierte Systeme • Mittlerer OmaScore: ${scoreStr}`;
+        if (i18n.es) i18n.es.tickerStatText = `${total.toLocaleString()} Sistemas Verificados • Media OmaScore: ${scoreStr}`;
+        if (i18n.fr) i18n.fr.tickerStatText = `${total.toLocaleString()} Systèmes Vérifiés • Score Moyen: ${scoreStr}`;
+        if (i18n.ja) i18n.ja.tickerStatText = `${total.toLocaleString()}台の検証済みシステム • 全体平均OmaScore: ${scoreStr}`;
+        renderTicker(activeLang);
+      }
 
       renderProgress("gpuChart", data.top_gpus, "var(--brand)", [
         { model: "NVIDIA GeForce RTX 4060 Laptop GPU", percentage: 50 },
