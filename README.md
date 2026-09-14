@@ -1,5 +1,7 @@
 # 🏆 OmaStat
 
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-Support_Development-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/ozdil)
+
 **Privacy-Preserving Community Hardware Survey & Statistics Engine for Omarchy Linux**
 
 OmaStat is the open-source community hardware survey aggregator for Omarchy (`omastat.omarchy.org`). Inspired by the Steam Hardware Survey, it collects privacy-safe, anonymous telemetry from the [OmaRank](https://github.com/ozdil/omarchy-omarank) hardware benchmark widget to provide live, transparent hardware market share statistics across the Omarchy ecosystem.
@@ -129,6 +131,14 @@ npx wrangler d1 migrations apply omastat-db --remote
 # 5. Deploy Worker to omastat.omarchy.org
 npx wrangler deploy
 ```
+
+---
+
+## ☕ Support & Sponsorship
+
+If you find OmaStat useful and want to support independent Linux infrastructure:
+
+<a href="https://buymeacoffee.com/ozdil" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 50px !important;width: 180px !important;" ></a>
 
 ---
 
