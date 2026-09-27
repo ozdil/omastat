@@ -5,13 +5,13 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-console.log('🧪 Starting OmaStat Architecture Simulation & Deep Validation Suite...');
+console.log('[TEST] Starting OmaStat Architecture Simulation & Zero-Trust Validation Suite...');
 
 // 1. Initialize SQLite Database (simulating Cloudflare D1)
 const db = new DatabaseSync(':memory:');
 const migrationSql = readFileSync(resolve(__dirname, '../migrations/0001_init_omastat.sql'), 'utf8');
 db.exec(migrationSql);
-console.log('✅ D1 Migration Applied Successfully');
+console.log('[PASS] D1 Migration Applied Successfully');
 
 // Mock D1 environment
 const mockDb = {
@@ -53,16 +53,40 @@ const mockDb = {
   }
 };
 
+function sanitize(str, maxLen = 80) {
+  if (typeof str !== 'string') return '';
+  return str.replace(/[\x00-\x1f\x7f-\x9f<>&`'"\\]/g, '').trim().slice(0, maxLen);
+}
+
+function validateArchetype(raw) {
+  if (typeof raw !== 'string') return 'OMA-CUSTOM-RIG';
+  const cleaned = raw.toUpperCase().replace(/[^A-Z0-9\-]/g, '').slice(0, 50);
+  if (/^OMA-[A-Z0-9]{1,12}(-[A-Z0-9]{1,12}){1,6}$/.test(cleaned)) {
+    return cleaned;
+  }
+  return 'OMA-CUSTOM-RIG';
+}
+
 // Simulation Helper
 function simulateIngest(payload) {
-  const score = Math.max(0, Math.min(100, Number(payload.omarank_score) || 0));
-  const tierName = payload.tier_name || 'Unknown';
-  const cpuModel = payload.cpu_model || 'CPU';
-  const gpuModel = payload.gpu_model || 'GPU';
-  const gpuDriver = payload.gpu_driver || 'driver';
-  const ramBucket = `${Math.round(payload.ram_gb)}GB ${payload.ram_type}`;
-  const display = payload.primary_display || '1080p';
-  const archetype = payload.archetype_signature || 'OMA-UNKNOWN';
+  if (!payload || typeof payload !== 'object' || payload.schema_version !== 2) {
+    return { success: false, error: 'Unsupported schema_version (expected 2)' };
+  }
+
+  const scoreRaw = Number(payload.omarank_score);
+  if (isNaN(scoreRaw) || scoreRaw < 0 || scoreRaw > 100) {
+    return { success: false, error: 'Invalid omarank_score' };
+  }
+  const score = Math.max(0, Math.min(100, Math.round(scoreRaw * 100) / 100));
+
+  const tierName = sanitize(payload.tier_name, 40) || 'Unknown';
+  const cpuModel = sanitize(payload.cpu_model, 80) || 'CPU';
+  const gpuModel = sanitize(payload.gpu_model, 80) || 'GPU';
+  const gpuDriver = sanitize(payload.gpu_driver, 40) || 'driver';
+  const ramGb = Math.round(Number(payload.ram_gb) || 0);
+  const ramBucket = `${ramGb}GB ${sanitize(payload.ram_type, 20)}`;
+  const display = sanitize(payload.primary_display, 40) || '1080p';
+  const archetype = validateArchetype(payload.archetype_signature);
   const now = Math.floor(Date.now() / 1000);
 
   // Atomic batch
@@ -74,9 +98,11 @@ function simulateIngest(payload) {
     mockDb.prepare("INSERT INTO gpu_distribution (model, driver, count) VALUES (?, ?, 1) ON CONFLICT(model) DO UPDATE SET count = count + 1, driver = excluded.driver").bind(gpuModel, gpuDriver),
     mockDb.prepare("INSERT INTO ram_distribution (bucket, count) VALUES (?, 1) ON CONFLICT(bucket) DO UPDATE SET count = count + 1").bind(ramBucket),
     mockDb.prepare("INSERT INTO display_distribution (resolution_hz, count) VALUES (?, 1) ON CONFLICT(resolution_hz) DO UPDATE SET count = count + 1").bind(display),
-    mockDb.prepare("INSERT INTO tier_distribution (tier_name, tier_icon, count) VALUES (?, ?, 1) ON CONFLICT(tier_name) DO UPDATE SET count = count + 1").bind(tierName, '🏎️'),
+    mockDb.prepare("INSERT INTO tier_distribution (tier_name, tier_icon, count) VALUES (?, ?, 1) ON CONFLICT(tier_name) DO UPDATE SET count = count + 1").bind(tierName, '󰢮'),
     mockDb.prepare("INSERT INTO archetype_distribution (archetype, count) VALUES (?, 1) ON CONFLICT(archetype) DO UPDATE SET count = count + 1").bind(archetype),
   ]);
+
+  return { success: true, score, tier: tierName };
 }
 
 // TEST 1: Real-world OmaRank Payload Ingestion
@@ -104,8 +130,9 @@ const userPayload = {
   archetype_signature: "OMA-U7-ARC-31G-240H"
 };
 
-simulateIngest(userPayload);
-console.log('✅ User Submission Processed Successfully');
+const res1 = simulateIngest(userPayload);
+if (!res1.success) throw new Error('Test 1 failed');
+console.log('[PASS] User Submission Processed Successfully');
 
 // TEST 2: Simulate 50 Diverse Community Battlestations
 console.log('\n--- Test 2: Simulating 50 Diverse Community Battlestations ---');
@@ -143,7 +170,7 @@ for (let i = 0; i < 50; i++) {
     archetype_signature: `OMA-${cpu.slice(0,3)}-${gpu.slice(0,3)}-${ram.gb}G`
   });
 }
-console.log('✅ 50 Community Battlestations Ingested');
+console.log('[PASS] 50 Community Battlestations Ingested');
 
 // TEST 3: Query Aggregate Statistics (/api/stats/v1)
 console.log('\n--- Test 3: Aggregates Calculation & Edge Query ---');
@@ -158,27 +185,49 @@ const topGpus = db.prepare("SELECT model, count FROM gpu_distribution ORDER BY c
 console.log('\nTop GPUs by Community Share:');
 topGpus.forEach(g => {
   const pct = ((g.count / totalSubs) * 100).toFixed(1);
-  console.log(` • ${g.model.padEnd(28)} : ${g.count} rigs (${pct}%)`);
+  console.log(` - ${g.model.padEnd(28)} : ${g.count} rigs (${pct}%)`);
 });
 
 const topDisplays = db.prepare("SELECT resolution_hz, count FROM display_distribution ORDER BY count DESC").all();
 console.log('\nTop Display Resolutions:');
 topDisplays.forEach(d => {
   const pct = ((d.count / totalSubs) * 100).toFixed(1);
-  console.log(` • ${d.resolution_hz.padEnd(28)} : ${d.count} rigs (${pct}%)`);
+  console.log(` - ${d.resolution_hz.padEnd(28)} : ${d.count} rigs (${pct}%)`);
 });
 
-// TEST 4: Archetype Lookup (/api/archetype/:code)
+// TEST 4: Archetype Global Lookup (/api/archetype/:code)
 console.log('\n--- Test 4: Archetype Global Lookup ---');
 const testArchetype = "OMA-U7-ARC-31G-240H";
 const archRow = db.prepare("SELECT count FROM archetype_distribution WHERE archetype = ?").get(testArchetype);
 console.log(`Lookup for ${testArchetype}: ${archRow ? archRow.count : 0} matching battlestations globally.`);
+if (!archRow || archRow.count !== 1) throw new Error('Test 4 failed');
+console.log('[PASS] Archetype Lookup Succeeded');
 
 // TEST 5: Zero-PII Guarantee Verification
 console.log('\n--- Test 5: Zero-PII Audit ---');
 const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
 console.log('Active DB Tables:', tables.map(t => t.name).join(', '));
 const hasIpColumn = db.prepare("PRAGMA table_info(stats_meta)").all().some(c => c.name.toLowerCase().includes('ip'));
-console.log(`Zero IP Columns Detected: ${!hasIpColumn ? 'PASSED (100% Privacy-Preserving)' : 'FAILED'}`);
+if (hasIpColumn) throw new Error('Zero-PII Audit Failed: IP column found');
+console.log('[PASS] Zero-PII Guarantee Verified');
 
-console.log('\n🎉 ALL 5 ARCHITECTURAL SIMULATION TESTS PASSED WITH 0 ERRORS!\n');
+// TEST 6: Zero-Trust Schema & Boundary Validation
+console.log('\n--- Test 6: Zero-Trust Boundary Validation ---');
+const invalidSchemaRes = simulateIngest({ schema_version: 1 });
+if (invalidSchemaRes.success) throw new Error('Should reject schema_version != 2');
+
+const negativeScoreRes = simulateIngest({ schema_version: 2, omarank_score: -10 });
+if (negativeScoreRes.success) throw new Error('Should reject negative omarank_score');
+
+const overflowScoreRes = simulateIngest({ schema_version: 2, omarank_score: 999 });
+if (overflowScoreRes.success) throw new Error('Should reject omarank_score > 100');
+
+const badArch = validateArchetype("<script>alert(1)</script>");
+if (badArch !== "OMA-CUSTOM-RIG") throw new Error('Should sanitize malicious archetype');
+
+const validArch = validateArchetype("OMA-U7-ARC-31G-240H");
+if (validArch !== "OMA-U7-ARC-31G-240H") throw new Error('Should preserve valid archetype');
+
+console.log('[PASS] Zero-Trust Boundary & Sanitization Tests Passed');
+
+console.log('\n[PASS] ALL 6 ARCHITECTURAL & ZERO-TRUST VALIDATION TESTS PASSED WITH 0 ERRORS!\n');

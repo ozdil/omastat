@@ -34,12 +34,42 @@ interface OmaStatSurveyPayload {
   archetype_signature?: string;
 }
 
+const SECURITY_HEADERS_API: Record<string, string> = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
+  "Cross-Origin-Resource-Policy": "cross-origin",
+};
+
+const SECURITY_HEADERS_HTML: Record<string, string> = {
+  "Content-Type": "text/html; charset=utf-8",
+  "Cache-Control": "no-cache, no-store, must-revalidate",
+  "Content-Security-Policy":
+    "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net data:; img-src 'self' data: https://cdn.buymeacoffee.com https://img.shields.io; connect-src 'self' https://stream.nightride.fm; media-src 'self' https://stream.nightride.fm; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "Cross-Origin-Resource-Policy": "same-origin",
+};
+
 function sanitizeText(str: unknown, maxLen = 80): string {
   if (typeof str !== "string") return "";
   return str
     .replace(/[\x00-\x1f\x7f-\x9f<>&`'"\\]/g, "")
     .trim()
     .slice(0, maxLen);
+}
+
+function validateArchetype(raw: unknown): string {
+  if (typeof raw !== "string") return "OMA-CUSTOM-RIG";
+  const cleaned = raw.toUpperCase().replace(/[^A-Z0-9\-]/g, "").slice(0, 50);
+  if (/^OMA-[A-Z0-9]{1,12}(-[A-Z0-9]{1,12}){1,6}$/.test(cleaned)) {
+    return cleaned;
+  }
+  return "OMA-CUSTOM-RIG";
 }
 
 function jsonResponse(body: unknown, status = 200, extraHeaders: Record<string, string> = {}): Response {
@@ -50,6 +80,7 @@ function jsonResponse(body: unknown, status = 200, extraHeaders: Record<string, 
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
+      ...SECURITY_HEADERS_API,
       ...extraHeaders,
     },
   });
@@ -68,6 +99,7 @@ export default {
           "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Max-Age": "86400",
+          ...SECURITY_HEADERS_API,
         },
       });
     }
@@ -80,10 +112,7 @@ export default {
     // Web Dashboard UI
     if (url.pathname === "/" || url.pathname === "/stats" || url.pathname === "/dashboard") {
       return new Response(dashboardHtml, {
-        headers: {
-          "Content-Type": "text/html; charset=utf-8",
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-        },
+        headers: SECURITY_HEADERS_HTML,
       });
     }
 
@@ -126,25 +155,46 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
   }
 
   // Schema Validation
-  if (body.schema_version !== 2) {
+  if (!body || typeof body !== "object" || body.schema_version !== 2) {
     return jsonResponse({ success: false, error: "Unsupported schema_version (expected 2)" }, 400);
   }
 
-  // High-precision decimal score (e.g. 88.45)
-  const score = Math.max(0, Math.min(100, Math.round((Number(body.omarank_score) || 0) * 100) / 100));
+  // Strict Numerical Boundaries
+  const scoreRaw = Number(body.omarank_score);
+  if (isNaN(scoreRaw) || scoreRaw < 0 || scoreRaw > 100) {
+    return jsonResponse({ success: false, error: "Invalid omarank_score (must be 0-100)" }, 400);
+  }
+  const score = Math.max(0, Math.min(100, Math.round(scoreRaw * 100) / 100));
+
+  const rawCores = Number(body.cpu_cores);
+  const cpuCores = Number.isInteger(rawCores) && rawCores >= 1 && rawCores <= 256 ? rawCores : 0;
+
+  const rawThreads = Number(body.cpu_threads);
+  const cpuThreads = Number.isInteger(rawThreads) && rawThreads >= 1 && rawThreads <= 512 ? rawThreads : 0;
+
+  const rawRamGb = Number(body.ram_gb);
+  const ramGb = !isNaN(rawRamGb) && rawRamGb >= 0.5 && rawRamGb <= 4096 ? Math.round(rawRamGb) : 0;
+
+  const rawRamSpeed = Number(body.ram_speed_mts);
+  const ramSpeed = Number.isInteger(rawRamSpeed) && rawRamSpeed >= 0 && rawRamSpeed <= 20000 ? rawRamSpeed : 0;
+
+  const rawDisplayCount = Number(body.display_count);
+  const displayCount = Number.isInteger(rawDisplayCount) && rawDisplayCount >= 1 && rawDisplayCount <= 32 ? rawDisplayCount : 1;
+
   const grade = getLetterGrade(score);
   const tierName = sanitizeText(body.tier_name, 40) || "Unknown";
   const cpuModel = cleanCpuModel(sanitizeText(body.cpu_model, 80));
   const gpuModel = cleanGpuModel(sanitizeText(body.gpu_model, 80));
   const gpuDriver = sanitizeText(body.gpu_driver, 40);
-  const ramGb = Math.round(Number(body.ram_gb) || 0);
   const ramType = sanitizeText(body.ram_type, 20) || "RAM";
-  const ramSpeed = Math.round(Number(body.ram_speed_mts) || 0);
   const ramBucket = `${ramGb}GB ${ramType}`;
   const ramDesc = ramSpeed > 0 ? `${ramGb}GB ${ramType} @ ${ramSpeed}MT/s` : `${ramGb}GB ${ramType}`;
   const display = cleanDisplay(sanitizeText(body.primary_display, 40));
-  const archetype = sanitizeText(body.archetype_signature, 50) || "OMA-BUILD-UNKNOWN";
+  const archetype = validateArchetype(body.archetype_signature);
+
   const now = Math.floor(Date.now() / 1000);
+  const rawEpoch = Number(body.timestamp_epoch);
+  const timestampEpoch = Number.isInteger(rawEpoch) && Math.abs(now - rawEpoch) <= 604800 ? rawEpoch : now;
 
   const tierIcon = getTierIcon(tierName);
   const { brand: vendorBrand, model: vendorModel } = cleanBrandAndModel(
@@ -169,7 +219,7 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
       ).bind(score),
       env.DB.prepare(
         "UPDATE stats_meta SET value = ? WHERE key = 'last_updated_epoch'"
-      ).bind(now),
+      ).bind(timestampEpoch),
 
       // Upsert CPU distribution
       env.DB.prepare(
@@ -215,7 +265,7 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
            score = MAX(score, excluded.score),
            submissions_count = submissions_count + 1,
            last_updated_epoch = excluded.last_updated_epoch`
-      ).bind(archetype, score, grade, tierName, tierIcon, systemName, cpuModel, gpuModel, ramDesc, display, now),
+      ).bind(archetype, score, grade, tierName, tierIcon, systemName, cpuModel, gpuModel, ramDesc, display, timestampEpoch),
     ]);
 
     return jsonResponse({
@@ -225,8 +275,9 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
       grade,
       tier: tierName,
     });
-  } catch (err: any) {
-    return jsonResponse({ success: false, error: "Database transaction failed", details: String(err) }, 500);
+  } catch (err: unknown) {
+    // Zero information disclosure: do not leak raw DB errors to client
+    return jsonResponse({ success: false, error: "Database transaction failed" }, 500);
   }
 }
 
@@ -283,8 +334,9 @@ async function handleStatsQuery(env: Env): Promise<Response> {
         "Cache-Control": "public, max-age=300, stale-while-revalidate=60",
       }
     );
-  } catch (err: any) {
-    return jsonResponse({ error: "Failed to load stats", details: String(err) }, 500);
+  } catch (err: unknown) {
+    // Zero information disclosure
+    return jsonResponse({ error: "Failed to load stats" }, 500);
   }
 }
 
@@ -307,8 +359,9 @@ async function handleArchetypeLookup(code: string, env: Env): Promise<Response> 
     }
 
     return jsonResponse({ found: false, archetype: sanitized, count: 0, percentage: 0 });
-  } catch (err: any) {
-    return jsonResponse({ error: "Lookup failed", details: String(err) }, 500);
+  } catch (err: unknown) {
+    // Zero information disclosure
+    return jsonResponse({ error: "Lookup failed" }, 500);
   }
 }
 

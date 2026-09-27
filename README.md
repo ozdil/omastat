@@ -1,4 +1,4 @@
-# 🏆 OmaStat
+# OmaStat
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-Support_Development-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/ozdil)
 
@@ -6,13 +6,12 @@
 
 OmaStat is the open-source community hardware survey aggregator for Omarchy (`omastat.omarchy.org`). Inspired by the Steam Hardware Survey, it collects privacy-safe, anonymous telemetry from the [OmaRank](https://github.com/ozdil/omarchy-omarank) hardware benchmark widget to provide live, transparent hardware market share statistics across the Omarchy ecosystem.
 
-📊 **Live Demo Dashboard:** [https://omastat.ozan-zdil.workers.dev/dashboard](https://omastat.ozan-zdil.workers.dev/dashboard)  
-📡 **Live Survey API:** `https://omastat.ozan-zdil.workers.dev/api/survey/v1`
-
+- **Live Demo Dashboard:** [https://omastat.ozan-zdil.workers.dev/dashboard](https://omastat.ozan-zdil.workers.dev/dashboard)  
+- **Live Survey API:** `https://omastat.ozan-zdil.workers.dev/api/survey/v1`
 
 ---
 
-## 🌟 Architecture & Technology Stack
+## Architecture & Technology Stack
 
 Built to match the exact infrastructure patterns of the official Omarchy Plugin Marketplace (`omacom/omarchy-plugin-marketplace`):
 
@@ -23,7 +22,7 @@ Built to match the exact infrastructure patterns of the official Omarchy Plugin 
 
 ---
 
-## 🔒 Privacy & Trust Boundary (Zero-PII by Design)
+## Privacy & Trust Boundary (Zero-PII by Design)
 
 Adheres strictly to the **Omarchy Developer Guide (ODG)** and **Omarchy Security Baseline**:
 
@@ -35,7 +34,7 @@ Adheres strictly to the **Omarchy Developer Guide (ODG)** and **Omarchy Security
 
 ---
 
-## 📡 API Specification
+## API Specification
 
 ### `POST /api/survey/v1`
 Ingests an anonymous hardware profile submitted via OmaRank.
@@ -85,7 +84,7 @@ Returns global community hardware aggregates. Cached at Cloudflare edge for 5 mi
 {
   "total_submissions": 12480,
   "average_score": 67,
-  "average_tier": "🏎️ Gaming Chair Missing",
+  "average_tier": "Gaming Chair Missing",
   "top_gpus": [
     { "model": "Intel Arc Graphics", "driver": "i915", "count": 3420, "percentage": 27.4 },
     { "model": "NVIDIA GeForce RTX 4080", "driver": "nvidia", "count": 2810, "percentage": 22.5 }
@@ -112,7 +111,7 @@ Looks up how common a specific hardware combination is globally:
 
 ---
 
-## 🚀 1-Click Deployment for Omarchy Maintainers
+## 1-Click Deployment for Omarchy Maintainers
 
 ```bash
 # 1. Clone repository
@@ -134,7 +133,7 @@ npx wrangler deploy
 
 ---
 
-## ☕ Support & Sponsorship
+## Support & Sponsorship
 
 If you find OmaStat useful and want to support independent Linux infrastructure:
 
@@ -142,6 +141,6 @@ If you find OmaStat useful and want to support independent Linux infrastructure:
 
 ---
 
-## 📄 License
+## License
 
-Distributed under the MIT License. Copyright © 2026 Ozan Özdil (ozdil) & Omarchy Contributors.
+Distributed under the MIT License. Copyright (c) 2026 Ozan Özdil (ozdil) & Omarchy Contributors.

@@ -45,8 +45,8 @@
     .q-icon-text    { color: var(--text-bright); }
 
     :root {
-      --font-mono: "JetBrainsMono Nerd Font", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
+      --font-sans: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
       --transition-fast: 0.15s cubic-bezier(0.2, 0, 0, 1);
       --transition-smooth: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       --radius-sm: 6px;
@@ -2309,19 +2309,19 @@
             <span class="q-icon" style="font-size: 0.65rem;">▾</span>
           </button>
           <div id="langMenu" class="quickshell-menu">
-            <div class="menu-item active" data-lang="tr"><div class="menu-item-title">🇹🇷 Türkçe</div></div>
-            <div class="menu-item" data-lang="en"><div class="menu-item-title">🇬🇧 English</div></div>
-            <div class="menu-item" data-lang="de"><div class="menu-item-title">🇩🇪 Deutsch</div></div>
-            <div class="menu-item" data-lang="es"><div class="menu-item-title">🇪🇸 Español</div></div>
-            <div class="menu-item" data-lang="fr"><div class="menu-item-title">🇫🇷 Français</div></div>
-            <div class="menu-item" data-lang="ja"><div class="menu-item-title">🇯🇵 日本語</div></div>
+            <div class="menu-item active" data-lang="tr"><div class="menu-item-title">[TR] Türkçe</div></div>
+            <div class="menu-item" data-lang="en"><div class="menu-item-title">[EN] English</div></div>
+            <div class="menu-item" data-lang="de"><div class="menu-item-title">[DE] Deutsch</div></div>
+            <div class="menu-item" data-lang="es"><div class="menu-item-title">[ES] Español</div></div>
+            <div class="menu-item" data-lang="fr"><div class="menu-item-title">[FR] Français</div></div>
+            <div class="menu-item" data-lang="ja"><div class="menu-item-title">[JA] 日本語</div></div>
           </div>
         </div>
 
         <!-- Buy Me a Coffee -->
         <a href="https://buymeacoffee.com/ozdil" target="_blank" rel="noopener noreferrer" class="shell-btn" style="color: #FFDD00; border-color: rgba(255, 221, 0, 0.4); text-decoration: none;" title="Buy Me a Coffee">
-          <span style="font-size: 0.85rem;">☕</span>
-          <span style="font-weight: 700; font-size: 0.72rem;">Coffee</span>
+          <span class="q-icon q-icon-amber" style="font-size: 0.85rem;">󰇰</span>
+          <span style="font-weight: 700; font-size: 0.72rem;">Sponsor</span>
         </a>
 
         <!-- Install Action -->
@@ -2368,7 +2368,7 @@
 
           <div id="install" class="terminal-cli">
             <div class="cli-cmd">
-              <span class="cli-prompt">❯</span>
+              <span class="cli-prompt">&gt;</span>
               <code id="cliSnippet">omarchy plugin add https://github.com/ozdil/omarchy-omarank --enable</code>
             </div>
             <button id="copyCliBtn" class="cli-copy">
@@ -2714,7 +2714,7 @@
 
     <footer class="qml-footer">
       <p>
-        <strong>OmaStat</strong> • Pure Qt Quickshell Telemetry Engine • <a href="https://omarchy.org" target="_blank">Omarchy Linux</a> • <a href="https://buymeacoffee.com/ozdil" target="_blank" style="color: #FFDD00; font-weight: bold; text-decoration: none;">☕ Buy Me a Coffee</a>
+        <strong>OmaStat</strong> • Pure Qt Quickshell Telemetry Engine • <a href="https://omarchy.org" target="_blank">Omarchy Linux</a> • <a href="https://buymeacoffee.com/ozdil" target="_blank" style="color: #FFDD00; font-weight: bold; text-decoration: none;"><span class="q-icon q-icon-amber">󰇰</span> Sponsor OmaStat</a>
       </p>
       <p style="margin-top: 0.25rem; opacity: 0.7;">
         Architected by <a href="https://github.com/ozdil" target="_blank">Ozan Özdil (ozdil)</a> & Omarchy Contributors • Zero-PII Cryptographic Matrix
@@ -2722,7 +2722,7 @@
     </footer>
   </main>
 
-  <!-- 🎨 Theme Browser Modal -->
+  <!-- Theme Browser Modal -->
   <div id="themeModal" class="theme-modal-backdrop">
     <div class="theme-modal">
       <div class="modal-head">
@@ -2730,7 +2730,7 @@
           <span class="q-icon q-icon-purple">󰏚</span>
           <span>Omarchy Themes (26)</span>
         </div>
-        <button id="closeThemeModalBtn" class="modal-close-btn">✕</button>
+        <button id="closeThemeModalBtn" class="modal-close-btn">x</button>
       </div>
 
       <div class="modal-search-bar">
@@ -2745,7 +2745,7 @@
     </div>
   </div>
 
-  <!-- 🚀 Real Benchmark Guide Modal -->
+  <!-- Real Benchmark Guide Modal -->
   <div id="benchmarkModal" class="theme-modal-backdrop">
     <div class="theme-modal" style="max-width: 580px;">
       <div class="modal-head">
@@ -2753,7 +2753,7 @@
           <span class="q-icon q-icon-brand">󰓅</span>
           <span id="bmModalTitle">Gerçek Donanım Testi (Real Benchmark)</span>
         </div>
-        <button id="closeBenchmarkModalBtn" class="modal-close-btn">✕</button>
+        <button id="closeBenchmarkModalBtn" class="modal-close-btn">x</button>
       </div>
 
       <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
@@ -3027,7 +3027,7 @@
         simDesc: "Donanım parçalarını değiştirerek tahmini OmaScore puanınızı hesaplayın.",
         runRealBenchmark: "Gerçek Testi Çalıştır",
         tickerWelcomeTag: "YENİ RIG",
-        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Aramıza hoş geldin! 🎉",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Aramıza hoş geldin!",
         tickerStatTag: "CANLI TELEMETRİ",
         tickerStatText: "142 Doğrulanmış Battlestation • Ortalama OmaScore: 84.6/100 (Enthusiast)",
         tickerGpuTag: "LİDER GPU",
@@ -3088,7 +3088,7 @@
         simDesc: "Tweak hardware components to calculate your projected OmaScore and tier.",
         runRealBenchmark: "Run Real Benchmark",
         tickerWelcomeTag: "NEW RIG",
-        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Welcome aboard! 🎉",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Welcome aboard!",
         tickerStatTag: "LIVE TELEMETRY",
         tickerStatText: "142 Verified Battlestations • Global Mean OmaScore: 84.6/100 (Enthusiast)",
         tickerGpuTag: "APEX GPU",
@@ -3147,7 +3147,7 @@
         simDesc: "Simulieren Sie Hardware-Upgrades und berechnen Sie Ihre hypothetische OmaScore-Stufe.",
         runRealBenchmark: "Echten Benchmark Starten",
         tickerWelcomeTag: "NEUES RIG",
-        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Willkommen! 🎉",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Willkommen!",
         tickerStatTag: "LIVE-TELEMETRIE",
         tickerStatText: "142 Verifizierte Systeme • Mittlerer OmaScore: 84.6/100",
         tickerGpuTag: "TOP-GPU",
@@ -3206,7 +3206,7 @@
         simDesc: "Simula mejoras en tus componentes y calcula tu puntuación hipotética.",
         runRealBenchmark: "Ejecutar Benchmark Real",
         tickerWelcomeTag: "NUEVO EQUIPO",
-        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — ¡Bienvenido! 🎉",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — ¡Bienvenido!",
         tickerStatTag: "TELEMETRÍA EN VIVO",
         tickerStatText: "142 Sistemas Verificados • Media OmaScore: 84.6/100",
         tickerGpuTag: "GPU LÍDER",
@@ -3265,7 +3265,7 @@
         simDesc: "Simulez des mises à niveau et calculez votre rang théorique OmaScore.",
         runRealBenchmark: "Lancer le Vrai Benchmark",
         tickerWelcomeTag: "NOUVEAU RIG",
-        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Bienvenue! 🎉",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — Bienvenue!",
         tickerStatTag: "TÉLÉMÉTRIE DIRECTE",
         tickerStatText: "142 Systèmes Vérifiés • Score Moyen: 84.6/100",
         tickerGpuTag: "MEILLEUR GPU",
@@ -3324,7 +3324,7 @@
         simDesc: "パーツのアップグレードを試算し、仮想OmaScoreティアを算出します。",
         runRealBenchmark: "実機ベンチマークを実行",
         tickerWelcomeTag: "新規リグ",
-        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — ようこそ！ 🎉",
+        tickerWelcomeText: "Game Garaj Slayer 4 Ultra • i7-14700HX • RTX 4070 Laptop • 32 GB RAM — ようこそ！",
         tickerStatTag: "リアルタイム遠隔測定",
         tickerStatText: "142台の検証済みシステム • 全体平均OmaScore: 84.6/100",
         tickerGpuTag: "首位GPU",
@@ -3347,7 +3347,13 @@
     }
 
     function escapeHtml(s) {
-      return String(s || "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[m]);
+      return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;")
+        .replace(/`/g, "&#96;");
     }
 
     // --- Global Leaderboard Logic ---
@@ -3413,8 +3419,11 @@
     let currentLeaderboardSearch = "";
 
     function getCleanTierIcon(tierName, rawIcon) {
-      if (rawIcon && !["🚀", "🥔", "⚡", "🔥", "👑", "🎮", "⚔️"].includes(rawIcon) && rawIcon.trim().length > 0) {
-        return rawIcon;
+      if (rawIcon && typeof rawIcon === "string" && rawIcon.trim().length > 0 && rawIcon.trim().length <= 4) {
+        const cp = rawIcon.codePointAt(0) || 0;
+        if (cp < 0x1F300 || cp > 0x1FAFF) {
+          return rawIcon.trim();
+        }
       }
       const name = (tierName || "").toLowerCase();
       if (name.includes("nasa") || name.includes("supercomputer")) return "";
@@ -3422,7 +3431,7 @@
       if (name.includes("high-fps") || name.includes("gamer") || name.includes("addiction")) return "󰢮";
       if (name.includes("daily")) return "󰌢";
       if (name.includes("potato") || name.includes("toaster")) return "󰋊";
-      return "󰌢";
+      return "󰋊";
     }
 
     function renderLeaderboard() {
@@ -3556,7 +3565,7 @@
             </td>
             <td style="text-align: right;">
               <span style="font-family: var(--font-mono); font-weight: 700; color: var(--green); background: rgba(158, 206, 106, 0.1); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid rgba(158, 206, 106, 0.25);">
-                ✓ ${submissions}×
+                <span class="q-icon" style="font-size:0.7rem; margin-right:2px;">󰄵</span>${submissions}x
               </span>
             </td>
           </tr>
@@ -3741,7 +3750,7 @@
           </div>
           <div class="theme-card-info">
             <span class="theme-card-name">${t.name}</span>
-            <span class="active-tick">✓ Active</span>
+            <span class="active-tick"><span class="q-icon" style="font-size:0.75rem; margin-right:2px;">󰄵</span>Active</span>
           </div>
         `;
         card.addEventListener("click", () => {
@@ -3794,7 +3803,7 @@
         } else {
           fallbackCopy(defaultCmd);
         }
-        toastMsg("✓ 'omarank-engine' komutu kopyalandı! Terminalinde çalıştırabilirsin.");
+        toastMsg("[OK] 'omarank-engine' komutu kopyalandı! Terminalinde çalıştırabilirsin.");
       });
     }
 
@@ -3820,10 +3829,10 @@
           const label = btn.querySelector(".btn-label");
           if (label) {
             const old = label.textContent;
-            label.textContent = "✓ Kopyalandı!";
+            label.textContent = "[OK] Kopyalandı!";
             setTimeout(() => { label.textContent = old; }, 1500);
           }
-          toastMsg(`✓ Komut panoya kopyalandı!`);
+          toastMsg("[OK] Komut panoya kopyalandı!");
         };
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(cmd).then(onDone).catch(() => fallbackCopy(cmd).then(onDone));
@@ -3863,8 +3872,8 @@
       const code = document.getElementById("cliSnippet").innerText;
       const onDone = () => {
         playChime();
-        document.getElementById("copyStatus").textContent = "Copied! ✓";
-        toastMsg("✓ Plugin install command copied to clipboard!");
+        document.getElementById("copyStatus").textContent = "Copied! [OK]";
+        toastMsg("[OK] Plugin install command copied to clipboard!");
         setTimeout(() => {
           document.getElementById("copyStatus").textContent = "Copy";
         }, 2000);
@@ -4216,22 +4225,23 @@
       tiers.forEach(t => {
         const c = document.createElement("div");
         c.className = "qml-tier-card";
+        const safeIcon = escapeHtml(t.tier_icon || "");
+        const safeName = escapeHtml(t.tier_name || "");
+        const safeLore = escapeHtml(t.lore || "Community hardware tier ranking.");
+        const safePct = Number(t.percentage) || 0;
+        const widthPct = Math.min(100, Math.max(0, safePct));
         c.innerHTML = `
           <div class="tier-header">
-            <span class="tier-name">${t.tier_icon} ${escapeHtml(t.tier_name)}</span>
-            <span class="tier-share">${t.percentage}%</span>
+            <span class="tier-name">${safeIcon} ${safeName}</span>
+            <span class="tier-share">${safePct}%</span>
           </div>
-          <div class="tier-lore">${t.lore || "Community hardware tier ranking."}</div>
+          <div class="tier-lore">${safeLore}</div>
           <div class="bar-track">
-            <div class="bar-fill" style="width: ${t.percentage}%; background: var(--brand);"></div>
+            <div class="bar-fill" style="width: ${widthPct}%; background: var(--brand);"></div>
           </div>
         `;
         grid.appendChild(c);
       });
-    }
-
-    function escapeHtml(s) {
-      return String(s || "").replace(/[&<>"\x27]/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "\x27": "&#39;" })[m]);
     }
 
     loadData();
