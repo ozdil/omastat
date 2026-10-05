@@ -3426,12 +3426,14 @@
         }
       }
       const name = (tierName || "").toLowerCase();
-      if (name.includes("nasa") || name.includes("supercomputer")) return "";
-      if (name.includes("cyberpunk")) return "󰓅";
-      if (name.includes("high-fps") || name.includes("gamer") || name.includes("addiction")) return "󰢮";
-      if (name.includes("daily")) return "󰌢";
-      if (name.includes("potato") || name.includes("toaster")) return "󰋊";
-      return "󰋊";
+      if (name.includes("cosmic")) return "";
+      if (name.includes("nasa") || name.includes("supercomputer")) return "󰓅";
+      if (name.includes("cyberpunk")) return "";
+      if (name.includes("gaming chair") || name.includes("high-fps") || name.includes("addiction")) return "";
+      if (name.includes("honest daily") || name.includes("daily")) return "";
+      if (name.includes("budget warrior")) return "";
+      if (name.includes("study mode")) return "";
+      return "";
     }
 
     function renderLeaderboard() {

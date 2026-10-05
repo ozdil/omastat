@@ -1,6 +1,6 @@
 {
   "name": "omastat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Privacy-preserving community hardware survey and statistics engine for Omarchy",
   "author": "Ozan Özdil (ozdil)",
   "license": "MIT",

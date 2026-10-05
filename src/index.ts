@@ -106,7 +106,7 @@ export default {
 
     // Health check
     if (url.pathname === "/health" || url.pathname === "/api/ping") {
-      return jsonResponse({ status: "ok", service: "omastat", version: "1.0.0" });
+      return jsonResponse({ status: "ok", service: "omastat", version: "1.0.1" });
     }
 
     // Web Dashboard UI
@@ -391,24 +391,24 @@ function cleanDisplay(raw: string): string {
 
 function getTierIcon(tier: string): string {
   if (tier.includes("Cosmic")) return "";
-  if (tier.includes("NASA")) return "";
-  if (tier.includes("Cyberpunk")) return "󰓅";
-  if (tier.includes("Gaming Chair")) return "󰢮";
-  if (tier.includes("Honest Daily") || tier.includes("Daily")) return "󰌢";
-  if (tier.includes("Budget Warrior")) return "󰘚";
-  if (tier.includes("Study Mode")) return "󰍛";
-  return "󰋊";
+  if (tier.includes("NASA")) return "󰓅";
+  if (tier.includes("Cyberpunk")) return "";
+  if (tier.includes("Gaming Chair") || tier.includes("High-FPS")) return "";
+  if (tier.includes("Honest Daily") || tier.includes("Daily")) return "";
+  if (tier.includes("Budget Warrior")) return "";
+  if (tier.includes("Study Mode")) return "";
+  return "";
 }
 
 function getAverageTier(score: number): string {
   if (score >= 96) return " Cosmic Reality Simulator";
-  if (score >= 89) return " NASA Supercomputer";
-  if (score >= 76) return "󰓅 Cyberpunk Beast";
-  if (score >= 61) return "󰢮 Gaming Chair Missing";
-  if (score >= 46) return "󰌢 Honest Daily Driver";
-  if (score >= 31) return "󰘚 Budget Warrior";
-  if (score >= 16) return "󰍛 Study Mode Only";
-  return "󰋊 Potato Toaster";
+  if (score >= 89) return "󰓅 NASA Supercomputer";
+  if (score >= 76) return " Cyberpunk Beast";
+  if (score >= 61) return " Gaming Chair Missing";
+  if (score >= 46) return " Honest Daily Driver";
+  if (score >= 31) return " Budget Warrior";
+  if (score >= 16) return " Study Mode Only";
+  return " Potato Toaster";
 }
 
 function getLetterGrade(score: number): string {
