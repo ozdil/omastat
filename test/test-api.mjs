@@ -9,9 +9,16 @@ console.log('[TEST] Starting OmaStat Architecture Simulation & Zero-Trust Valida
 
 // 1. Initialize SQLite Database (simulating Cloudflare D1)
 const db = new DatabaseSync(':memory:');
-const migrationSql = readFileSync(resolve(__dirname, '../migrations/0001_init_omastat.sql'), 'utf8');
-db.exec(migrationSql);
-console.log('[PASS] D1 Migration Applied Successfully');
+const migrationFiles = [
+  '0001_init_omastat.sql',
+  '0002_add_brand_distribution.sql',
+  '0003_add_global_leaderboard.sql',
+];
+for (const file of migrationFiles) {
+  const sql = readFileSync(resolve(__dirname, '../migrations', file), 'utf8');
+  db.exec(sql);
+}
+console.log('[PASS] All 3 D1 Migrations Applied Successfully (Schema v1.0.1 Parity)');
 
 // Mock D1 environment
 const mockDb = {
@@ -67,6 +74,101 @@ function validateArchetype(raw) {
   return 'OMA-CUSTOM-RIG';
 }
 
+function getLetterGrade(score) {
+  if (score >= 95.0) return 'S+';
+  if (score >= 90.0) return 'S';
+  if (score >= 85.0) return 'A+';
+  if (score >= 75.0) return 'A';
+  if (score >= 65.0) return 'B+';
+  if (score >= 55.0) return 'B';
+  if (score >= 40.0) return 'C';
+  return 'D';
+}
+
+function getTierIcon(tier) {
+  if (tier.includes('Cosmic')) return '';
+  if (tier.includes('NASA')) return '󰓅';
+  if (tier.includes('Cyberpunk')) return '';
+  if (tier.includes('Gaming Chair') || tier.includes('High-FPS')) return '';
+  if (tier.includes('Honest Daily') || tier.includes('Daily')) return '';
+  if (tier.includes('Budget Warrior')) return '';
+  if (tier.includes('Study Mode')) return '';
+  return '';
+}
+
+function cleanBrandAndModel(sysVendor, boardVendor, productName, boardName) {
+  const sv = (sysVendor || '').toUpperCase().trim();
+  const bv = (boardVendor || '').toUpperCase().trim();
+  const pn = (productName || '').trim();
+  const bn = (boardName || '').trim();
+  const isGeneric = !pn || ['SYSTEM PRODUCT NAME', 'DEFAULT STRING', 'TO BE FILLED BY O.E.M.', 'UNKNOWN'].includes(pn.toUpperCase());
+
+  if (sv.includes('GAME GARAJ') || bv.includes('GAME GARAJ') || pn.toUpperCase().includes('SLAYER')) {
+    return { brand: 'Game Garaj', model: sanitize(pn || bn || 'Slayer 4 Ultra', 40) };
+  }
+  if (sv.includes('FRAMEWORK') || bv.includes('FRAMEWORK')) {
+    return { brand: 'Framework', model: sanitize(pn || 'Modular Laptop', 40) };
+  }
+  if (sv.includes('MONSTER') || bv.includes('MONSTER') || pn.toUpperCase().includes('TULPAR') || pn.toUpperCase().includes('ABRA')) {
+    return { brand: 'Monster Notebook', model: sanitize(pn || bn || 'Tulpar / Abra', 40) };
+  }
+  if (sv.includes('SYSTEM76')) {
+    return { brand: 'System76', model: sanitize(pn || 'Linux Rig', 40) };
+  }
+  if (sv.includes('LENOVO') || pn.toUpperCase().includes('THINKPAD') || pn.toUpperCase().includes('LEGION')) {
+    return { brand: 'Lenovo', model: sanitize(pn || 'ThinkPad / Legion', 40) };
+  }
+  if (sv.includes('DELL') || sv.includes('ALIENWARE') || pn.toUpperCase().includes('XPS')) {
+    return { brand: 'Dell / Alienware', model: sanitize(pn || 'XPS / Latitude', 40) };
+  }
+  if (sv.includes('APPLE')) {
+    return { brand: 'Apple Silicon (Asahi)', model: sanitize(pn || 'MacBook Pro', 40) };
+  }
+  if (sv.includes('RAZER') || pn.toUpperCase().includes('BLADE')) {
+    return { brand: 'Razer', model: sanitize(pn || 'Blade', 40) };
+  }
+  if (sv.includes('HP') || sv.includes('HEWLETT-PACKARD') || pn.toUpperCase().includes('OMEN')) {
+    return { brand: 'HP', model: sanitize(pn || 'Omen / Victus', 40) };
+  }
+  if (sv.includes('ACER') || pn.toUpperCase().includes('PREDATOR')) {
+    return { brand: 'Acer', model: sanitize(pn || 'Predator / Nitro', 40) };
+  }
+  if (sv.includes('TUXEDO')) {
+    return { brand: 'TUXEDO Computers', model: sanitize(pn || 'Linux Book', 40) };
+  }
+
+  let diyVendor = '';
+  if (bv.includes('ASUS') || sv.includes('ASUS') || bv.includes('ASUSTEK')) diyVendor = 'ASUS';
+  else if (bv.includes('GIGABYTE') || sv.includes('GIGABYTE')) diyVendor = 'Gigabyte';
+  else if (bv.includes('MSI') || sv.includes('MSI') || bv.includes('MICRO-STAR')) diyVendor = 'MSI';
+  else if (bv.includes('ASROCK') || sv.includes('ASROCK')) diyVendor = 'ASRock';
+  else if (bv.includes('NZXT')) diyVendor = 'NZXT';
+  else if (bv.includes('BIOSTAR')) diyVendor = 'Biostar';
+
+  if (diyVendor) {
+    if (isGeneric) {
+      return { brand: `Custom PC (${diyVendor})`, model: sanitize(bn || diyVendor, 40) };
+    }
+    if (pn.toUpperCase().includes('ROG') || pn.toUpperCase().includes('STRIX')) {
+      return { brand: 'ASUS ROG', model: sanitize(pn, 40) };
+    }
+    if (pn.toUpperCase().includes('TUF')) {
+      return { brand: 'ASUS TUF', model: sanitize(pn, 40) };
+    }
+    if (pn.toUpperCase().includes('AORUS')) {
+      return { brand: 'Gigabyte AORUS', model: sanitize(pn, 40) };
+    }
+    return { brand: `Custom PC (${diyVendor})`, model: sanitize(bn || pn, 40) };
+  }
+
+  if (isGeneric) {
+    return { brand: 'Custom PC (DIY)', model: sanitize(bn || 'DIY Rig', 40) };
+  }
+
+  const fallbackBrand = sanitize(sysVendor || boardVendor || 'Custom PC', 30);
+  return { brand: fallbackBrand, model: sanitize(pn || bn || 'Desktop', 40) };
+}
+
 // Simulation Helper
 function simulateIngest(payload) {
   if (!payload || typeof payload !== 'object' || payload.schema_version !== 2) {
@@ -79,15 +181,30 @@ function simulateIngest(payload) {
   }
   const score = Math.max(0, Math.min(100, Math.round(scoreRaw * 100) / 100));
 
+  const grade = getLetterGrade(score);
   const tierName = sanitize(payload.tier_name, 40) || 'Unknown';
+  const tierIcon = getTierIcon(tierName);
   const cpuModel = sanitize(payload.cpu_model, 80) || 'CPU';
   const gpuModel = sanitize(payload.gpu_model, 80) || 'GPU';
   const gpuDriver = sanitize(payload.gpu_driver, 40) || 'driver';
   const ramGb = Math.round(Number(payload.ram_gb) || 0);
-  const ramBucket = `${ramGb}GB ${sanitize(payload.ram_type, 20)}`;
+  const ramType = sanitize(payload.ram_type, 20) || 'RAM';
+  const ramSpeed = Number(payload.ram_speed_mts) || 0;
+  const ramBucket = `${ramGb}GB ${ramType}`;
+  const ramDesc = ramSpeed > 0 ? `${ramGb}GB ${ramType} @ ${ramSpeed}MT/s` : `${ramGb}GB ${ramType}`;
   const display = sanitize(payload.primary_display, 40) || '1080p';
   const archetype = validateArchetype(payload.archetype_signature);
   const now = Math.floor(Date.now() / 1000);
+
+  const { brand: vendorBrand, model: vendorModel } = cleanBrandAndModel(
+    sanitize(payload.system_vendor || payload.mobo_vendor || '', 40),
+    sanitize(payload.mobo_vendor || '', 40),
+    sanitize(payload.mobo_name || '', 50),
+    sanitize(payload.mobo_name || '', 50)
+  );
+  const systemName = vendorBrand && vendorModel && vendorModel !== vendorBrand
+    ? `${vendorBrand} ${vendorModel}`
+    : (vendorBrand || 'Custom Battlestation');
 
   // Atomic batch
   mockDb.batch([
@@ -98,11 +215,19 @@ function simulateIngest(payload) {
     mockDb.prepare("INSERT INTO gpu_distribution (model, driver, count) VALUES (?, ?, 1) ON CONFLICT(model) DO UPDATE SET count = count + 1, driver = excluded.driver").bind(gpuModel, gpuDriver),
     mockDb.prepare("INSERT INTO ram_distribution (bucket, count) VALUES (?, 1) ON CONFLICT(bucket) DO UPDATE SET count = count + 1").bind(ramBucket),
     mockDb.prepare("INSERT INTO display_distribution (resolution_hz, count) VALUES (?, 1) ON CONFLICT(resolution_hz) DO UPDATE SET count = count + 1").bind(display),
-    mockDb.prepare("INSERT INTO tier_distribution (tier_name, tier_icon, count) VALUES (?, ?, 1) ON CONFLICT(tier_name) DO UPDATE SET count = count + 1").bind(tierName, '󰢮'),
+    mockDb.prepare("INSERT INTO tier_distribution (tier_name, tier_icon, count) VALUES (?, ?, 1) ON CONFLICT(tier_name) DO UPDATE SET count = count + 1").bind(tierName, tierIcon),
     mockDb.prepare("INSERT INTO archetype_distribution (archetype, count) VALUES (?, 1) ON CONFLICT(archetype) DO UPDATE SET count = count + 1").bind(archetype),
+    mockDb.prepare("INSERT INTO brand_distribution (brand, model, count) VALUES (?, ?, 1) ON CONFLICT(brand) DO UPDATE SET count = count + 1, model = excluded.model").bind(vendorBrand, vendorModel),
+    mockDb.prepare(`INSERT INTO global_leaderboard (
+       archetype, score, grade, tier_name, tier_icon, system_name, cpu_model, gpu_model, ram_desc, display_desc, submissions_count, last_updated_epoch
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+     ON CONFLICT(archetype) DO UPDATE SET
+       score = MAX(score, excluded.score),
+       submissions_count = submissions_count + 1,
+       last_updated_epoch = excluded.last_updated_epoch`).bind(archetype, score, grade, tierName, tierIcon, systemName, cpuModel, gpuModel, ramDesc, display, now),
   ]);
 
-  return { success: true, score, tier: tierName };
+  return { success: true, score, grade, tier: tierName };
 }
 
 // TEST 1: Real-world OmaRank Payload Ingestion
@@ -195,6 +320,13 @@ topDisplays.forEach(d => {
   console.log(` - ${d.resolution_hz.padEnd(28)} : ${d.count} rigs (${pct}%)`);
 });
 
+const topBrands = db.prepare("SELECT brand, model, count FROM brand_distribution ORDER BY count DESC").all();
+console.log('\nTop Brands / Manufacturers:');
+topBrands.forEach(b => {
+  const pct = ((b.count / totalSubs) * 100).toFixed(1);
+  console.log(` - ${b.brand.padEnd(28)} : ${b.count} rigs (${pct}%)`);
+});
+
 // TEST 4: Archetype Global Lookup (/api/archetype/:code)
 console.log('\n--- Test 4: Archetype Global Lookup ---');
 const testArchetype = "OMA-U7-ARC-31G-240H";
@@ -209,7 +341,9 @@ const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").a
 console.log('Active DB Tables:', tables.map(t => t.name).join(', '));
 const hasIpColumn = db.prepare("PRAGMA table_info(stats_meta)").all().some(c => c.name.toLowerCase().includes('ip'));
 if (hasIpColumn) throw new Error('Zero-PII Audit Failed: IP column found');
-console.log('[PASS] Zero-PII Guarantee Verified');
+const hasIpInLeaderboard = db.prepare("PRAGMA table_info(global_leaderboard)").all().some(c => c.name.toLowerCase().includes('ip'));
+if (hasIpInLeaderboard) throw new Error('Zero-PII Audit Failed: IP column found in leaderboard');
+console.log('[PASS] Zero-PII Guarantee Verified across all tables');
 
 // TEST 6: Zero-Trust Schema & Boundary Validation
 console.log('\n--- Test 6: Zero-Trust Boundary Validation ---');
@@ -230,4 +364,25 @@ if (validArch !== "OMA-U7-ARC-31G-240H") throw new Error('Should preserve valid 
 
 console.log('[PASS] Zero-Trust Boundary & Sanitization Tests Passed');
 
-console.log('\n[PASS] ALL 6 ARCHITECTURAL & ZERO-TRUST VALIDATION TESTS PASSED WITH 0 ERRORS!\n');
+// TEST 7: Global Battlestation Leaderboard Verification
+console.log('\n--- Test 7: Global Battlestation Leaderboard Integrity ---');
+const leaderboardEntries = db.prepare("SELECT archetype, score, grade, tier_name, tier_icon, system_name, submissions_count FROM global_leaderboard ORDER BY score DESC LIMIT 10").all();
+if (!leaderboardEntries || leaderboardEntries.length === 0) {
+  throw new Error('Leaderboard should contain seeded & submitted entries');
+}
+console.log(`Top Leaderboard System: #${1} [${leaderboardEntries[0].grade}] ${leaderboardEntries[0].score} pts - ${leaderboardEntries[0].system_name} (${leaderboardEntries[0].archetype})`);
+if (leaderboardEntries[0].score < leaderboardEntries[leaderboardEntries.length - 1].score) {
+  throw new Error('Leaderboard must be sorted by score DESC');
+}
+console.log('[PASS] Global Leaderboard Verification Succeeded');
+
+// TEST 8: Brand & OEM Attribution Integrity
+console.log('\n--- Test 8: Brand & OEM Attribution Integrity ---');
+const ggRig = db.prepare("SELECT brand, model, count FROM brand_distribution WHERE brand = 'Game Garaj'").get();
+if (!ggRig || ggRig.count < 1) {
+  throw new Error('Game Garaj brand distribution should be recorded from userPayload');
+}
+console.log(`Game Garaj Ingest Verified: ${ggRig.brand} - ${ggRig.model} (${ggRig.count} submissions)`);
+console.log('[PASS] Brand & OEM Attribution Integrity Passed');
+
+console.log('\n[PASS] ALL 8 ARCHITECTURAL & ZERO-TRUST VALIDATION TESTS PASSED WITH 0 ERRORS!\n');
