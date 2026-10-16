@@ -25,6 +25,7 @@ interface OmaStatSurveyPayload {
   mobo_vendor?: string;
   system_vendor?: string;
   mobo_name: string;
+  product_name?: string;
   chipset: string;
   primary_display: string;
   display_count: number;
@@ -128,7 +129,12 @@ export default {
 
     // Archetype Lookup
     if (url.pathname.startsWith("/api/archetype/") && request.method === "GET") {
-      const code = decodeURIComponent(url.pathname.replace("/api/archetype/", "")).trim();
+      let code: string;
+      try {
+        code = decodeURIComponent(url.pathname.slice("/api/archetype/".length)).trim();
+      } catch {
+        return jsonResponse({ found: false, error: "Malformed archetype code" }, 400);
+      }
       return handleArchetypeLookup(code, env);
     }
 
@@ -160,8 +166,9 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
   }
 
   // Strict Numerical Boundaries
-  const scoreRaw = Number(body.omarank_score);
-  if (isNaN(scoreRaw) || scoreRaw < 0 || scoreRaw > 100) {
+  // Number(null) / Number("") silently become 0, so require an actual finite number
+  const scoreRaw = typeof body.omarank_score === "number" ? body.omarank_score : NaN;
+  if (!Number.isFinite(scoreRaw) || scoreRaw < 0 || scoreRaw > 100) {
     return jsonResponse({ success: false, error: "Invalid omarank_score (must be 0-100)" }, 400);
   }
   const score = Math.max(0, Math.min(100, Math.round(scoreRaw * 100) / 100));
@@ -200,7 +207,7 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
   const { brand: vendorBrand, model: vendorModel } = cleanBrandAndModel(
     sanitizeText(body.system_vendor || body.mobo_vendor || "", 40),
     sanitizeText(body.mobo_vendor || "", 40),
-    sanitizeText(body.mobo_name || "", 50),
+    sanitizeText(body.product_name || body.mobo_name || "", 50),
     sanitizeText(body.mobo_name || "", 50)
   );
   const systemName = vendorBrand && vendorModel && vendorModel !== vendorBrand
@@ -218,7 +225,7 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
         "UPDATE stats_meta SET value = value + ? WHERE key = 'sum_scores'"
       ).bind(score),
       env.DB.prepare(
-        "UPDATE stats_meta SET value = ? WHERE key = 'last_updated_epoch'"
+        "UPDATE stats_meta SET value = MAX(value, ?) WHERE key = 'last_updated_epoch'"
       ).bind(timestampEpoch),
 
       // Upsert CPU distribution
@@ -262,9 +269,17 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
            archetype, score, grade, tier_name, tier_icon, system_name, cpu_model, gpu_model, ram_desc, display_desc, submissions_count, last_updated_epoch
          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
          ON CONFLICT(archetype) DO UPDATE SET
+           grade = CASE WHEN excluded.score > score THEN excluded.grade ELSE grade END,
+           tier_name = CASE WHEN excluded.score > score THEN excluded.tier_name ELSE tier_name END,
+           tier_icon = CASE WHEN excluded.score > score THEN excluded.tier_icon ELSE tier_icon END,
+           system_name = CASE WHEN excluded.score > score THEN excluded.system_name ELSE system_name END,
+           cpu_model = CASE WHEN excluded.score > score THEN excluded.cpu_model ELSE cpu_model END,
+           gpu_model = CASE WHEN excluded.score > score THEN excluded.gpu_model ELSE gpu_model END,
+           ram_desc = CASE WHEN excluded.score > score THEN excluded.ram_desc ELSE ram_desc END,
+           display_desc = CASE WHEN excluded.score > score THEN excluded.display_desc ELSE display_desc END,
            score = MAX(score, excluded.score),
            submissions_count = submissions_count + 1,
-           last_updated_epoch = excluded.last_updated_epoch`
+           last_updated_epoch = MAX(last_updated_epoch, excluded.last_updated_epoch)`
       ).bind(archetype, score, grade, tierName, tierIcon, systemName, cpuModel, gpuModel, ramDesc, display, timestampEpoch),
     ]);
 
@@ -341,9 +356,14 @@ async function handleStatsQuery(env: Env): Promise<Response> {
 }
 
 async function handleArchetypeLookup(code: string, env: Env): Promise<Response> {
-  const sanitized = sanitizeText(code, 50);
-  if (!sanitized) {
+  if (!sanitizeText(code, 50)) {
     return jsonResponse({ found: false, error: "Empty archetype code" }, 400);
+  }
+  // Normalise exactly like ingestion does, so "oma-u7-arc-31g-240h" finds the stored row
+  const sanitized = validateArchetype(code);
+  if (sanitized === "OMA-CUSTOM-RIG" && code.toUpperCase() !== "OMA-CUSTOM-RIG") {
+    // Not a valid signature: never report the shared fallback bucket as a match
+    return jsonResponse({ found: false, archetype: sanitizeText(code, 50), count: 0, percentage: 0 });
   }
 
   try {
@@ -354,7 +374,7 @@ async function handleArchetypeLookup(code: string, env: Env): Promise<Response> 
 
     const total = metaRow?.value || 0;
     if (row && total > 0) {
-      const pct = ((row.count / total) * 100).toFixed(2);
+      const pct = Number(((row.count / total) * 100).toFixed(2));
       return jsonResponse({ found: true, archetype: sanitized, count: row.count, percentage: pct });
     }
 
@@ -455,7 +475,7 @@ function cleanBrandAndModel(sysVendor: string, boardVendor: string, productName:
   if (sv.includes("RAZER") || pn.toUpperCase().includes("BLADE")) {
     return { brand: "Razer", model: sanitizeText(pn || "Blade", 40) };
   }
-  if (sv.includes("HP") || sv.includes("HEWLETT-PACKARD") || pn.toUpperCase().includes("OMEN")) {
+  if (/\bHP\b/.test(sv) || sv.includes("HEWLETT-PACKARD") || pn.toUpperCase().includes("OMEN")) {
     return { brand: "HP", model: sanitizeText(pn || "Omen / Victus", 40) };
   }
   if (sv.includes("ACER") || pn.toUpperCase().includes("PREDATOR")) {
@@ -469,7 +489,7 @@ function cleanBrandAndModel(sysVendor: string, boardVendor: string, productName:
   let diyVendor = "";
   if (bv.includes("ASUS") || sv.includes("ASUS") || bv.includes("ASUSTEK")) diyVendor = "ASUS";
   else if (bv.includes("GIGABYTE") || sv.includes("GIGABYTE")) diyVendor = "Gigabyte";
-  else if (bv.includes("MSI") || sv.includes("MSI") || bv.includes("MICRO-STAR")) diyVendor = "MSI";
+  else if (/\bMSI\b/.test(bv) || /\bMSI\b/.test(sv) || bv.includes("MICRO-STAR")) diyVendor = "MSI";
   else if (bv.includes("ASROCK") || sv.includes("ASROCK")) diyVendor = "ASRock";
   else if (bv.includes("NZXT")) diyVendor = "NZXT";
   else if (bv.includes("BIOSTAR")) diyVendor = "Biostar";

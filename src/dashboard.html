@@ -2541,6 +2541,9 @@
                 <button class="lb-filter-btn" data-filter="A+"><span class="q-icon q-icon-purple" style="font-size:0.75rem; margin-right:3px;">󰢮</span>A+</button>
                 <button class="lb-filter-btn" data-filter="A"><span class="q-icon q-icon-green" style="font-size:0.75rem; margin-right:3px;">󰈸</span>A</button>
                 <button class="lb-filter-btn" data-filter="B+"><span class="q-icon q-icon-red" style="font-size:0.75rem; margin-right:3px;">󰘚</span>B+</button>
+                <button class="lb-filter-btn" data-filter="B">B</button>
+                <button class="lb-filter-btn" data-filter="C">C</button>
+                <button class="lb-filter-btn" data-filter="D">D</button>
               </div>
             </div>
 
@@ -3377,7 +3380,15 @@
     };
 
     let activeLang = "tr";
-    const savedLang = localStorage.getItem("omastat-lang");
+    // localStorage throws when storage is blocked; never let that stop the dashboard script
+    function storageGet(key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
+    function storageSet(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) {}
+    }
+
+    const savedLang = storageGet("omastat-lang");
     if (savedLang && i18n[savedLang]) {
       activeLang = savedLang;
     }
@@ -3571,7 +3582,7 @@
             <td><span class="score-cell">${scoreFormatted}</span></td>
             <td>
               <div class="system-title">
-                <span class="q-icon q-icon-brand">${tierIcon}</span>
+                <span class="q-icon q-icon-brand">${escapeHtml(tierIcon)}</span>
                 <span>${escapeHtml(item.system_name || "Custom Rig")}</span>
                 ${myBadgeHtml}
               </div>
@@ -3653,7 +3664,7 @@
     function applyLanguage(lang) {
       if (!i18n[lang]) lang = "tr";
       activeLang = lang;
-      localStorage.setItem("omastat-lang", lang);
+      storageSet("omastat-lang", lang);
       document.documentElement.lang = lang;
       const t = i18n[lang];
 
@@ -3764,7 +3775,7 @@
 
     // --- Theme System ---
     let activeThemeId = "tokyo-night";
-    const savedTheme = localStorage.getItem("omastat-theme");
+    const savedTheme = storageGet("omastat-theme");
     if (savedTheme && themeCatalog.some(t => t.id === savedTheme)) {
       activeThemeId = savedTheme;
     }
@@ -3772,7 +3783,7 @@
     function applyTheme(id) {
       activeThemeId = id;
       document.documentElement.dataset.theme = id;
-      localStorage.setItem("omastat-theme", id);
+      storageSet("omastat-theme", id);
       const found = themeCatalog.find(t => t.id === id);
       const label = found ? found.name : id.toUpperCase();
       document.getElementById("activeThemeBadge").textContent = label + " ▾";
@@ -3984,43 +3995,43 @@
     // --- Rig Roaster 3000 ---
     const roastDB = [
       {
-        pattern: /ARC|A770|A750|B580/i,
+        pattern: /(^|-)(ARC|A770|A750|B580|B570)(-|$)/i,
         title: "Intel Arc Underdog Hero",
         comment: "The Intel Arc driver engineers light a candle in your honor every morning. Thank you for your fearless service to open-source Mesa drivers!",
         tier: "Arc Vanguard"
       },
       {
-        pattern: /4090|490|7900XTX/i,
+        pattern: /(^|-)(5090|5080|4090|490|790|7900XTX)(-|$)/i,
         title: "NASA Thermal Wind Tunnel",
         comment: "Your municipal power substation reports a voltage sag whenever you compile a Rust kernel. Your rig doubles as central heating for a small village.",
         tier: "Apex Halo"
       },
       {
-        pattern: /4060|4070|7800XT|3070|3080/i,
+        pattern: /(^|-)(5070|5060|4080|4070|4060|7800XT|3070|3080)(-|$)/i,
         title: "Liquid Butter High-Refresh Beast",
         comment: "High-refresh DSC + heavy silicon. Wayland animations glide like liquid butter. Still blames lag on a 4ms ping spike.",
         tier: "Cyberpunk Beast"
       },
       {
-        pattern: /CEL|INT|4G|8G|60H/i,
+        pattern: /(^|-)(CEL|INT|4G|8G|60H)(-|$)/i,
         title: "Certified Potato Toaster 1998",
         comment: "Opening four tabs in Firefox is considered an act of cyber terrorism against your RAM. When you compile, the fans scream in Morse code.",
         tier: "Potato Toaster"
       },
       {
-        pattern: /240H|360H|500H/i,
+        pattern: /(^|-)(240H|360H|480H|500H)(-|$)/i,
         title: "Competitive Sweatlord Optical Illusion",
         comment: "Your monitor refreshes faster than human optic synapses can fire. You still get one-tapped by a 12-year-old on an iPad with greasy fingers.",
         tier: "FPS Addict"
       },
       {
-        pattern: /M3|M3P|APPLE|M4/i,
+        pattern: /(^|-)(M1|M2|M3|M3P|M4|APPLE)(-|$)/i,
         title: "Asahi Silicon Sorcery",
         comment: "Running Wayland on Apple Silicon out of sheer defiance of Tim Cook. 18 hours of battery life, but good luck finding Vulkan raytracing drivers.",
         tier: "ARM Renegade"
       },
       {
-        pattern: /32G|DDR5/i,
+        pattern: /(^|-)(32G|DDR5)(-|$)/i,
         title: "The Golden Ratio Daily Driver",
         comment: "Mathematically balanced, clean, and respectable. You actually close your browser tabs before sleep and your desk cable management is pristine.",
         tier: "Zen Master"
@@ -4189,6 +4200,7 @@
     async function loadData() {
       try {
         const res = await fetch("/api/stats/v1");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         renderStats(data);
       } catch(e) {
@@ -4198,10 +4210,10 @@
 
     function renderStats(data) {
       const total = data.total_submissions || 0;
-      document.getElementById("totalSubmissions").textContent = total > 0 ? total.toLocaleString() : "2";
+      document.getElementById("totalSubmissions").textContent = total > 0 ? total.toLocaleString() : "0";
       const avgGrade = data.average_grade ? ` [${data.average_grade}]` : "";
-      document.getElementById("avgScore").textContent = data.average_score > 0 ? (Number(data.average_score).toFixed(2) + "/100" + avgGrade) : "79.50/100 [A]";
-      document.getElementById("avgTier").textContent = data.average_tier || "󰓅 Cyberpunk Beast";
+      document.getElementById("avgScore").textContent = data.average_score > 0 ? (Number(data.average_score).toFixed(2) + "/100" + avgGrade) : "--";
+      document.getElementById("avgTier").textContent = total > 0 ? (data.average_tier || "--") : "--";
 
       if (data.leaderboard && data.leaderboard.length > 0) {
         currentLeaderboard = data.leaderboard;
@@ -4269,15 +4281,16 @@
         if (item.brand) {
           name = item.model && item.model !== item.brand ? `${item.brand} • ${item.model}` : item.brand;
         }
+        const pct = Number(item.percentage) || 0;
         const row = document.createElement("div");
         row.className = "progress-row";
         row.innerHTML = `
           <div class="progress-meta">
             <span class="meta-name">${escapeHtml(name)}</span>
-            <span class="meta-pct">${item.percentage}%</span>
+            <span class="meta-pct">${pct}%</span>
           </div>
           <div class="bar-track">
-            <div class="bar-fill" style="width: ${item.percentage}%; background: ${color};"></div>
+            <div class="bar-fill" style="width: ${Math.min(100, Math.max(0, pct))}%; background: ${color};"></div>
           </div>
         `;
         box.appendChild(row);
