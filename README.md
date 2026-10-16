@@ -54,7 +54,10 @@ Ingests an anonymous hardware profile submitted via OmaRank.
   "ram_gb": 31.1,
   "ram_type": "DDR4",
   "ram_speed_mts": 3200,
+  "mobo_vendor": "GAME GARAJ",
   "mobo_name": "SLAYER 4 ULTRA",
+  "system_vendor": "GAME GARAJ",
+  "product_name": "SLAYER 4 ULTRA",
   "chipset": "Mainstream Chipset",
   "primary_display": "2560x1600 @ 240Hz",
   "display_count": 1,
@@ -64,6 +67,8 @@ Ingests an anonymous hardware profile submitted via OmaRank.
   "archetype_signature": "OMA-U7-ARC-31G-240H"
 }
 ```
+
+`system_vendor` and `product_name` are optional (DMI `sys_vendor` / `product_name`); they improve OEM and laptop model detection. `omarank_score` must be a JSON number between 0 and 100.
 
 **Response:**
 ```json
@@ -105,7 +110,7 @@ Looks up how common a specific hardware combination is globally:
   "found": true,
   "archetype": "OMA-U7-ARC-31G-240H",
   "count": 412,
-  "percentage": "3.3"
+  "percentage": 3.3
 }
 ```
 
