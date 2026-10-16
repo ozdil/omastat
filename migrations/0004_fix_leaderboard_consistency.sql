@@ -2,19 +2,19 @@
 -- Before this fix the upsert raised `score` with MAX() but kept the old grade and
 -- tier, and some seeded rows carried tiers that never matched their score
 -- (e.g. 98.75 labelled "NASA Supercomputer", legacy "High-FPS Addiction").
--- Thresholds mirror getLetterGrade() / getAverageTier() in src/index.ts and
--- get_rank_tier() in the OmaRank engine.
+-- Grades are the tier letters (S+ S A B C D E F); thresholds mirror TIERS in
+-- src/tiers.ts and get_rank_tier() in the OmaRank engine.
 
 UPDATE global_leaderboard SET
   grade = CASE
-    WHEN score >= 95 THEN 'S+'
-    WHEN score >= 90 THEN 'S'
-    WHEN score >= 85 THEN 'A+'
-    WHEN score >= 75 THEN 'A'
-    WHEN score >= 65 THEN 'B+'
-    WHEN score >= 55 THEN 'B'
-    WHEN score >= 40 THEN 'C'
-    ELSE 'D'
+    WHEN score >= 96 THEN 'S+'
+    WHEN score >= 89 THEN 'S'
+    WHEN score >= 76 THEN 'A'
+    WHEN score >= 61 THEN 'B'
+    WHEN score >= 46 THEN 'C'
+    WHEN score >= 31 THEN 'D'
+    WHEN score >= 16 THEN 'E'
+    ELSE 'F'
   END,
   tier_name = CASE
     WHEN score >= 96 THEN 'Cosmic Reality Simulator'

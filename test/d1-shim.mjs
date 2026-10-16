@@ -31,8 +31,8 @@ class Statement {
     return this.db.prepare(this.sql).all(...this.args).map((r) => ({ ...r }));
   }
   _run() {
-    this.db.prepare(this.sql).run(...this.args);
-    return { results: [], success: true };
+    const info = this.db.prepare(this.sql).run(...this.args);
+    return { results: [], success: true, meta: { changes: Number(info.changes) } };
   }
 }
 

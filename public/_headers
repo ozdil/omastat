@@ -1,0 +1,5 @@
+/assets/*
+  X-Content-Type-Options: nosniff
+  Cross-Origin-Resource-Policy: same-origin
+  Referrer-Policy: strict-origin-when-cross-origin
+  Cache-Control: public, max-age=300
