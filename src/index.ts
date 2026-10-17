@@ -4,9 +4,19 @@
  */
 
 import dashboardHtml from "./dashboard.html";
+import { TIERS, WEIGHTS, tierForScore } from "./tiers";
+import { maxPlausibleScore, PLAUSIBILITY_TOLERANCE } from "./scoring";
+
+const VERSION = "1.1.0";
+
+/** Workers Rate Limiting binding (configured in wrangler.jsonc as SURVEY_LIMITER). */
+interface RateLimiter {
+  limit(options: { key: string }): Promise<{ success: boolean }>;
+}
 
 export interface Env {
   DB: D1Database;
+  SURVEY_LIMITER?: RateLimiter;
 }
 
 interface OmaStatSurveyPayload {
@@ -25,6 +35,7 @@ interface OmaStatSurveyPayload {
   mobo_vendor?: string;
   system_vendor?: string;
   mobo_name: string;
+  product_name?: string;
   chipset: string;
   primary_display: string;
   display_count: number;
@@ -32,6 +43,7 @@ interface OmaStatSurveyPayload {
   storage_model: string;
   os_name: string;
   archetype_signature?: string;
+  install_token?: string;
 }
 
 const SECURITY_HEADERS_API: Record<string, string> = {
@@ -45,8 +57,9 @@ const SECURITY_HEADERS_API: Record<string, string> = {
 const SECURITY_HEADERS_HTML: Record<string, string> = {
   "Content-Type": "text/html; charset=utf-8",
   "Cache-Control": "no-cache, no-store, must-revalidate",
+  // Scripts only from this origin: /assets/* is served by Workers static assets (public/)
   "Content-Security-Policy":
-    "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net data:; img-src 'self' data: https://cdn.buymeacoffee.com https://img.shields.io; connect-src 'self' https://stream.nightride.fm; media-src 'self' https://stream.nightride.fm; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
+    "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net data:; img-src 'self' data: https://cdn.buymeacoffee.com https://img.shields.io; connect-src 'self' https://stream.nightride.fm; media-src 'self' https://stream.nightride.fm; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -54,6 +67,8 @@ const SECURITY_HEADERS_HTML: Record<string, string> = {
   "Cross-Origin-Opener-Policy": "same-origin",
   "Cross-Origin-Resource-Policy": "same-origin",
 };
+
+const STATS_CACHE_SECONDS = 300;
 
 function sanitizeText(str: unknown, maxLen = 80): string {
   if (typeof str !== "string") return "";
@@ -86,6 +101,26 @@ function jsonResponse(body: unknown, status = 200, extraHeaders: Record<string, 
   });
 }
 
+function currentMonth(epochSeconds: number): string {
+  return new Date(epochSeconds * 1000).toISOString().slice(0, 7);
+}
+
+/** Serve a GET from the colo cache when available (Workers only; absent in Node tests). */
+async function withEdgeCache(request: Request, ctx: ExecutionContext | undefined, build: () => Promise<Response>): Promise<Response> {
+  const cache = typeof caches !== "undefined" ? (caches as unknown as { default?: Cache }).default : undefined;
+  if (!cache) return build();
+  const key = new Request(new URL(request.url).toString(), { method: "GET" });
+  const hit = await cache.match(key);
+  if (hit) return hit;
+  const res = await build();
+  if (res.status === 200) {
+    const put = cache.put(key, res.clone());
+    if (ctx) ctx.waitUntil(put);
+    else await put;
+  }
+  return res;
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -106,7 +141,7 @@ export default {
 
     // Health check
     if (url.pathname === "/health" || url.pathname === "/api/ping") {
-      return jsonResponse({ status: "ok", service: "omastat", version: "1.0.1" });
+      return jsonResponse({ status: "ok", service: "omastat", version: VERSION });
     }
 
     // Web Dashboard UI
@@ -123,12 +158,32 @@ export default {
 
     // Get Aggregate Stats
     if (url.pathname === "/api/stats/v1" && request.method === "GET") {
-      return handleStatsQuery(env);
+      return withEdgeCache(request, ctx, () => handleStatsQuery(env));
+    }
+
+    // Paged leaderboard
+    if (url.pathname === "/api/leaderboard/v1" && request.method === "GET") {
+      return withEdgeCache(request, ctx, () => handleLeaderboardQuery(url, env));
+    }
+
+    // Real percentile for a score
+    if (url.pathname === "/api/rank/v1" && request.method === "GET") {
+      return handleRankQuery(url, env);
+    }
+
+    // Tiers, grades and weights shared with the dashboard and OmaRank
+    if (url.pathname === "/api/meta/v1" && request.method === "GET") {
+      return jsonResponse({ version: VERSION, tiers: TIERS, weights: WEIGHTS }, 200, { "Cache-Control": "public, max-age=3600" });
     }
 
     // Archetype Lookup
     if (url.pathname.startsWith("/api/archetype/") && request.method === "GET") {
-      const code = decodeURIComponent(url.pathname.replace("/api/archetype/", "")).trim();
+      let code: string;
+      try {
+        code = decodeURIComponent(url.pathname.slice("/api/archetype/".length)).trim();
+      } catch {
+        return jsonResponse({ found: false, error: "Malformed archetype code" }, 400);
+      }
       return handleArchetypeLookup(code, env);
     }
 
@@ -137,6 +192,15 @@ export default {
 };
 
 async function handleSurveySubmission(request: Request, env: Env): Promise<Response> {
+  // Per-client rate limit. The key is only used by the limiter's counter and never stored.
+  if (env.SURVEY_LIMITER) {
+    const key = request.headers.get("cf-connecting-ip") || "unknown";
+    const { success } = await env.SURVEY_LIMITER.limit({ key });
+    if (!success) {
+      return jsonResponse({ success: false, error: "Too many submissions, try again later" }, 429, { "Retry-After": "60" });
+    }
+  }
+
   // Enforce 16 KiB size limit (prevent DoS)
   const contentLength = Number(request.headers.get("content-length")) || 0;
   if (contentLength > 16384) {
@@ -160,8 +224,9 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
   }
 
   // Strict Numerical Boundaries
-  const scoreRaw = Number(body.omarank_score);
-  if (isNaN(scoreRaw) || scoreRaw < 0 || scoreRaw > 100) {
+  // Number(null) / Number("") silently become 0, so require an actual finite number
+  const scoreRaw = typeof body.omarank_score === "number" ? body.omarank_score : NaN;
+  if (!Number.isFinite(scoreRaw) || scoreRaw < 0 || scoreRaw > 100) {
     return jsonResponse({ success: false, error: "Invalid omarank_score (must be 0-100)" }, 400);
   }
   const score = Math.max(0, Math.min(100, Math.round(scoreRaw * 100) / 100));
@@ -181,35 +246,77 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
   const rawDisplayCount = Number(body.display_count);
   const displayCount = Number.isInteger(rawDisplayCount) && rawDisplayCount >= 1 && rawDisplayCount <= 32 ? rawDisplayCount : 1;
 
-  const grade = getLetterGrade(score);
-  const tierName = sanitizeText(body.tier_name, 40) || "Unknown";
+  // Tier and grade are derived from the score, never trusted from the client
+  const tier = tierForScore(score);
+  const grade = tier.grade;
+  const tierName = tier.name;
+  const tierIcon = tier.icon;
+  const rawGpuModel = sanitizeText(body.gpu_model, 80);
   const cpuModel = cleanCpuModel(sanitizeText(body.cpu_model, 80));
-  const gpuModel = cleanGpuModel(sanitizeText(body.gpu_model, 80));
+  const gpuModel = cleanGpuModel(rawGpuModel);
   const gpuDriver = sanitizeText(body.gpu_driver, 40);
   const ramType = sanitizeText(body.ram_type, 20) || "RAM";
   const ramBucket = `${ramGb}GB ${ramType}`;
   const ramDesc = ramSpeed > 0 ? `${ramGb}GB ${ramType} @ ${ramSpeed}MT/s` : `${ramGb}GB ${ramType}`;
-  const display = cleanDisplay(sanitizeText(body.primary_display, 40));
+  const rawDisplay = sanitizeText(body.primary_display, 40);
+  const display = cleanDisplay(rawDisplay);
   const archetype = validateArchetype(body.archetype_signature);
 
   const now = Math.floor(Date.now() / 1000);
   const rawEpoch = Number(body.timestamp_epoch);
   const timestampEpoch = Number.isInteger(rawEpoch) && Math.abs(now - rawEpoch) <= 604800 ? rawEpoch : now;
 
-  const tierIcon = getTierIcon(tierName);
   const { brand: vendorBrand, model: vendorModel } = cleanBrandAndModel(
     sanitizeText(body.system_vendor || body.mobo_vendor || "", 40),
     sanitizeText(body.mobo_vendor || "", 40),
-    sanitizeText(body.mobo_name || "", 50),
+    sanitizeText(body.product_name || body.mobo_name || "", 50),
     sanitizeText(body.mobo_name || "", 50)
   );
   const systemName = vendorBrand && vendorModel && vendorModel !== vendorBrand
     ? `${vendorBrand} ${vendorModel}`
     : (vendorBrand || "Custom Battlestation");
 
+  // A score the described hardware cannot reach is counted, but kept off the leaderboard
+  const maxScore = maxPlausibleScore({
+    cpuCores,
+    cpuThreads,
+    gpuModel: rawGpuModel,
+    ramGb,
+    ramType,
+    ramSpeed,
+    chipset: sanitizeText(body.chipset, 40),
+    display: rawDisplay,
+    displayCount,
+    storageType: sanitizeText(body.storage_type, 40),
+  });
+  const plausible = score <= maxScore + PLAUSIBILITY_TOLERANCE;
+
+  // One counted submission per machine per month. The token is a monthly-rotating hash
+  // computed by OmaRank (not reversible to a machine id); older clients send none.
+  const month = currentMonth(now);
+  const token = typeof body.install_token === "string" && /^[0-9a-f]{32}$/.test(body.install_token) ? body.install_token : "";
+
   try {
-    // Atomic D1 batch execution for zero-latency aggregate updates
-    await env.DB.batch([
+    if (token) {
+      const ins = await env.DB.prepare(
+        "INSERT INTO submission_tokens (token, month) VALUES (?, ?) ON CONFLICT(token) DO NOTHING"
+      ).bind(token, month).run();
+      if (!ins.meta || ins.meta.changes === 0) {
+        return jsonResponse({
+          success: true,
+          counted: false,
+          message: "This machine is already counted in this month's OmaStat survey.",
+          score,
+          grade,
+          tier: tierName,
+        });
+      }
+    }
+
+    const statements = [
+      // Forget tokens from previous months
+      env.DB.prepare("DELETE FROM submission_tokens WHERE month < ?").bind(month),
+
       // Update global totals
       env.DB.prepare(
         "UPDATE stats_meta SET value = value + 1 WHERE key = 'total_submissions'"
@@ -218,8 +325,13 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
         "UPDATE stats_meta SET value = value + ? WHERE key = 'sum_scores'"
       ).bind(score),
       env.DB.prepare(
-        "UPDATE stats_meta SET value = ? WHERE key = 'last_updated_epoch'"
+        "UPDATE stats_meta SET value = MAX(value, ?) WHERE key = 'last_updated_epoch'"
       ).bind(timestampEpoch),
+
+      // Score histogram for real percentiles
+      env.DB.prepare(
+        "INSERT INTO score_histogram (score, count) VALUES (?, 1) ON CONFLICT(score) DO UPDATE SET count = count + 1"
+      ).bind(Math.round(score)),
 
       // Upsert CPU distribution
       env.DB.prepare(
@@ -253,24 +365,50 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
 
       // Upsert Brand / OEM distribution
       env.DB.prepare(
-        "INSERT INTO brand_distribution (brand, model, count) VALUES (?, ?, 1) ON CONFLICT(brand) DO UPDATE SET count = count + 1, model = excluded.model"
+        "INSERT INTO brand_distribution (brand, model, count) VALUES (?, ?, 1) ON CONFLICT(brand, model) DO UPDATE SET count = count + 1"
       ).bind(vendorBrand, vendorModel),
+    ];
 
-      // Upsert Global Leaderboard
-      env.DB.prepare(
-        `INSERT INTO global_leaderboard (
-           archetype, score, grade, tier_name, tier_icon, system_name, cpu_model, gpu_model, ram_desc, display_desc, submissions_count, last_updated_epoch
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
-         ON CONFLICT(archetype) DO UPDATE SET
-           score = MAX(score, excluded.score),
-           submissions_count = submissions_count + 1,
-           last_updated_epoch = excluded.last_updated_epoch`
-      ).bind(archetype, score, grade, tierName, tierIcon, systemName, cpuModel, gpuModel, ramDesc, display, timestampEpoch),
-    ]);
+    if (plausible) {
+      // Upsert Global Leaderboard. A real submission replaces a seeded demo row outright.
+      statements.push(
+        env.DB.prepare(
+          `INSERT INTO global_leaderboard (
+             archetype, score, grade, tier_name, tier_icon, system_name, cpu_model, gpu_model, ram_desc, display_desc, submissions_count, last_updated_epoch, is_demo
+           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, 0)
+           ON CONFLICT(archetype) DO UPDATE SET
+             grade = CASE WHEN is_demo = 1 OR excluded.score > score THEN excluded.grade ELSE grade END,
+             tier_name = CASE WHEN is_demo = 1 OR excluded.score > score THEN excluded.tier_name ELSE tier_name END,
+             tier_icon = CASE WHEN is_demo = 1 OR excluded.score > score THEN excluded.tier_icon ELSE tier_icon END,
+             system_name = CASE WHEN is_demo = 1 OR excluded.score > score THEN excluded.system_name ELSE system_name END,
+             cpu_model = CASE WHEN is_demo = 1 OR excluded.score > score THEN excluded.cpu_model ELSE cpu_model END,
+             gpu_model = CASE WHEN is_demo = 1 OR excluded.score > score THEN excluded.gpu_model ELSE gpu_model END,
+             ram_desc = CASE WHEN is_demo = 1 OR excluded.score > score THEN excluded.ram_desc ELSE ram_desc END,
+             display_desc = CASE WHEN is_demo = 1 OR excluded.score > score THEN excluded.display_desc ELSE display_desc END,
+             score = CASE WHEN is_demo = 1 THEN excluded.score ELSE MAX(score, excluded.score) END,
+             submissions_count = CASE WHEN is_demo = 1 THEN 1 ELSE submissions_count + 1 END,
+             last_updated_epoch = CASE WHEN is_demo = 1 THEN excluded.last_updated_epoch ELSE MAX(last_updated_epoch, excluded.last_updated_epoch) END,
+             is_demo = 0`
+        ).bind(archetype, score, grade, tierName, tierIcon, systemName, cpuModel, gpuModel, ramDesc, display, timestampEpoch)
+      );
+    }
+
+    // Atomic D1 batch execution for zero-latency aggregate updates
+    try {
+      await env.DB.batch(statements);
+    } catch (err) {
+      // Let the client retry: the token must not block a submission that was never stored
+      if (token) await env.DB.prepare("DELETE FROM submission_tokens WHERE token = ?").bind(token).run().catch(() => {});
+      throw err;
+    }
 
     return jsonResponse({
       success: true,
-      message: "Successfully submitted anonymous hardware profile to OmaStat survey!",
+      counted: true,
+      leaderboard: plausible,
+      message: plausible
+        ? "Successfully submitted anonymous hardware profile to OmaStat survey!"
+        : "Submitted to OmaStat statistics. The score is higher than the reported hardware allows, so it is not shown on the leaderboard.",
       score,
       grade,
       tier: tierName,
@@ -281,9 +419,12 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
   }
 }
 
+const LEADERBOARD_COLUMNS =
+  "archetype, score, grade, tier_name, tier_icon, system_name, cpu_model, gpu_model, ram_desc, display_desc, submissions_count, last_updated_epoch, is_demo";
+
 async function handleStatsQuery(env: Env): Promise<Response> {
   try {
-    const [metaRes, cpusRes, gpusRes, ramRes, dispRes, tierRes, archRes, brandRes, boardRes] = await env.DB.batch([
+    const [metaRes, cpusRes, gpusRes, ramRes, dispRes, tierRes, archRes, brandRes, boardRes, histRes] = await env.DB.batch([
       env.DB.prepare("SELECT key, value FROM stats_meta"),
       env.DB.prepare("SELECT model, count FROM cpu_distribution ORDER BY count DESC LIMIT 8"),
       env.DB.prepare("SELECT model, count FROM gpu_distribution ORDER BY count DESC LIMIT 8"),
@@ -292,7 +433,8 @@ async function handleStatsQuery(env: Env): Promise<Response> {
       env.DB.prepare("SELECT tier_name, tier_icon, count FROM tier_distribution ORDER BY count DESC"),
       env.DB.prepare("SELECT archetype, count FROM archetype_distribution ORDER BY count DESC LIMIT 10"),
       env.DB.prepare("SELECT brand, model, count FROM brand_distribution ORDER BY count DESC LIMIT 8"),
-      env.DB.prepare("SELECT archetype, score, grade, tier_name, tier_icon, system_name, cpu_model, gpu_model, ram_desc, display_desc, submissions_count, last_updated_epoch FROM global_leaderboard ORDER BY score DESC LIMIT 50"),
+      env.DB.prepare(`SELECT ${LEADERBOARD_COLUMNS} FROM global_leaderboard ORDER BY score DESC LIMIT 50`),
+      env.DB.prepare("SELECT score, count FROM score_histogram ORDER BY score"),
     ]);
 
     const metaMap: Record<string, number> = {};
@@ -303,6 +445,7 @@ async function handleStatsQuery(env: Env): Promise<Response> {
     const total = metaMap["total_submissions"] || 0;
     const sumScores = metaMap["sum_scores"] || 0;
     const avgScore = total > 0 ? Number((sumScores / total).toFixed(2)) : 0;
+    const avgTier = tierForScore(avgScore);
 
     const calcPercentage = (count: number) => (total > 0 ? Number(((count / total) * 100).toFixed(1)) : 0);
 
@@ -316,8 +459,8 @@ async function handleStatsQuery(env: Env): Promise<Response> {
       {
         total_submissions: total,
         average_score: avgScore,
-        average_grade: getLetterGrade(avgScore),
-        average_tier: getAverageTier(Math.round(avgScore)),
+        average_grade: total > 0 ? avgTier.grade : null,
+        average_tier: total > 0 ? `${avgTier.icon} ${avgTier.name}` : null,
         top_cpus: formatList(cpusRes.results || []),
         top_gpus: formatList(gpusRes.results || []),
         ram_breakdown: formatList(ramRes.results || []),
@@ -325,13 +468,14 @@ async function handleStatsQuery(env: Env): Promise<Response> {
         tier_distribution: formatList(tierRes.results || []),
         top_archetypes: formatList(archRes.results || []),
         top_brands: formatList(brandRes.results || []),
+        score_histogram: histRes.results || [],
         leaderboard: boardRes.results || [],
         last_updated: new Date((metaMap["last_updated_epoch"] || 0) * 1000).toISOString(),
       },
       200,
       {
         // 5 minute edge cache, revalidate in background
-        "Cache-Control": "public, max-age=300, stale-while-revalidate=60",
+        "Cache-Control": `public, max-age=${STATS_CACHE_SECONDS}, stale-while-revalidate=60`,
       }
     );
   } catch (err: unknown) {
@@ -340,10 +484,85 @@ async function handleStatsQuery(env: Env): Promise<Response> {
   }
 }
 
+async function handleLeaderboardQuery(url: URL, env: Env): Promise<Response> {
+  const limitRaw = Number(url.searchParams.get("limit") ?? 50);
+  const offsetRaw = Number(url.searchParams.get("offset") ?? 0);
+  const limit = Number.isInteger(limitRaw) ? Math.min(100, Math.max(1, limitRaw)) : 50;
+  const offset = Number.isInteger(offsetRaw) ? Math.min(100000, Math.max(0, offsetRaw)) : 0;
+  const gradeParam = (url.searchParams.get("grade") || "").toUpperCase();
+  const grade = TIERS.some((t) => t.grade === gradeParam) ? gradeParam : "";
+  const q = sanitizeText(url.searchParams.get("q") || "", 40).toLowerCase();
+
+  const where: string[] = [];
+  const binds: (string | number)[] = [];
+  if (grade) {
+    where.push("grade = ?");
+    binds.push(grade);
+  }
+  if (q) {
+    // LIKE wildcards in user input are escaped, so "%" and "_" match literally
+    const like = `%${q.replace(/[\\%_]/g, (c) => "\\" + c)}%`;
+    where.push(
+      "(LOWER(system_name) LIKE ? ESCAPE '\\' OR LOWER(cpu_model) LIKE ? ESCAPE '\\' OR LOWER(gpu_model) LIKE ? ESCAPE '\\' OR LOWER(ram_desc) LIKE ? ESCAPE '\\' OR LOWER(archetype) LIKE ? ESCAPE '\\')"
+    );
+    binds.push(like, like, like, like, like);
+  }
+  const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+  try {
+    const [rows, count] = await env.DB.batch([
+      env.DB.prepare(`SELECT ${LEADERBOARD_COLUMNS} FROM global_leaderboard ${whereSql} ORDER BY score DESC, archetype LIMIT ? OFFSET ?`).bind(
+        ...binds,
+        limit,
+        offset
+      ),
+      env.DB.prepare(`SELECT COUNT(*) AS total FROM global_leaderboard ${whereSql}`).bind(...binds),
+    ]);
+    const total = ((count.results || [])[0] as { total?: number } | undefined)?.total ?? 0;
+    return jsonResponse(
+      { total, offset, limit, items: rows.results || [] },
+      200,
+      { "Cache-Control": `public, max-age=60` }
+    );
+  } catch {
+    return jsonResponse({ error: "Failed to load leaderboard" }, 500);
+  }
+}
+
+async function handleRankQuery(url: URL, env: Env): Promise<Response> {
+  const scoreRaw = Number(url.searchParams.get("score"));
+  if (url.searchParams.get("score") === null || !Number.isFinite(scoreRaw) || scoreRaw < 0 || scoreRaw > 100) {
+    return jsonResponse({ error: "score must be a number between 0 and 100" }, 400);
+  }
+  const score = Math.round(scoreRaw);
+  try {
+    const row = await env.DB.prepare(
+      "SELECT COALESCE(SUM(count), 0) AS total, COALESCE(SUM(CASE WHEN score > ? THEN count ELSE 0 END), 0) AS above FROM score_histogram"
+    ).bind(score).first<{ total: number; above: number }>();
+    const total = row?.total ?? 0;
+    if (total === 0) {
+      return jsonResponse({ score, rank: null, total: 0, percentile: null });
+    }
+    const rank = (row?.above ?? 0) + 1;
+    return jsonResponse(
+      { score, rank, total, percentile: Number(((rank / total) * 100).toFixed(1)) },
+      200,
+      { "Cache-Control": "public, max-age=300" }
+    );
+  } catch {
+    return jsonResponse({ error: "Rank lookup failed" }, 500);
+  }
+}
+
 async function handleArchetypeLookup(code: string, env: Env): Promise<Response> {
-  const sanitized = sanitizeText(code, 50);
-  if (!sanitized) {
+  if (!sanitizeText(code, 50)) {
     return jsonResponse({ found: false, error: "Empty archetype code" }, 400);
+  }
+  // Normalise exactly like ingestion does, so "oma-u7-arc-31g-240h" finds the stored row
+  const sanitized = validateArchetype(code);
+  if (sanitized === "OMA-CUSTOM-RIG" && code.toUpperCase() !== "OMA-CUSTOM-RIG") {
+    // Not a valid signature: never report the shared fallback bucket as a match
+    return jsonResponse({ found: false, archetype: sanitizeText(code, 50), count: 0, percentage: 0 });
   }
 
   try {
@@ -354,7 +573,7 @@ async function handleArchetypeLookup(code: string, env: Env): Promise<Response> 
 
     const total = metaRow?.value || 0;
     if (row && total > 0) {
-      const pct = ((row.count / total) * 100).toFixed(2);
+      const pct = Number(((row.count / total) * 100).toFixed(2));
       return jsonResponse({ found: true, archetype: sanitized, count: row.count, percentage: pct });
     }
 
@@ -387,39 +606,6 @@ function cleanGpuModel(raw: string): string {
 function cleanDisplay(raw: string): string {
   if (!raw) return "1080p @ 60Hz";
   return raw.replace(/x/g, "×");
-}
-
-function getTierIcon(tier: string): string {
-  if (tier.includes("Cosmic")) return "";
-  if (tier.includes("NASA")) return "󰓅";
-  if (tier.includes("Cyberpunk")) return "";
-  if (tier.includes("Gaming Chair") || tier.includes("High-FPS")) return "";
-  if (tier.includes("Honest Daily") || tier.includes("Daily")) return "";
-  if (tier.includes("Budget Warrior")) return "";
-  if (tier.includes("Study Mode")) return "";
-  return "";
-}
-
-function getAverageTier(score: number): string {
-  if (score >= 96) return " Cosmic Reality Simulator";
-  if (score >= 89) return "󰓅 NASA Supercomputer";
-  if (score >= 76) return " Cyberpunk Beast";
-  if (score >= 61) return " Gaming Chair Missing";
-  if (score >= 46) return " Honest Daily Driver";
-  if (score >= 31) return " Budget Warrior";
-  if (score >= 16) return " Study Mode Only";
-  return " Potato Toaster";
-}
-
-function getLetterGrade(score: number): string {
-  if (score >= 95.0) return "S+";
-  if (score >= 90.0) return "S";
-  if (score >= 85.0) return "A+";
-  if (score >= 75.0) return "A";
-  if (score >= 65.0) return "B+";
-  if (score >= 55.0) return "B";
-  if (score >= 40.0) return "C";
-  return "D";
 }
 
 function cleanBrandAndModel(sysVendor: string, boardVendor: string, productName: string, boardName: string): { brand: string; model: string } {
@@ -455,7 +641,7 @@ function cleanBrandAndModel(sysVendor: string, boardVendor: string, productName:
   if (sv.includes("RAZER") || pn.toUpperCase().includes("BLADE")) {
     return { brand: "Razer", model: sanitizeText(pn || "Blade", 40) };
   }
-  if (sv.includes("HP") || sv.includes("HEWLETT-PACKARD") || pn.toUpperCase().includes("OMEN")) {
+  if (/\bHP\b/.test(sv) || sv.includes("HEWLETT-PACKARD") || pn.toUpperCase().includes("OMEN")) {
     return { brand: "HP", model: sanitizeText(pn || "Omen / Victus", 40) };
   }
   if (sv.includes("ACER") || pn.toUpperCase().includes("PREDATOR")) {
@@ -469,7 +655,7 @@ function cleanBrandAndModel(sysVendor: string, boardVendor: string, productName:
   let diyVendor = "";
   if (bv.includes("ASUS") || sv.includes("ASUS") || bv.includes("ASUSTEK")) diyVendor = "ASUS";
   else if (bv.includes("GIGABYTE") || sv.includes("GIGABYTE")) diyVendor = "Gigabyte";
-  else if (bv.includes("MSI") || sv.includes("MSI") || bv.includes("MICRO-STAR")) diyVendor = "MSI";
+  else if (/\bMSI\b/.test(bv) || /\bMSI\b/.test(sv) || bv.includes("MICRO-STAR")) diyVendor = "MSI";
   else if (bv.includes("ASROCK") || sv.includes("ASROCK")) diyVendor = "ASRock";
   else if (bv.includes("NZXT")) diyVendor = "NZXT";
   else if (bv.includes("BIOSTAR")) diyVendor = "Biostar";
