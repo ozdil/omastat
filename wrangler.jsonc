@@ -2,14 +2,26 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "omastat",
   "main": "src/index.ts",
-  "compatibility_date": "2024-12-30",
+  "compatibility_date": "2025-09-01",
   "compatibility_flags": ["nodejs_compat"],
+  // Dashboard CSS/JS (public/assets/*) are served by Workers static assets
+  "assets": {
+    "directory": "./public"
+  },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "omastat-db",
       "database_id": "b8948890-0740-44d6-b4a2-28deb3dd8b1b",
       "migrations_dir": "migrations"
+    }
+  ],
+  // 5 survey submissions per minute per client (the client IP is only a counter key, never stored)
+  "ratelimits": [
+    {
+      "name": "SURVEY_LIMITER",
+      "namespace_id": "1001",
+      "simple": { "limit": 5, "period": 60 }
     }
   ],
   "observability": {
