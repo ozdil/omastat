@@ -175,6 +175,18 @@ volumeSlider.addEventListener("input", (e) => {
 // --- Multi-Language Support (i18n) ---
 const i18n = {
   tr: {
+    tagRam: "DDR5 • DDR4 kapasite",
+    tagDisplay: "Yüksek Hz ve 60Hz",
+    tagVendors: "Dizüstü • Hazır sistem • DIY anakart",
+    oemTitle: "Donanım üreticileri",
+    oemTag: "Sponsorluğa açık",
+    oemLead: "Omarchy çalıştıran dizüstü veya masaüstü mü üretiyorsunuz? OmaStat, cihazlarınızın gerçek topluluk makineleri arasında nasıl puan aldığını gösterir.",
+    oemBody: "OmaStat bir topluluk projesidir, resmi bir Omarchy hizmeti değildir. Sponsorluk anketin sürmesini sağlar; puanlar ve sıralamalar satılık değildir.",
+    oemCta: "GitHub'da tartış (#10652)",
+    oemSource: "Kaynağı gör",
+    tiersTitle: "OmaRank seviye ölçeği",
+    privacyTitle: "Zero-PII gizlilik standardı",
+    histCaption: "{n} sayılan gönderim (aylık tekilleştirilmiş)",
     badge: "TR",
     tickerTitle: "CANLI AKIŞ",
     navAddPlugin: "OmaRank Ekle",
@@ -240,7 +252,7 @@ const i18n = {
     lbLoadMore: "Daha fazla yükle",
     demoBadge: "DEMO",
     demoTitle: "Örnek kayıt: gerçek bir gönderimle değiştirilecek",
-    noData: "Henüz veri yok. İlk gönderimi sen yap: omarank-engine --share",
+    noData: "Henüz veri yok. İlk gönderimi sen yap: omarank-engine --submit-survey",
     loading: "Yükleniyor...",
     chartHist: "OmaScore Dağılımı",
     histEmpty: "Henüz puan dağılımı yok.",
@@ -255,6 +267,18 @@ const i18n = {
     tickerStatText: "Canlı topluluk istatistikleri yükleniyor..."
   },
   en: {
+    tagRam: "DDR5 • DDR4 capacity",
+    tagDisplay: "High refresh vs 60Hz",
+    tagVendors: "Laptops • Prebuilts • DIY boards",
+    oemTitle: "Hardware vendors",
+    oemTag: "Open to sponsors",
+    oemLead: "Building laptops or desktops that run Omarchy? OmaStat shows how they score across real community machines.",
+    oemBody: "OmaStat is a community project, not an official Omarchy service. Sponsorship keeps the survey running; scores and rankings are never for sale.",
+    oemCta: "Discuss on GitHub (#10652)",
+    oemSource: "View source",
+    tiersTitle: "OmaRank tier scale",
+    privacyTitle: "Zero-PII privacy standard",
+    histCaption: "{n} counted submissions (deduplicated monthly)",
     badge: "EN",
     tickerTitle: "LIVE FEED",
     navAddPlugin: "Add OmaRank",
@@ -322,7 +346,7 @@ const i18n = {
     lbLoadMore: "Load more",
     demoBadge: "DEMO",
     demoTitle: "Sample entry: replaced by the first real submission",
-    noData: "No data yet. Be the first: omarank-engine --share",
+    noData: "No data yet. Be the first: omarank-engine --submit-survey",
     loading: "Loading...",
     chartHist: "OmaScore Distribution",
     histEmpty: "No score distribution yet.",
@@ -401,7 +425,7 @@ const i18n = {
     lbLoadMore: "Mehr laden",
     demoBadge: "DEMO",
     demoTitle: "Beispieleintrag: wird durch die erste echte Einsendung ersetzt",
-    noData: "Noch keine Daten. Sei der Erste: omarank-engine --share",
+    noData: "Noch keine Daten. Sei der Erste: omarank-engine --submit-survey",
     loading: "Lädt...",
     chartHist: "OmaScore-Verteilung",
     histEmpty: "Noch keine Punkteverteilung.",
@@ -481,7 +505,7 @@ const i18n = {
     lbLoadMore: "Cargar más",
     demoBadge: "DEMO",
     demoTitle: "Entrada de ejemplo: se reemplaza con el primer envío real",
-    noData: "Aún no hay datos. Sé el primero: omarank-engine --share",
+    noData: "Aún no hay datos. Sé el primero: omarank-engine --submit-survey",
     loading: "Cargando...",
     chartHist: "Distribución de OmaScore",
     histEmpty: "Aún no hay distribución de puntuaciones.",
@@ -561,7 +585,7 @@ const i18n = {
     lbLoadMore: "Charger plus",
     demoBadge: "DÉMO",
     demoTitle: "Entrée d'exemple : remplacée par le premier envoi réel",
-    noData: "Pas encore de données. Soyez le premier : omarank-engine --share",
+    noData: "Pas encore de données. Soyez le premier : omarank-engine --submit-survey",
     loading: "Chargement...",
     chartHist: "Distribution OmaScore",
     histEmpty: "Pas encore de distribution des scores.",
@@ -774,7 +798,7 @@ function renderLeaderboard() {
 
   const messageRow = (text) => `
       <tr>
-        <td colspan="9" style="text-align: center; padding: 2.5rem; color: var(--muted); font-size: 0.85rem;">
+        <td colspan="9" style="text-align: center; padding: 2.5rem; color: var(--text-muted); font-size: 0.85rem;">
           ${escapeHtml(text)}
         </td>
       </tr>
@@ -1004,6 +1028,12 @@ function applyLanguage(lang) {
   document.querySelectorAll("#langMenu .menu-item").forEach(item => {
     if (item.getAttribute("data-lang") === lang) item.classList.add("active");
     else item.classList.remove("active");
+  });
+
+  // Static strings marked up in the HTML; languages without a key fall back to English
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const v = tr(el.dataset.i18n);
+    if (v) el.textContent = v;
   });
 
   renderTicker(lang);
@@ -1604,6 +1634,8 @@ function renderHistogram(rows) {
   const sum = buckets.reduce((a, b) => a + b, 0);
   if (sum === 0) {
     box.innerHTML = `<div class="chart-empty">${escapeHtml(tr("histEmpty"))}</div>`;
+    const emptyCap = document.getElementById("histCaption");
+    if (emptyCap) emptyCap.textContent = "";
     box.setAttribute("aria-label", tr("histEmpty"));
     return;
   }
@@ -1621,6 +1653,8 @@ function renderHistogram(rows) {
       </div>
     `;
   }).join("");
+  const cap = document.getElementById("histCaption");
+  if (cap) cap.textContent = tr("histCaption").replace("{n}", sum.toLocaleString());
   box.setAttribute("aria-label", `${tr("chartHist")}: ` + buckets.map((c, i) => `${i * 10}-${i === 9 ? 100 : i * 10 + 9}: ${c}`).join(", "));
 }
 

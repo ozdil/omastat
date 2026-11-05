@@ -30,7 +30,7 @@
 .q-icon-amber   { color: var(--amber); }
 .q-icon-red     { color: var(--red); }
 .q-icon-cyan    { color: var(--cyan); }
-.q-icon-muted   { color: var(--muted); }
+.q-icon-muted   { color: var(--text-muted); }
 .q-icon-text    { color: var(--text-bright); }
 
 :root {
@@ -57,6 +57,7 @@
   --text: #e2e8f0;
   --text-bright: #c0caf5;
   --muted: #565f89;
+  --text-muted: #8890ae;
   --brand: #f5b700;
   --brand-rgb: 245, 183, 0;
   --green: #9ece6a;
@@ -78,6 +79,7 @@
   --text: #cdd6f4;
   --text-bright: #cdd6f4;
   --muted: #585b70;
+  --text-muted: #969cb6;
   --brand: #89b4fa;
   --brand-rgb: 137, 180, 250;
   --green: #a6e3a1;
@@ -99,6 +101,7 @@
   --text: #4c4f69;
   --text-bright: #4c4f69;
   --muted: #acb0be;
+  --text-muted: #585c74;
   --brand: #1e66f5;
   --brand-rgb: 30, 102, 245;
   --green: #40a02b;
@@ -120,6 +123,7 @@
   --text: #ffcead;
   --text-bright: #ffcead;
   --muted: #6d7db6;
+  --text-muted: #7783b5;
   --brand: #7d82d9;
   --brand-rgb: 125, 130, 217;
   --green: #92a593;
@@ -141,6 +145,7 @@
   --text: #d3c6aa;
   --text-bright: #d3c6aa;
   --muted: #475258;
+  --text-muted: #b0a996;
   --brand: #7fbbb3;
   --brand-rgb: 127, 187, 179;
   --green: #a7c080;
@@ -162,6 +167,7 @@
   --text: #100F0F;
   --text-bright: #100F0F;
   --muted: #B7B5AC;
+  --text-muted: #64625e;
   --brand: #205EA6;
   --brand-rgb: 32, 94, 166;
   --green: #879A39;
@@ -183,6 +189,7 @@
   --text: #d4be98;
   --text-bright: #d4be98;
   --muted: #665c54;
+  --text-muted: #b3a184;
   --brand: #7daea3;
   --brand-rgb: 125, 174, 163;
   --green: #a9b665;
@@ -204,6 +211,7 @@
   --text: #ddf7ff;
   --text-bright: #ddf7ff;
   --muted: #2d3450;
+  --text-muted: #758498;
   --brand: #82FB9C;
   --brand-rgb: 130, 251, 156;
   --green: #4fe88f;
@@ -225,6 +233,7 @@
   --text: #dbe4ee;
   --text-bright: #c0caf5;
   --muted: #565f89;
+  --text-muted: #8992af;
   --brand: #00cbb8;
   --brand-rgb: 0, 203, 184;
   --green: #9ece6a;
@@ -246,6 +255,7 @@
   --text: #dcd7ba;
   --text-bright: #dcd7ba;
   --muted: #54546D;
+  --text-muted: #9d9b97;
   --brand: #dcd7ba;
   --brand-rgb: 220, 215, 186;
   --green: #76946a;
@@ -267,6 +277,7 @@
   --text: #FAFCFB;
   --text-bright: #e2dddc;
   --muted: #584e51;
+  --text-muted: #807a7c;
   --brand: #b59790;
   --brand-rgb: 181, 151, 144;
   --green: #87a9b0;
@@ -288,6 +299,7 @@
   --text: #d6e2ee;
   --text-bright: #f2fcff;
   --muted: #304860;
+  --text-muted: #8597a8;
   --brand: #8bc9eb;
   --brand-rgb: 139, 201, 235;
   --green: #5e95bc;
@@ -309,6 +321,7 @@
   --text: #212121;
   --text-bright: #000000;
   --muted: #9e9e9e;
+  --text-muted: #616161;
   --brand: #3264eb;
   --brand-rgb: 50, 100, 235;
   --green: #4a2fd0;
@@ -330,6 +343,7 @@
   --text: #bebebe;
   --text-bright: #bebebe;
   --muted: #333333;
+  --text-muted: #888888;
   --brand: #e68e0d;
   --brand-rgb: 230, 142, 13;
   --green: #FFC107;
@@ -351,6 +365,7 @@
   --text: #c2c2b0;
   --text-bright: #c2c2b0;
   --muted: #666666;
+  --text-muted: #95958c;
   --brand: #78824b;
   --brand-rgb: 120, 130, 75;
   --green: #5f875f;
@@ -372,6 +387,7 @@
   --text: #d8dee9;
   --text-bright: #d8dee9;
   --muted: #4c566a;
+  --text-muted: #a8b0be;
   --brand: #81a1c1;
   --brand-rgb: 129, 161, 193;
   --green: #a3be8c;
@@ -393,6 +409,7 @@
   --text: #C1C497;
   --text-bright: #F7E8B2;
   --muted: #53685B;
+  --text-muted: #96a080;
   --brand: #509475;
   --brand-rgb: 80, 148, 117;
   --green: #549e6a;
@@ -414,6 +431,7 @@
   --text: #f6dcac;
   --text-bright: #f6dcac;
   --muted: #2a6b78;
+  --text-muted: #71938a;
   --brand: #faa968;
   --brand-rgb: 250, 169, 104;
   --green: #028391;
@@ -435,6 +453,7 @@
   --text: #e6d9db;
   --text-bright: #e6d9db;
   --muted: #72696a;
+  --text-muted: #a4999b;
   --brand: #f38d70;
   --brand-rgb: 243, 141, 112;
   --green: #adda78;
@@ -456,6 +475,7 @@
   --text: #575279;
   --text-bright: #575279;
   --muted: #cecacd;
+  --text-muted: #5f5a7f;
   --brand: #56949f;
   --brand-rgb: 86, 148, 159;
   --green: #286983;
@@ -477,6 +497,7 @@
   --text: #cacccc;
   --text-bright: #a5aeb4;
   --muted: #4b4e55;
+  --text-muted: #7d7f83;
   --brand: #798186;
   --brand-rgb: 121, 129, 134;
   --green: #9fa5a9;
@@ -498,6 +519,7 @@
   --text: #c7d5e0;
   --text-bright: #c0caf5;
   --muted: #565f89;
+  --text-muted: #8591ae;
   --brand: #66c0f4;
   --brand-rgb: 102, 192, 244;
   --green: #9ece6a;
@@ -519,6 +541,7 @@
   --text: #a9b1d6;
   --text-bright: #c0caf5;
   --muted: #414868;
+  --text-muted: #8990b4;
   --brand: #7aa2f7;
   --brand-rgb: 122, 162, 247;
   --green: #9ece6a;
@@ -540,6 +563,7 @@
   --text: #e5ecf4;
   --text-bright: #c0caf5;
   --muted: #565f89;
+  --text-muted: #8890ae;
   --brand: #e63946;
   --brand-rgb: 230, 57, 70;
   --green: #9ece6a;
@@ -561,6 +585,7 @@
   --text: #ffffff;
   --text-bright: #ffffff;
   --muted: #7a7a7a;
+  --text-muted: #858585;
   --brand: #8d8d8d;
   --brand-rgb: 141, 141, 141;
   --green: #b6b6b6;
@@ -582,6 +607,7 @@
   --text: #000000;
   --text-bright: #000000;
   --muted: #808080;
+  --text-muted: #4d4d4d;
   --brand: #6e6e6e;
   --brand-rgb: 110, 110, 110;
   --green: #3a3a3a;
@@ -919,7 +945,7 @@ header.omarchy-panel {
 
 .menu-item-desc {
   font-size: 0.64rem;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 /* Live Telemetry Ticker Strip (Kayar Yazı) */
@@ -1094,7 +1120,7 @@ main.quickshell-canvas {
 }
 
 .hero-lead {
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 0.88rem;
   max-width: 640px;
   margin: 0 auto 1.5rem;
@@ -1164,7 +1190,7 @@ main.quickshell-canvas {
 .qml-tab {
   background: transparent;
   border: 1px solid transparent;
-  color: var(--muted);
+  color: var(--text-muted);
   font-family: inherit;
   font-size: 0.8rem;
   font-weight: 700;
@@ -1240,7 +1266,7 @@ main.quickshell-canvas {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .card-icon {
@@ -1300,7 +1326,7 @@ main.quickshell-canvas {
 
 .chart-box-tag {
   font-size: 0.68rem;
-  color: var(--muted);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -1328,7 +1354,7 @@ main.quickshell-canvas {
 }
 
 .meta-pct {
-  color: var(--muted);
+  color: var(--text-muted);
   font-weight: 700;
 }
 
@@ -1376,7 +1402,7 @@ main.quickshell-canvas {
 
 .leaderboard-head p {
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .leaderboard-summary-pill {
@@ -1478,7 +1504,7 @@ main.quickshell-canvas {
 
 .leaderboard-table th {
   background: var(--bg-subtle);
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 0.8px;
@@ -1639,7 +1665,7 @@ main.quickshell-canvas {
 .archetype-tag {
   font-size: 0.65rem;
   font-family: var(--font-mono);
-  color: var(--muted);
+  color: var(--text-muted);
   background: var(--bg-surface);
   padding: 0.1rem 0.4rem;
   border-radius: 3px;
@@ -1742,7 +1768,7 @@ main.quickshell-canvas {
 
 .roaster-header p {
   font-size: 0.82rem;
-  color: var(--muted);
+  color: var(--text-muted);
   margin-bottom: 1.25rem;
 }
 
@@ -1818,7 +1844,7 @@ main.quickshell-canvas {
   gap: 0.5rem;
   flex-wrap: wrap;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--text-muted);
   margin-bottom: 1.25rem;
 }
 
@@ -1880,7 +1906,7 @@ main.quickshell-canvas {
   align-items: center;
   gap: 1.25rem;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--text-muted);
   flex-wrap: wrap;
 }
 
@@ -1905,7 +1931,7 @@ main.quickshell-canvas {
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--text-muted);
   margin-bottom: 0.4rem;
   letter-spacing: 0.5px;
 }
@@ -1993,7 +2019,7 @@ main.quickshell-canvas {
 
 .tier-lore {
   font-size: 0.72rem;
-  color: var(--muted);
+  color: var(--text-muted);
   line-height: 1.5;
   margin-bottom: 0.6rem;
 }
@@ -2005,7 +2031,7 @@ main.quickshell-canvas {
   padding: 1.5rem;
   line-height: 1.7;
   font-size: 0.82rem;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .zero-pii-card strong {
@@ -2188,7 +2214,7 @@ footer.qml-footer {
   margin-top: 2.5rem;
   text-align: center;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--text-muted);
   line-height: 1.8;
 }
 
@@ -2233,7 +2259,7 @@ footer a:hover {
   padding: 0.05rem 0.4rem;
   border-radius: 4px;
   border: 1px dashed var(--muted);
-  color: var(--muted);
+  color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 0.6rem;
   font-weight: 700;
@@ -2262,7 +2288,7 @@ footer a:hover {
 .chart-empty {
   padding: 1.5rem 0.5rem;
   text-align: center;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 0.8rem;
 }
 
@@ -2301,11 +2327,35 @@ footer a:hover {
 .hist-label {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hist-bar {
     transition: none;
   }
+}
+
+/* Header summary: one line, truncated, never wraps into a narrow column */
+.quick-summary {
+  display: block;
+  max-width: 100%;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.panel-center { min-width: 0; }
+
+/* Histogram sample size under the chart, so a small n is not read as the whole community */
+.hist-caption {
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.hist-caption:empty { display: none; }
+/* The ticker already carries the same figures; the header line only shows when there is room */
+@media (max-width: 1599px) {
+  .panel-center { display: none; }
 }

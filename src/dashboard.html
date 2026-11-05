@@ -27,7 +27,7 @@
       </div>
 
       <div class="panel-center">
-        <span style="font-size: 0.72rem; color: var(--muted);" id="quickSummary">Loading telemetry metrics...</span>
+        <span class="quick-summary" id="quickSummary">Loading telemetry metrics...</span>
       </div>
 
       <div class="panel-right">
@@ -253,7 +253,7 @@
             <div class="chart-box">
               <div class="chart-box-header">
                 <span class="chart-box-title"><span class="q-icon q-icon-green">󰘚</span> System Memory (RAM)</span>
-                <span class="chart-box-tag">DDR5 • DDR4 Capacity</span>
+                <span class="chart-box-tag" data-i18n="tagRam">DDR5 • DDR4 Capacity</span>
               </div>
               <div id="ramChart"></div>
             </div>
@@ -261,7 +261,7 @@
             <div class="chart-box">
               <div class="chart-box-header">
                 <span class="chart-box-title"><span class="q-icon q-icon-amber">󰍹</span> Display Arena & Refresh Rates</span>
-                <span class="chart-box-tag">High-Speed vs 60Hz</span>
+                <span class="chart-box-tag" data-i18n="tagDisplay">High-Speed vs 60Hz</span>
               </div>
               <div id="displayChart"></div>
             </div>
@@ -269,7 +269,7 @@
             <div class="chart-box">
               <div class="chart-box-header">
                 <span class="chart-box-title"><span class="q-icon q-icon-brand">󰌢</span> PC Manufacturers & Custom DIY Vendors</span>
-                <span class="chart-box-tag">Laptops • Prebuilts • DIY Mobos</span>
+                <span class="chart-box-tag" data-i18n="tagVendors">Laptops • Prebuilts • DIY Mobos</span>
               </div>
               <div id="brandChart"></div>
             </div>
@@ -280,29 +280,26 @@
                 <span class="chart-box-tag">0 – 100</span>
               </div>
               <div id="scoreHistogram" class="score-histogram" role="img" aria-label="OmaScore distribution"></div>
+              <p id="histCaption" class="hist-caption"></p>
             </div>
 
             <div class="chart-box" style="display: flex; flex-direction: column; justify-content: space-between;">
               <div>
                 <div class="chart-box-header">
-                  <span class="chart-box-title"><span class="q-icon q-icon-green">󰒋</span> Hardware Vendor & OEM Partnership</span>
-                  <span class="chart-box-tag" style="color: var(--brand); border-color: var(--border-accent);">Sponsorship Open</span>
+                  <span class="chart-box-title oem-title"><span class="q-icon q-icon-green">󰒋</span> <span data-i18n="oemTitle">Hardware vendors</span></span>
+                  <span class="chart-box-tag" style="color: var(--brand); border-color: var(--border-accent);" data-i18n="oemTag">Open to sponsors</span>
                 </div>
-                <p style="font-size: 0.82rem; color: var(--text); line-height: 1.5; margin-bottom: 0.75rem;">
-                  Are you a PC manufacturer or hardware brand like <strong>Game Garaj</strong>, <strong>Framework</strong>, <strong>ASUS</strong>, <strong>System76</strong>, or <strong>Lenovo</strong>?
-                </p>
-                <p style="font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem;">
-                  Omarchy Linux delivers native Wayland performance and zero-PII telemetry. Get your models certified, featured in community benchmarks, or sponsor official Omarchy hardware validation.
-                </p>
+                <p data-i18n="oemLead" style="font-size: 0.82rem; color: var(--text); line-height: 1.5; margin-bottom: 0.75rem;">Building laptops or desktops that run Omarchy? OmaStat shows how they score across real community machines.</p>
+                <p data-i18n="oemBody" style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem;">OmaStat is a community project, not an official Omarchy service. Sponsorship keeps the survey running; scores and rankings are never for sale.</p>
               </div>
               <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
                 <a href="https://github.com/omacom/omarchy/discussions/10652" target="_blank" class="btn-install" style="padding: 0.5rem 1rem; font-size: 0.8rem; text-decoration: none;">
                   <span class="q-icon q-icon-brand">󰒋</span>
-                  <span>Partner with Omarchy (RFC #10652)</span>
+                  <span data-i18n="oemCta">Discuss on GitHub (#10652)</span>
                 </a>
                 <a href="https://github.com/ozdil/omastat" target="_blank" class="shell-btn" style="padding: 0.5rem 1rem; font-size: 0.8rem; text-decoration: none;">
                   <span class="q-icon q-icon-purple"></span>
-                  <span>View Source</span>
+                  <span data-i18n="oemSource">View source</span>
                 </a>
               </div>
             </div>
@@ -360,7 +357,7 @@
                 </thead>
                 <tbody id="leaderboardBody" aria-live="polite">
                   <tr>
-                    <td colspan="9" style="text-align: center; padding: 2rem; color: var(--muted);">Yükleniyor...</td>
+                    <td colspan="9" style="text-align: center; padding: 2rem; color: var(--text-muted);">Yükleniyor...</td>
                   </tr>
                 </tbody>
               </table>
@@ -421,7 +418,7 @@
               <span class="chart-box-title"><span class="q-icon q-icon-purple">󰃬</span> Interactive OmaScore Simulator</span>
               <span class="chart-box-tag">Instant Client-Side Estimation</span>
             </div>
-            <p style="font-size: 0.8rem; color: var(--muted);">
+            <p style="font-size: 0.8rem; color: var(--text-muted);">
               Curious what your rig would score before running the benchmark? Dial in your hardware below:
             </p>
 
@@ -491,11 +488,11 @@
             <div class="sim-score-card">
               <div class="sim-num-display">
                 <span class="sim-big-score" id="simScoreDisplay">81</span>
-                <span style="color: var(--muted); font-size: 0.9rem;">/ 100 Projected OmaScore</span>
+                <span style="color: var(--text-muted); font-size: 0.9rem;">/ 100 Projected OmaScore</span>
               </div>
               <div style="flex: 1; min-width: 220px;">
                 <div style="font-weight: 800; color: var(--text-bright); font-size: 1rem;" id="simTierTitle">󰢮 Gaming Chair Missing</div>
-                <div style="font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem;" id="simTierQuote">"Top 15% tier. You are ready to blame your ISP whenever you miss a shot."</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;" id="simTierQuote">"Top 15% tier. You are ready to blame your ISP whenever you miss a shot."</div>
               </div>
               <button id="runRealBenchmarkBtn" class="btn-install" style="padding: 0.6rem 1.25rem; border: none; cursor: pointer;">
                 <span id="runRealBenchmarkText">Run Real Benchmark</span>
@@ -508,8 +505,8 @@
         <!-- TAB 4: Hall of Tiers -->
         <div id="tab-tiers" class="tab-pane">
           <div style="margin-bottom: 1.25rem;">
-            <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--text-bright); margin-bottom: 0.25rem;">Official OmaRank Normalized Hierarchy</h2>
-            <p style="font-size: 0.78rem; color: var(--muted);">How systems are classified into the global hardware ladder:</p>
+            <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--text-bright); margin-bottom: 0.25rem;" data-i18n="tiersTitle">OmaRank tier scale</h2>
+            <p style="font-size: 0.78rem; color: var(--text-muted);">How systems are classified into the global hardware ladder:</p>
           </div>
           <div id="tierGrid" class="tiers-layout"></div>
         </div>
@@ -517,7 +514,7 @@
         <!-- TAB 5: Zero-PII Audit -->
         <div id="tab-privacy" class="tab-pane">
           <div class="zero-pii-card">
-            <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--text-bright); margin-bottom: 0.75rem;"><span class="q-icon q-icon-green">󰒃</span> Zero-PII Cryptographic Privacy Standard</h2>
+            <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--text-bright); margin-bottom: 0.75rem;"><span class="q-icon q-icon-green">󰒃</span> <span data-i18n="privacyTitle">Zero-PII privacy standard</span></h2>
             <p style="margin-bottom: 0.8rem;">
               OmaStat is purpose-built to eliminate user tracking, telemetry backlash, and surveillance vectors.
             </p>
@@ -536,9 +533,9 @@
 
     <footer class="qml-footer">
       <p>
-        <strong>OmaStat</strong> • Pure Qt Quickshell Telemetry Engine • <a href="https://omarchy.org" target="_blank">Omarchy Linux</a> • <a href="https://buymeacoffee.com/ozdil" target="_blank" style="color: #FFDD00; font-weight: bold; text-decoration: none;"><span class="q-icon q-icon-amber">󰇰</span> Sponsor OmaStat</a>
+        <strong>OmaStat</strong> • Pure Qt Quickshell Telemetry Engine • <a href="https://omarchy.org" target="_blank">Omarchy Linux</a> • <a href="https://buymeacoffee.com/ozdil" target="_blank" style="color: var(--text-bright); font-weight: bold; text-decoration: none;"><span class="q-icon q-icon-amber">󰇰</span> Sponsor OmaStat</a>
       </p>
-      <p style="margin-top: 0.25rem; opacity: 0.7;">
+      <p style="margin-top: 0.25rem; color: var(--text-muted);">
         Architected by <a href="https://github.com/ozdil" target="_blank">Ozan Özdil (ozdil)</a> & Omarchy Contributors • Zero-PII Cryptographic Matrix
       </p>
     </footer>

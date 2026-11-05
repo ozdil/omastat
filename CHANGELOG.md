@@ -2,6 +2,19 @@
 
 All notable changes to OmaStat are listed here.
 
+## Unreleased
+
+### Fixed
+
+- **Dashboard text was hard to read in every theme.** Secondary text used each theme's `--muted` comment colour, measured at 1.18:1 to 4.25:1 against its background (Tokyo Night: 1.63:1, below WCAG 1.4.3's 4.5:1). Each theme now has a `--text-muted` between `--muted` and `--text`, chosen to reach at least 4.6:1 on the page, shell and card backgrounds. Low-contrast text on Tokyo Night went from 41 elements to 0.
+- **Duplicate chart rows.** "31GB DDR5" and "32GB DDR5" were listed separately, and so were "2560×1440 @ 240Hz" and "2560×1440@240Hz". RAM is now labelled with the installed size (usable memory up to 10% below a standard size rounds up), and display strings get one spelling. Both are normalized on ingest, and rows stored under older spellings are merged in `/api/stats/v1`. No migration needed.
+- **The empty state told people to run `omarank-engine --share`**, a flag the engine doesn't have. It now says `--submit-survey`.
+- **English text on the Turkish page:** the RAM, display and vendor chart tags, the vendor card, and the tier and privacy headings. These strings are now translated (TR and EN, other languages fall back to EN).
+- **The vendor card claimed things on Omarchy's behalf** ("Partner with Omarchy", "sponsor official Omarchy hardware validation"). It now says OmaStat is a community project and that rankings aren't for sale.
+- The header summary wrapped into a three-line column. It's now one line and only shows on screens 1600px and wider, since the ticker carries the same figures.
+- The score histogram shows its sample size ("n counted submissions"), so a small count isn't read as the whole community.
+- The yellow "Sponsor OmaStat" footer link was unreadable on light themes.
+
 ## 1.1.0 (unreleased)
 
 Before deploying, apply migrations 0004 and 0005: `npm run db:migrate:prod`.
