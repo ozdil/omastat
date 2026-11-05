@@ -6,6 +6,7 @@
 import dashboardHtml from "./dashboard.html";
 import { TIERS, WEIGHTS, tierForScore } from "./tiers";
 import { maxPlausibleScore, PLAUSIBILITY_TOLERANCE } from "./scoring";
+import { marketedRamGb, mergeRows, normalizeDisplay, normalizeRamBucket } from "./normalize";
 
 const VERSION = "1.1.0";
 
@@ -256,8 +257,10 @@ async function handleSurveySubmission(request: Request, env: Env): Promise<Respo
   const gpuModel = cleanGpuModel(rawGpuModel);
   const gpuDriver = sanitizeText(body.gpu_driver, 40);
   const ramType = sanitizeText(body.ram_type, 20) || "RAM";
-  const ramBucket = `${ramGb}GB ${ramType}`;
-  const ramDesc = ramSpeed > 0 ? `${ramGb}GB ${ramType} @ ${ramSpeed}MT/s` : `${ramGb}GB ${ramType}`;
+  // Charts show the installed size (32GB), not the usable MemTotal the engine reports (31GB)
+  const ramLabelGb = marketedRamGb(ramGb);
+  const ramBucket = `${ramLabelGb}GB ${ramType}`;
+  const ramDesc = ramSpeed > 0 ? `${ramLabelGb}GB ${ramType} @ ${ramSpeed}MT/s` : `${ramLabelGb}GB ${ramType}`;
   const rawDisplay = sanitizeText(body.primary_display, 40);
   const display = cleanDisplay(rawDisplay);
   const archetype = validateArchetype(body.archetype_signature);
@@ -428,8 +431,9 @@ async function handleStatsQuery(env: Env): Promise<Response> {
       env.DB.prepare("SELECT key, value FROM stats_meta"),
       env.DB.prepare("SELECT model, count FROM cpu_distribution ORDER BY count DESC LIMIT 8"),
       env.DB.prepare("SELECT model, count FROM gpu_distribution ORDER BY count DESC LIMIT 8"),
-      env.DB.prepare("SELECT bucket, count FROM ram_distribution ORDER BY count DESC LIMIT 8"),
-      env.DB.prepare("SELECT resolution_hz, count FROM display_distribution ORDER BY count DESC LIMIT 8"),
+      // Unlimited: rows stored under older spellings are merged below, then cut to 8
+      env.DB.prepare("SELECT bucket, count FROM ram_distribution ORDER BY count DESC"),
+      env.DB.prepare("SELECT resolution_hz, count FROM display_distribution ORDER BY count DESC"),
       env.DB.prepare("SELECT tier_name, tier_icon, count FROM tier_distribution ORDER BY count DESC"),
       env.DB.prepare("SELECT archetype, count FROM archetype_distribution ORDER BY count DESC LIMIT 10"),
       env.DB.prepare("SELECT brand, model, count FROM brand_distribution ORDER BY count DESC LIMIT 8"),
@@ -463,8 +467,10 @@ async function handleStatsQuery(env: Env): Promise<Response> {
         average_tier: total > 0 ? `${avgTier.icon} ${avgTier.name}` : null,
         top_cpus: formatList(cpusRes.results || []),
         top_gpus: formatList(gpusRes.results || []),
-        ram_breakdown: formatList(ramRes.results || []),
-        display_breakdown: formatList(dispRes.results || []),
+        ram_breakdown: formatList(mergeRows((ramRes.results || []) as any[], "bucket", normalizeRamBucket).slice(0, 8)),
+        display_breakdown: formatList(
+          mergeRows((dispRes.results || []) as any[], "resolution_hz", normalizeDisplay).slice(0, 8)
+        ),
         tier_distribution: formatList(tierRes.results || []),
         top_archetypes: formatList(archRes.results || []),
         top_brands: formatList(brandRes.results || []),
@@ -605,7 +611,7 @@ function cleanGpuModel(raw: string): string {
 
 function cleanDisplay(raw: string): string {
   if (!raw) return "1080p @ 60Hz";
-  return raw.replace(/x/g, "×");
+  return normalizeDisplay(raw);
 }
 
 function cleanBrandAndModel(sysVendor: string, boardVendor: string, productName: string, boardName: string): { brand: string; model: string } {
