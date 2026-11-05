@@ -240,7 +240,7 @@ const i18n = {
     lbLoadMore: "Daha fazla yükle",
     demoBadge: "DEMO",
     demoTitle: "Örnek kayıt: gerçek bir gönderimle değiştirilecek",
-    noData: "Henüz veri yok. İlk gönderimi sen yap: omarank-engine --share",
+    noData: "Henüz veri yok. İlk gönderimi sen yap: omarank-engine --submit-survey",
     loading: "Yükleniyor...",
     chartHist: "OmaScore Dağılımı",
     histEmpty: "Henüz puan dağılımı yok.",
@@ -322,7 +322,7 @@ const i18n = {
     lbLoadMore: "Load more",
     demoBadge: "DEMO",
     demoTitle: "Sample entry: replaced by the first real submission",
-    noData: "No data yet. Be the first: omarank-engine --share",
+    noData: "No data yet. Be the first: omarank-engine --submit-survey",
     loading: "Loading...",
     chartHist: "OmaScore Distribution",
     histEmpty: "No score distribution yet.",
@@ -401,7 +401,7 @@ const i18n = {
     lbLoadMore: "Mehr laden",
     demoBadge: "DEMO",
     demoTitle: "Beispieleintrag: wird durch die erste echte Einsendung ersetzt",
-    noData: "Noch keine Daten. Sei der Erste: omarank-engine --share",
+    noData: "Noch keine Daten. Sei der Erste: omarank-engine --submit-survey",
     loading: "Lädt...",
     chartHist: "OmaScore-Verteilung",
     histEmpty: "Noch keine Punkteverteilung.",
@@ -481,7 +481,7 @@ const i18n = {
     lbLoadMore: "Cargar más",
     demoBadge: "DEMO",
     demoTitle: "Entrada de ejemplo: se reemplaza con el primer envío real",
-    noData: "Aún no hay datos. Sé el primero: omarank-engine --share",
+    noData: "Aún no hay datos. Sé el primero: omarank-engine --submit-survey",
     loading: "Cargando...",
     chartHist: "Distribución de OmaScore",
     histEmpty: "Aún no hay distribución de puntuaciones.",
@@ -561,7 +561,7 @@ const i18n = {
     lbLoadMore: "Charger plus",
     demoBadge: "DÉMO",
     demoTitle: "Entrée d'exemple : remplacée par le premier envoi réel",
-    noData: "Pas encore de données. Soyez le premier : omarank-engine --share",
+    noData: "Pas encore de données. Soyez le premier : omarank-engine --submit-survey",
     loading: "Chargement...",
     chartHist: "Distribution OmaScore",
     histEmpty: "Pas encore de distribution des scores.",
@@ -774,7 +774,7 @@ function renderLeaderboard() {
 
   const messageRow = (text) => `
       <tr>
-        <td colspan="9" style="text-align: center; padding: 2.5rem; color: var(--muted); font-size: 0.85rem;">
+        <td colspan="9" style="text-align: center; padding: 2.5rem; color: var(--muted-text); font-size: 0.85rem;">
           ${escapeHtml(text)}
         </td>
       </tr>

@@ -27,7 +27,7 @@
       </div>
 
       <div class="panel-center">
-        <span style="font-size: 0.72rem; color: var(--muted);" id="quickSummary">Loading telemetry metrics...</span>
+        <span style="font-size: 0.72rem; color: var(--muted-text);" id="quickSummary">Loading telemetry metrics...</span>
       </div>
 
       <div class="panel-right">
@@ -78,7 +78,7 @@
           <!-- Volume Slider -->
           <div class="volume-slider-box" title="Radio Volume">
             <span class="q-icon q-icon-cyan" id="volumeIcon" style="font-size:0.75rem;">󰕾</span>
-            <input type="range" id="radioVolume" min="0" max="1" step="0.05" value="0.75" class="quickshell-slider" />
+            <input type="range" id="radioVolume" aria-label="Radio volume" min="0" max="1" step="0.05" value="0.75" class="quickshell-slider" />
           </div>
         </div>
 
@@ -106,7 +106,7 @@
         </div>
 
         <!-- Buy Me a Coffee -->
-        <a href="https://buymeacoffee.com/ozdil" target="_blank" rel="noopener noreferrer" class="shell-btn" style="color: #FFDD00; border-color: rgba(255, 221, 0, 0.4); text-decoration: none;" title="Buy Me a Coffee">
+        <a href="https://buymeacoffee.com/ozdil" target="_blank" rel="noopener noreferrer" class="shell-btn" style="color: var(--text-bright); border-color: color-mix(in srgb, var(--amber) 40%, transparent); text-decoration: none;" title="Buy Me a Coffee">
           <span class="q-icon q-icon-amber" style="font-size: 0.85rem;">󰇰</span>
           <span style="font-weight: 700; font-size: 0.72rem;">Sponsor</span>
         </a>
@@ -237,7 +237,7 @@
             <div class="chart-box">
               <div class="chart-box-header">
                 <span class="chart-box-title"><span class="q-icon q-icon-cyan">󰢮</span> Graphics Architecture (GPU)</span>
-                <span class="chart-box-tag">RADV • NVIDIA • i915 • Xe</span>
+                <span lang="en" class="chart-box-tag">RADV • NVIDIA • i915 • Xe</span>
               </div>
               <div id="gpuChart"></div>
             </div>
@@ -245,7 +245,7 @@
             <div class="chart-box">
               <div class="chart-box-header">
                 <span class="chart-box-title"><span class="q-icon q-icon-purple"></span> Processor Architecture (CPU)</span>
-                <span class="chart-box-tag">AMD • Intel • ARM64</span>
+                <span lang="en" class="chart-box-tag">AMD • Intel • ARM64</span>
               </div>
               <div id="cpuChart"></div>
             </div>
@@ -253,7 +253,7 @@
             <div class="chart-box">
               <div class="chart-box-header">
                 <span class="chart-box-title"><span class="q-icon q-icon-green">󰘚</span> System Memory (RAM)</span>
-                <span class="chart-box-tag">DDR5 • DDR4 Capacity</span>
+                <span lang="en" class="chart-box-tag">DDR5 • DDR4 Capacity</span>
               </div>
               <div id="ramChart"></div>
             </div>
@@ -261,7 +261,7 @@
             <div class="chart-box">
               <div class="chart-box-header">
                 <span class="chart-box-title"><span class="q-icon q-icon-amber">󰍹</span> Display Arena & Refresh Rates</span>
-                <span class="chart-box-tag">High-Speed vs 60Hz</span>
+                <span lang="en" class="chart-box-tag">High-Speed vs 60Hz</span>
               </div>
               <div id="displayChart"></div>
             </div>
@@ -269,7 +269,7 @@
             <div class="chart-box">
               <div class="chart-box-header">
                 <span class="chart-box-title"><span class="q-icon q-icon-brand">󰌢</span> PC Manufacturers & Custom DIY Vendors</span>
-                <span class="chart-box-tag">Laptops • Prebuilts • DIY Mobos</span>
+                <span lang="en" class="chart-box-tag">Laptops • Prebuilts • DIY Mobos</span>
               </div>
               <div id="brandChart"></div>
             </div>
@@ -277,7 +277,7 @@
             <div class="chart-box">
               <div class="chart-box-header">
                 <span class="chart-box-title" id="histTitle"><span class="q-icon q-icon-purple">󰄧</span> OmaScore Distribution</span>
-                <span class="chart-box-tag">0 – 100</span>
+                <span lang="en" class="chart-box-tag">0 – 100</span>
               </div>
               <div id="scoreHistogram" class="score-histogram" role="img" aria-label="OmaScore distribution"></div>
             </div>
@@ -286,12 +286,12 @@
               <div>
                 <div class="chart-box-header">
                   <span class="chart-box-title"><span class="q-icon q-icon-green">󰒋</span> Hardware Vendor & OEM Partnership</span>
-                  <span class="chart-box-tag" style="color: var(--brand); border-color: var(--border-accent);">Sponsorship Open</span>
+                  <span lang="en" class="chart-box-tag" style="color: var(--brand-text); border-color: var(--border-accent);">Sponsorship Open</span>
                 </div>
                 <p style="font-size: 0.82rem; color: var(--text); line-height: 1.5; margin-bottom: 0.75rem;">
                   Are you a PC manufacturer or hardware brand like <strong>Game Garaj</strong>, <strong>Framework</strong>, <strong>ASUS</strong>, <strong>System76</strong>, or <strong>Lenovo</strong>?
                 </p>
-                <p style="font-size: 0.78rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem;">
+                <p style="font-size: 0.78rem; color: var(--muted-text); line-height: 1.5; margin-bottom: 1rem;">
                   Omarchy Linux delivers native Wayland performance and zero-PII telemetry. Get your models certified, featured in community benchmarks, or sponsor official Omarchy hardware validation.
                 </p>
               </div>
@@ -360,7 +360,7 @@
                 </thead>
                 <tbody id="leaderboardBody" aria-live="polite">
                   <tr>
-                    <td colspan="9" style="text-align: center; padding: 2rem; color: var(--muted);">Yükleniyor...</td>
+                    <td colspan="9" style="text-align: center; padding: 2rem; color: var(--muted-text);">Yükleniyor...</td>
                   </tr>
                 </tbody>
               </table>
@@ -419,15 +419,15 @@
           <div class="simulator-box">
             <div class="chart-box-header">
               <span class="chart-box-title"><span class="q-icon q-icon-purple">󰃬</span> Interactive OmaScore Simulator</span>
-              <span class="chart-box-tag">Instant Client-Side Estimation</span>
+              <span lang="en" class="chart-box-tag">Instant Client-Side Estimation</span>
             </div>
-            <p style="font-size: 0.8rem; color: var(--muted);">
+            <p style="font-size: 0.8rem; color: var(--muted-text);">
               Curious what your rig would score before running the benchmark? Dial in your hardware below:
             </p>
 
             <div class="sim-grid">
               <div class="sim-field">
-                <label for="simCpu">Processor Tier (CPU)</label>
+                <label lang="en" for="simCpu">Processor Tier (CPU)</label>
                 <select id="simCpu" class="sim-select">
                   <option value="20">Entry Dual/Quad Core (+20)</option>
                   <option value="50">Mainstream 6-Core i5/Ryzen 5 (+50)</option>
@@ -437,7 +437,7 @@
               </div>
 
               <div class="sim-field">
-                <label for="simGpu">Graphics Card (GPU)</label>
+                <label lang="en" for="simGpu">Graphics Card (GPU)</label>
                 <select id="simGpu" class="sim-select">
                   <option value="15">Integrated Intel / AMD Graphics (+15)</option>
                   <option value="48">Entry dGPU (GTX 1650, RX 6600) (+48)</option>
@@ -447,7 +447,7 @@
               </div>
 
               <div class="sim-field">
-                <label for="simRam">Memory Size & Generation</label>
+                <label lang="en" for="simRam">Memory Size & Generation</label>
                 <select id="simRam" class="sim-select">
                   <option value="20">8 GB DDR3/DDR4 (+20)</option>
                   <option value="55">16 GB DDR4/DDR5 (+55)</option>
@@ -457,7 +457,7 @@
               </div>
 
               <div class="sim-field">
-                <label for="simMobo">Motherboard Chipset</label>
+                <label lang="en" for="simMobo">Motherboard Chipset</label>
                 <select id="simMobo" class="sim-select">
                   <option value="45">Legacy (H61 / B75) (+45)</option>
                   <option value="62">Entry (H610 / A520) (+62)</option>
@@ -468,7 +468,7 @@
               </div>
 
               <div class="sim-field">
-                <label for="simStorage">Storage</label>
+                <label lang="en" for="simStorage">Storage</label>
                 <select id="simStorage" class="sim-select">
                   <option value="32">Hard disk (HDD) (+32)</option>
                   <option value="68">SATA SSD (+68)</option>
@@ -478,7 +478,7 @@
               </div>
 
               <div class="sim-field">
-                <label for="simDisp">Display & Refresh Rate</label>
+                <label lang="en" for="simDisp">Display & Refresh Rate</label>
                 <select id="simDisp" class="sim-select">
                   <option value="25">1080p @ 60Hz Office (+25)</option>
                   <option value="60">1080p/1440p @ 144Hz (+60)</option>
@@ -491,11 +491,11 @@
             <div class="sim-score-card">
               <div class="sim-num-display">
                 <span class="sim-big-score" id="simScoreDisplay">81</span>
-                <span style="color: var(--muted); font-size: 0.9rem;">/ 100 Projected OmaScore</span>
+                <span style="color: var(--muted-text); font-size: 0.9rem;">/ 100 Projected OmaScore</span>
               </div>
               <div style="flex: 1; min-width: 220px;">
                 <div style="font-weight: 800; color: var(--text-bright); font-size: 1rem;" id="simTierTitle">󰢮 Gaming Chair Missing</div>
-                <div style="font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem;" id="simTierQuote">"Top 15% tier. You are ready to blame your ISP whenever you miss a shot."</div>
+                <div style="font-size: 0.78rem; color: var(--muted-text); margin-top: 0.2rem;" id="simTierQuote">"Top 15% tier. You are ready to blame your ISP whenever you miss a shot."</div>
               </div>
               <button id="runRealBenchmarkBtn" class="btn-install" style="padding: 0.6rem 1.25rem; border: none; cursor: pointer;">
                 <span id="runRealBenchmarkText">Run Real Benchmark</span>
@@ -509,7 +509,7 @@
         <div id="tab-tiers" class="tab-pane">
           <div style="margin-bottom: 1.25rem;">
             <h2 style="font-size: 1.1rem; font-weight: 800; color: var(--text-bright); margin-bottom: 0.25rem;">Official OmaRank Normalized Hierarchy</h2>
-            <p style="font-size: 0.78rem; color: var(--muted);">How systems are classified into the global hardware ladder:</p>
+            <p style="font-size: 0.78rem; color: var(--muted-text);">How systems are classified into the global hardware ladder:</p>
           </div>
           <div id="tierGrid" class="tiers-layout"></div>
         </div>
@@ -536,7 +536,7 @@
 
     <footer class="qml-footer">
       <p>
-        <strong>OmaStat</strong> • Pure Qt Quickshell Telemetry Engine • <a href="https://omarchy.org" target="_blank">Omarchy Linux</a> • <a href="https://buymeacoffee.com/ozdil" target="_blank" style="color: #FFDD00; font-weight: bold; text-decoration: none;"><span class="q-icon q-icon-amber">󰇰</span> Sponsor OmaStat</a>
+        <strong>OmaStat</strong> • Pure Qt Quickshell Telemetry Engine • <a href="https://omarchy.org" target="_blank">Omarchy Linux</a> • <a href="https://buymeacoffee.com/ozdil" target="_blank" style="color: var(--text-bright); font-weight: bold; text-decoration: none;"><span class="q-icon q-icon-amber">󰇰</span> Sponsor OmaStat</a>
       </p>
       <p style="margin-top: 0.25rem; opacity: 0.7;">
         Architected by <a href="https://github.com/ozdil" target="_blank">Ozan Özdil (ozdil)</a> & Omarchy Contributors • Zero-PII Cryptographic Matrix

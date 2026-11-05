@@ -2,7 +2,17 @@
 
 All notable changes to OmaStat are listed here.
 
-## 1.1.0 (unreleased)
+## Unreleased
+
+### Fixed (dashboard)
+
+- **Muted text was unreadable.** Labels, chart tags, empty states and subtitles used each theme's comment colour (`--muted`), 1.63:1 on the Tokyo Night surface. Text now uses `--muted-text`, a mix toward `--text` that keeps the theme's hue; the default theme went from 25 contrast failures to 0 (WCAG 1.4.3).
+- **The phone header was 1080px wide** at a 390px viewport, so the theme, language and "Add OmaRank" controls were off-screen; chart cards also overflowed with long hardware names. No tab scrolls sideways now at 320–1440px.
+- **The empty states told people to run `omarank-engine --share`**, a flag the engine doesn't have. They now say `--submit-survey`.
+- **English labels rendered as "HİGH-SPEED", "CAPACİTY"** in Turkish mode, because `text-transform: uppercase` follows the page language. English-only labels are marked `lang="en"`.
+- The icon on the filled "Add OmaRank" and partner buttons was drawn in the button's own colour (1:1). The Sponsor link's hard-coded `#FFDD00` was 1.0–1.4:1 on the light themes. The radio volume slider had no accessible name.
+
+## 1.1.0 (2026-11-05)
 
 Before deploying, apply migrations 0004 and 0005: `npm run db:migrate:prod`.
 

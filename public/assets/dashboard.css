@@ -30,7 +30,7 @@
 .q-icon-amber   { color: var(--amber); }
 .q-icon-red     { color: var(--red); }
 .q-icon-cyan    { color: var(--cyan); }
-.q-icon-muted   { color: var(--muted); }
+.q-icon-muted   { color: var(--muted-text); }
 .q-icon-text    { color: var(--text-bright); }
 
 :root {
@@ -43,6 +43,17 @@
   --radius-lg: 16px;
   --radius-full: 9999px;
 }
+
+/* Theme --muted values are comment colours (Tokyo Night #414868 is 1.6:1 on its
+   surface). Text uses this mix toward --text instead, which keeps each theme's hue
+   and reaches WCAG 1.4.3 (4.5:1) on --bg-surface in all 26 themes. --muted stays for borders. */
+:root, [data-theme] {
+  --muted-text: color-mix(in srgb, var(--muted) 25%, var(--text));
+  /* Brand hue for small text on tinted pills; pure --brand is 2.8-3.7:1 in white, nord, turkiye. */
+  --brand-text: color-mix(in srgb, var(--brand) 60%, var(--text-bright));
+}
+
+.btn-install .q-icon { color: inherit; }
 
 /* 26 Official Omarchy Themes */
 
@@ -919,7 +930,7 @@ header.omarchy-panel {
 
 .menu-item-desc {
   font-size: 0.64rem;
-  color: var(--muted);
+  color: var(--muted-text);
 }
 
 /* Live Telemetry Ticker Strip (Kayar Yazı) */
@@ -939,7 +950,7 @@ header.omarchy-panel {
   align-items: center;
   gap: 0.35rem;
   background: color-mix(in srgb, var(--brand) 12%, var(--bg-surface));
-  color: var(--brand);
+  color: var(--brand-text);
   border-right: 1px solid var(--border);
   padding: 0 0.85rem;
   height: 100%;
@@ -990,7 +1001,7 @@ header.omarchy-panel {
 .ticker-tag {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  color: var(--brand);
+  color: var(--brand-text);
   padding: 0.15rem 0.45rem;
   border-radius: var(--radius-sm);
   font-size: 0.65rem;
@@ -1070,7 +1081,7 @@ main.quickshell-canvas {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1.2px;
-  color: var(--brand);
+  color: var(--brand-text);
   background: rgba(var(--brand-rgb), 0.12);
   border: 1px solid var(--border-accent);
   padding: 0.25rem 0.85rem;
@@ -1094,7 +1105,7 @@ main.quickshell-canvas {
 }
 
 .hero-lead {
-  color: var(--muted);
+  color: var(--muted-text);
   font-size: 0.88rem;
   max-width: 640px;
   margin: 0 auto 1.5rem;
@@ -1164,7 +1175,7 @@ main.quickshell-canvas {
 .qml-tab {
   background: transparent;
   border: 1px solid transparent;
-  color: var(--muted);
+  color: var(--muted-text);
   font-family: inherit;
   font-size: 0.8rem;
   font-weight: 700;
@@ -1240,7 +1251,7 @@ main.quickshell-canvas {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--muted);
+  color: var(--muted-text);
 }
 
 .card-icon {
@@ -1264,7 +1275,7 @@ main.quickshell-canvas {
 /* Charts */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
   gap: 1.25rem;
   margin-bottom: 2rem;
 }
@@ -1272,6 +1283,10 @@ main.quickshell-canvas {
 @media (max-width: 600px) {
   .charts-grid { grid-template-columns: 1fr; }
 }
+
+/* Grid items default to min-width:auto, so a long GPU or board name widened the
+   column past the viewport on phones. */
+.charts-grid > *, .stat-cards-grid > * { min-width: 0; }
 
 .chart-box {
   background: var(--bg-surface);
@@ -1300,7 +1315,7 @@ main.quickshell-canvas {
 
 .chart-box-tag {
   font-size: 0.68rem;
-  color: var(--muted);
+  color: var(--muted-text);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -1328,7 +1343,7 @@ main.quickshell-canvas {
 }
 
 .meta-pct {
-  color: var(--muted);
+  color: var(--muted-text);
   font-weight: 700;
 }
 
@@ -1376,7 +1391,7 @@ main.quickshell-canvas {
 
 .leaderboard-head p {
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--muted-text);
 }
 
 .leaderboard-summary-pill {
@@ -1478,7 +1493,7 @@ main.quickshell-canvas {
 
 .leaderboard-table th {
   background: var(--bg-subtle);
-  color: var(--muted);
+  color: var(--muted-text);
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 0.8px;
@@ -1639,7 +1654,7 @@ main.quickshell-canvas {
 .archetype-tag {
   font-size: 0.65rem;
   font-family: var(--font-mono);
-  color: var(--muted);
+  color: var(--muted-text);
   background: var(--bg-surface);
   padding: 0.1rem 0.4rem;
   border-radius: 3px;
@@ -1742,7 +1757,7 @@ main.quickshell-canvas {
 
 .roaster-header p {
   font-size: 0.82rem;
-  color: var(--muted);
+  color: var(--muted-text);
   margin-bottom: 1.25rem;
 }
 
@@ -1818,7 +1833,7 @@ main.quickshell-canvas {
   gap: 0.5rem;
   flex-wrap: wrap;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-text);
   margin-bottom: 1.25rem;
 }
 
@@ -1880,7 +1895,7 @@ main.quickshell-canvas {
   align-items: center;
   gap: 1.25rem;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-text);
   flex-wrap: wrap;
 }
 
@@ -1905,7 +1920,7 @@ main.quickshell-canvas {
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--muted-text);
   margin-bottom: 0.4rem;
   letter-spacing: 0.5px;
 }
@@ -1993,7 +2008,7 @@ main.quickshell-canvas {
 
 .tier-lore {
   font-size: 0.72rem;
-  color: var(--muted);
+  color: var(--muted-text);
   line-height: 1.5;
   margin-bottom: 0.6rem;
 }
@@ -2005,7 +2020,7 @@ main.quickshell-canvas {
   padding: 1.5rem;
   line-height: 1.7;
   font-size: 0.82rem;
-  color: var(--muted);
+  color: var(--muted-text);
 }
 
 .zero-pii-card strong {
@@ -2188,7 +2203,7 @@ footer.qml-footer {
   margin-top: 2.5rem;
   text-align: center;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-text);
   line-height: 1.8;
 }
 
@@ -2233,7 +2248,7 @@ footer a:hover {
   padding: 0.05rem 0.4rem;
   border-radius: 4px;
   border: 1px dashed var(--muted);
-  color: var(--muted);
+  color: var(--muted-text);
   font-family: var(--font-mono);
   font-size: 0.6rem;
   font-weight: 700;
@@ -2262,7 +2277,7 @@ footer a:hover {
 .chart-empty {
   padding: 1.5rem 0.5rem;
   text-align: center;
-  color: var(--muted);
+  color: var(--muted-text);
   font-size: 0.8rem;
 }
 
@@ -2301,11 +2316,19 @@ footer a:hover {
 .hist-label {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  color: var(--muted);
+  color: var(--muted-text);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hist-bar {
     transition: none;
   }
+}
+
+/* Narrow screens: the header row was wider than the viewport (1080px at 390px),
+   pushing the theme, language and install controls off-screen. */
+@media (max-width: 760px) {
+  .panel-container { flex-wrap: wrap; row-gap: 0.5rem; }
+  .panel-center, .status-badge, .station-dropdown-container, .volume-slider-box { display: none; }
+  .panel-right { flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; }
 }
