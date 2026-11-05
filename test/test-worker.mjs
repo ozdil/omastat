@@ -367,4 +367,30 @@ await test('dashboard loads its script from /assets (no inline script, strict CS
   assert.doesNotMatch(r.headers.get('content-security-policy'), /script-src[^;]*unsafe-inline/);
 });
 
+await test('RAM and display labels are normalized on ingest and merged on read', async () => {
+  const db = { DB: createD1() };
+  const send = (p) => worker.fetch(new Request(BASE + '/api/survey/v1', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...base, ...p }),
+  }), db, {});
+  // Rows stored by older versions under other spellings
+  db.DB.raw.prepare("INSERT INTO ram_distribution (bucket, count) VALUES ('31GB DDR5', 3), ('15GB DDR4', 1)").run();
+  db.DB.raw.prepare("INSERT INTO display_distribution (resolution_hz, count) VALUES ('2560×1440@240Hz', 2)").run();
+  db.DB.raw.prepare("UPDATE stats_meta SET value = value + 6 WHERE key = 'total_submissions'").run();
+  await send({ ram_gb: 31.1, primary_display: '2560x1440 @ 240Hz' });
+  await send({ ram_gb: 32, primary_display: '2560x1440@240hz' });
+  const r = await worker.fetch(new Request(BASE + '/api/stats/v1'), db, {}).then((x) => x.json());
+  const ram = Object.fromEntries(r.ram_breakdown.map((x) => [x.bucket, x.count]));
+  assert.deepEqual(ram, { '32GB DDR5': 5, '16GB DDR4': 1 });
+  assert.deepEqual(r.display_breakdown.map((x) => [x.resolution_hz, x.count]), [['2560×1440 @ 240Hz', 4]]);
+  assert.equal(r.ram_breakdown[0].percentage, Number(((5 / r.total_submissions) * 100).toFixed(1)));
+});
+
+await test('marketed RAM sizes: within 10% below rounds up, otherwise unchanged', async () => {
+  const { marketedRamGb, normalizeDisplay } = await import('../src/normalize.ts');
+  const cases = [[31, 32], [31.1, 32], [15, 16], [7.6, 8], [4, 4], [62.5, 64], [20, 20], [28, 28], [0, 0]];
+  for (const [inp, out] of cases) assert.equal(marketedRamGb(inp), out, `ram ${inp}`);
+  assert.equal(normalizeDisplay('1920 x 1080 @ 59.94 Hz'), '1920×1080 @ 60Hz');
+  assert.equal(normalizeDisplay('weird'), 'weird');
+});
+
 console.log(`\n[PASS] ${passed} worker tests passed against src/index.ts\n`);
