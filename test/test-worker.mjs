@@ -393,4 +393,19 @@ await test('marketed RAM sizes: within 10% below rounds up, otherwise unchanged'
   assert.equal(normalizeDisplay('weird'), 'weird');
 });
 
+await test('demo rows fill an empty board and disappear once a real system is listed', async () => {
+  const db = { DB: createD1() };
+  const lb = () => worker.fetch(new Request(BASE + '/api/leaderboard/v1?limit=100'), db, {}).then((x) => x.json());
+  const before = await lb();
+  assert.ok(before.total > 0 && before.items.every((i) => i.is_demo === 1), 'seed rows show on an empty board');
+  await worker.fetch(new Request(BASE + '/api/survey/v1', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...base, archetype_signature: 'OMA-R7-7800-32G-165H', omarank_score: 55 }),
+  }), db, {});
+  const after = await lb();
+  assert.equal(after.total, 1);
+  assert.equal(after.items[0].is_demo, 0);
+  assert.equal(after.items[0].score, 55);
+});
+
 console.log(`\n[PASS] ${passed} worker tests passed against src/index.ts\n`);

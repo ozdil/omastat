@@ -4,6 +4,12 @@ All notable changes to OmaStat are listed here.
 
 ## Unreleased
 
+### Changed
+
+- **Demo rows no longer outrank real systems.** Seed rows only fill an empty leaderboard; once any real submission is listed, `/api/leaderboard/v1` hides them. Before, a real system could rank below invented ones like "Custom DIY Battlestation 98.75", and the board counted them as verified.
+- **"Verified" is now "Submitted"** in every language. OmaStat checks plausibility but does not verify hardware, so the label overstated it.
+- **The install command builds the engine.** `omarchy plugin add … --enable` installed the widget without `omarank-engine`, so it stayed empty unless the package was installed. The copied command now adds the plugin, builds and installs the engine (also linked into `~/.local/bin`), then enables it.
+
 ### Fixed
 
 - **Dashboard text was hard to read in every theme.** Secondary text used each theme's `--muted` comment colour, measured at 1.18:1 to 4.25:1 against its background (Tokyo Night: 1.63:1, below WCAG 1.4.3's 4.5:1). Each theme now has a `--text-muted` between `--muted` and `--text`, chosen to reach at least 4.6:1 on the page, shell and card backgrounds. Low-contrast text on Tokyo Night went from 41 elements to 0.
