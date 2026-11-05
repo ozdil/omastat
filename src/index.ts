@@ -499,7 +499,9 @@ async function handleLeaderboardQuery(url: URL, env: Env): Promise<Response> {
   const grade = TIERS.some((t) => t.grade === gradeParam) ? gradeParam : "";
   const q = sanitizeText(url.searchParams.get("q") || "", 40).toLowerCase();
 
-  const where: string[] = [];
+  // Seed rows are placeholders for an empty board: once any real submission is on the
+  // leaderboard they are hidden, so real systems never rank below invented ones.
+  const where: string[] = ["(is_demo = 0 OR NOT EXISTS (SELECT 1 FROM global_leaderboard WHERE is_demo = 0))"];
   const binds: (string | number)[] = [];
   if (grade) {
     where.push("grade = ?");
@@ -513,7 +515,7 @@ async function handleLeaderboardQuery(url: URL, env: Env): Promise<Response> {
     );
     binds.push(like, like, like, like, like);
   }
-  const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+  const whereSql = `WHERE ${where.join(" AND ")}`;
 
   try {
     const [rows, count] = await env.DB.batch([
