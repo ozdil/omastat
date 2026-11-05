@@ -9,6 +9,7 @@ All notable changes to OmaStat are listed here.
 - **Demo rows no longer outrank real systems.** Seed rows only fill an empty leaderboard; once any real submission is listed, `/api/leaderboard/v1` hides them. Before, a real system could rank below invented ones like "Custom DIY Battlestation 98.75", and the board counted them as verified.
 - **"Verified" is now "Submitted"** in every language. OmaStat checks plausibility but does not verify hardware, so the label overstated it.
 - **The install command builds the engine.** `omarchy plugin add … --enable` installed the widget without `omarank-engine`, so it stayed empty unless the package was installed. The copied command now adds the plugin, builds and installs the engine (also linked into `~/.local/bin`), then enables it.
+- **The systems card says "all time".** It counts every system that ever sent a survey (including older aggregate data), while the leaderboard lists only systems with a submitted score, so "Active systems: 17" next to a 3-row board read like a bug.
 
 ### Fixed
 
